@@ -8,6 +8,7 @@
 
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
+import UserMap from "./components/UserMap";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -21,9 +22,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>SeaChange Mobile App</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <UserMap/>
       </View>
     );
   }
@@ -36,6 +35,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
+  /*
   welcome: {
     fontSize: 20,
     textAlign: 'center',
@@ -46,4 +46,5 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  */
 });

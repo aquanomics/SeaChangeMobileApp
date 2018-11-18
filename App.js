@@ -37,6 +37,9 @@ export default class App extends Component<Props> {
 	    if(user) {
 		console.log(user);
 		this.setState({'user':user});
+		user.getIdToken().then(function(idToken) {  // <------ Check this line
+		    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
+		});
 	    } else {
 		console.log('not logged in');
 	    }

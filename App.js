@@ -7,8 +7,11 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {AppRegistry, Platform, StyleSheet, Text, View} from 'react-native';
+import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
+
 import UserMap from "./components/UserMap";
+import ArticlesPage from "./components/ArticlesPage";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -16,9 +19,9 @@ const instructions = Platform.select({
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-
+/*
 type Props = {};
-export default class App extends Component<Props> {
+class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
@@ -27,7 +30,7 @@ export default class App extends Component<Props> {
     );
   }
 }
-
+*/
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -47,4 +50,15 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   */
+});
+
+export default createStackNavigator({
+  Home: {
+    screen: UserMap,
+  },
+  Articles: {
+    screen: ArticlesPage,
+  },
+}, {
+    initialRouteName: 'Home',
 });

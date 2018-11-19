@@ -8,7 +8,7 @@
 
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
-import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
+import { createStackNavigator, StackActions, NavigationActions,createAppContainer } from 'react-navigation';
 
 import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
@@ -43,19 +43,21 @@ const styles = StyleSheet.create({
   */
 });
 
-export default createStackNavigator({
+const MainNavigator = createStackNavigator({
   Home: {
-    screen: UserMap,
+   screen: UserMap,
   },
   Articles: {
-    screen: ArticlesPage,
+   screen: ArticlesPage,
   },
   Events: {
-    screen: EventsPage,
+   screen: EventsPage,
   },
   Settings: {
-    screen: SettingsPage,
+   screen: SettingsPage,
   },
-}, {
-    initialRouteName: 'Home',
-});
+  }, {
+   initialRouteName: 'Home',
+  });
+  
+  export default createAppContainer(MainNavigator);

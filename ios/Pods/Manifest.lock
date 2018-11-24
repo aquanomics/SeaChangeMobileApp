@@ -67,7 +67,7 @@ PODS:
   - nanopb/encode (0.3.901)
   - React (0.57.4):
     - React/Core (= 0.57.4)
-  - react-native-maps (0.22.0):
+  - react-native-maps (0.22.1):
     - React
   - React/Core (0.57.4):
     - yoga (= 0.57.4.React)
@@ -114,6 +114,8 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNGestureHandler (1.0.9):
+    - React
   - yoga (0.57.4.React)
 
 DEPENDENCIES:
@@ -137,6 +139,7 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler/ios`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
 SPEC REPOS:
@@ -164,6 +167,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
 
@@ -184,8 +189,9 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
+  RNGestureHandler: 968e4453152673aedcbbb7c1ada6700c214cea7a
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: ef39b0e0ce4b08c91d4a9a6f637df7da718311b9
+PODFILE CHECKSUM: 68b45dd86ca49aaa36547a44ddba374c03e91e20
 
 COCOAPODS: 1.5.3

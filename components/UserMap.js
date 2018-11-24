@@ -1,7 +1,9 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet } from "react-native";
+import {View, Button, StyleSheet,Text } from "react-native";
 import MapView from "react-native-maps";
 import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
+import ActionButton from 'react-native-action-button';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class UserMap extends Component{
 
@@ -44,53 +46,32 @@ export default class UserMap extends Component{
   render(){
     console.log(this.state.userLocation);
     return (
-    <View style={styles.container}>
-      <View style={styles.mapContainer}>
-      
-        <MapView
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,}
-          }
-          region={this.props.userLocation}
-          style={styles.map}
-        >   
-        </MapView>
-        <Button
-          title="Hey"
-          style={styles.but}
-          onPress={() =>
-            this.props.navigation.navigate('Articles')
-          }
-        />
-        
+    
+    <View style={{ flex: 1 }}>
+      <MapView style={{ flex: 1 }} />
+      <View
+          style={{
+              position: 'absolute',//use absolute position to show button on top of the map
+              top: '10%', //for center align
+              right: '20%',
+              alignSelf: 'flex-end' //for align to right
+          }}
+      >
+        <View style={{flex:1, backgroundColor: '#f3f3f3'}}>
+          {/* Rest of the app comes ABOVE the action button component !*/}
+          <ActionButton buttonColor="rgba(231,76,60,1)">
+            <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
+              <Icon name="md-create" style={styles.actionButtonIcon} />
+            </ActionButton.Item>
+            <ActionButton.Item buttonColor='#3498db' title="Notifications" onPress={() => {}}>
+              <Icon name="md-notifications-off" style={styles.actionButtonIcon} /><Icon name="md-done-all" style={styles.actionButtonIcon} />
+           </ActionButton.Item>
+            <ActionButton.Item buttonColor='#1abc9c' title="All Tasks" onPress={() => {}}>
+              <Icon name="md-done-all" style={styles.actionButtonIcon} />
+            </ActionButton.Item>
+          </ActionButton>
+        </View>
       </View>
-
-      <View style={styles.menu}>
-        <Button
-            title="Articles"
-            style={styles.menuButton}
-            onPress={() =>
-              this.props.navigation.navigate('Articles')
-            }
-        />
-        <Button
-            title="Events"
-            style={styles.menuButton}
-            onPress={() =>
-              this.props.navigation.navigate('Events')
-            }
-        />
-        <Button
-            title="Settings"
-            style={styles.menuButton}
-            onPress={() =>
-              this.props.navigation.navigate('Settings')
-            }
-        />
-      </View>   
     </View>
     );
   }
@@ -98,20 +79,35 @@ export default class UserMap extends Component{
 
 const styles = StyleSheet.create({
     container: {
-      flex:0
+      flex:1
     },
     mapContainer: {
-      width: "100%",
-      height: "90%",
-      position:"relative"
+      flex:1,
+      
+      justifyContent: 'center',
+    alignItems: 'center'
     },
     but: {
-      position: "absolute",
-      top:200
+      color:"#841584",
+      backgroundColor: '#2196F3'
     },
-    map: {
+    actionButtonIcon: {
+      fontSize: 20,
+      height: 22,
+      color: 'white',
+    },
 
-      margin: 0
+
+    buttonView:{
+      position: 'absolute',
+      top: '80%' 
+    },
+
+
+    map: {
+      flex:1,
+      zIndex: -1
+      
     },
     menu: {
       height: "10%",

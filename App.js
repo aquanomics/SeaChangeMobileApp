@@ -9,6 +9,8 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import firebase from 'react-native-firebase';
+import Login from './Login.js'; 
+import Main from './Main.js'; 
 
 const instructions = Platform.select({
     ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -24,102 +26,54 @@ export default class App extends Component<Props> {
 	this.unsubscriber = null;
 	this.state = {
 	    user: null,
-	    email: '',
-	    password: ''
 	};
+    }
 
-	//explicitly bind the callback handlers
-	this.onPressLogIn = this.onPressLogIn.bind(this);
-	this.onPressSignUp = this.onPressSignUp.bind(this);
-	this.onPressLogOut = this.onPressLogOut.bind(this);
-
-	firebase.auth().onAuthStateChanged(user => {
+    /**
+     * When the App component mounts, we listen for any authentication
+     * state changes in Firebase.
+     * Once subscribed, the 'user' parameter will either be null 
+     * (logged out) or an Object (logged in)
+     */
+    componentDidMount() {
+	this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
 	    if(user) {
+		console.log("Inside componentDidMount()'s callback function. Below is the user");
 		console.log(user);
+		console.log("Below is the unsubscriber");
+		console.log(this.unsubscriber);
 		this.setState({'user':user});
 		user.getIdToken().then(function(idToken) {  // <------ Check this line
 		    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
 		});
 	    } else {
 		console.log('not logged in');
+		this.setState({user: null});
 	    }
 	});
     }
-
     /**
-    * Listen for any auth state changes and update component state
-    */
-    componentDidMount() {
-	this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-	    this.setState({ user });
-	});
-    }
-
+     * Don't forget to stop listening for authentication state changes
+     * when the component unmounts.
+     */
     componentWillUnmount() {
+	console.log("Inside componentWillUnmount()");
 	if (this.unsubscriber) {
 	    this.unsubscriber();
 	}
     }
 
-    onPressLogIn() {
-	console.log('Login pressed');
-	firebase
-	    .auth()
-	    .signInWithEmailAndPassword(this.state.email, this.state.password)
-	    .then(() => console.log("successfully logged on"))
-	    .catch(e => console.log(e.message));
-	console.log('Got here');
-    }
-
-    onPressSignUp() {
-	//console.log(this.state);
-	console.log('Sign up pressed');
-	firebase
-	    .auth()
-	    .createUserWithEmailAndPassword(this.state.email, this.state.password)
-	    .then(() => console.log("successfully signed up"))
-	    .catch(e => console.log(e.message));
-	console.log('Got here');
-    }
-
-    onPressLogOut() {
-	console.log('LogOut pressed');
-    }
-
     render() {
-	//if (!this.state.user) {
-	//}
-//	console.log(firebase);
-	console.log(this.state);
+	//if logged in, redirect to main page
+	if(this.state.user) {
+	    return (
+	        <Main />
+	    );
+	}
+
+	//redirect to log in page
 	return (
-	    <View style={styles.container}>
-		<Text>Testing</Text>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"email":text})}
-		    placeholder={'email'}
-		/>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"password":text})}
-		    placeholder={'password'}
-		/>
-		<Button
-		    onPress={this.onPressLogIn}
-		    title="Login"
-		    color="#841584"
-		/>
-		<Button
-		    onPress={this.onPressSignUp}
-		    title="SignUp"
-		    color="#841584"
-		/>
-		<Button
-		    onPress={this.onPressLogOut}
-		    title="LogOut"
-		    color="#841584"
-		/>
-	    </View>
+	    <Login />
 	);
     }
 }

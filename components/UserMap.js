@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {View, Button, StyleSheet,Text ,TouchableOpacity} from "react-native";
 import MapView from "react-native-maps";
-import { createStackNavigator, StackActions, NavigationActions } from 'react-navigation';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MenuButton from './MenuButton'
 
 export default class UserMap extends Component{
 
@@ -75,28 +75,14 @@ export default class UserMap extends Component{
       </View>
 
       <View style={styles.menu}>
-
-        <View style={{flexDirection: 'row',flexWrap: 'wrap',justifyContent: 'center', alignItems: 'center',}}>
-         <TouchableOpacity style={styles.menuButton} onPress={() => this.props.navigation.navigate('Events')}>
-            <Icon name={"md-create"}  size={30} color="#01a699" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuButton} onPress={() => this.props.navigation.navigate('Events')}>
-            <Icon name={"md-create"}  size={30} color="#01a699" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuButton} onPress={() => this.props.navigation.navigate('Events')}>
-            <Icon name={"md-create"}  size={30} color="#01a699" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuButton} onPress={() => this.props.navigation.navigate('Events')}>
-            <Icon name={"md-create"}  size={30} color="#01a699" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuButton} onPress={() => this.props.navigation.navigate('Events')}>
-            <Icon name={"md-create"}  size={30} color="#01a699" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuButton} onPress={() => this.props.navigation.navigate('Events')}>
-            <Icon name={"md-create"}  size={30} color="#01a699" />
-          </TouchableOpacity>   
+        <View style={{flexDirection: 'row',flexWrap: 'wrap',justifyContent: 'center', alignItems: 'center'}}>
+          <MenuButton iconName="md-create" buttonTitle="Events" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-create" buttonTitle="Articles" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-create" buttonTitle="Posts" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-create" buttonTitle="Settings" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-create" buttonTitle="Profile" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-create" buttonTitle="Feed" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
         </View>
-
       </View>
 
     </View>
@@ -115,22 +101,6 @@ const styles = StyleSheet.create({
     menu: {
       height: "25%",
       flex: 1, 
-      flexDirection: 'row',  
-      paddingLeft: 20
     },
-
-    menuButton: { 
-      borderWidth:1,
-      borderColor:'rgba(0,0,0,0.2)',
-      alignItems:'center',
-      justifyContent:'center',
-      width:55,
-      height:55,
-      backgroundColor:'#fff',
-      borderRadius:55,
-      marginLeft: 20,
-      marginRight: 20,
-      marginTop: 15
-    }
 });
 

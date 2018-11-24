@@ -75,10 +75,12 @@ export default class UserMap extends Component{
       </View>
 
       <View style={styles.menu}>
-        <View style={{flexDirection: 'row',flexWrap: 'wrap',justifyContent: 'center', alignItems: 'center'}}>
+        <View style={styles.menuRow}>
           <MenuButton iconName="md-create" buttonTitle="Events" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-create" buttonTitle="Articles" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-create" buttonTitle="Posts" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+        </View>
+        <View style={styles.menuRow}>
           <MenuButton iconName="md-create" buttonTitle="Settings" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-create" buttonTitle="Profile" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-create" buttonTitle="Feed" navPage="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
@@ -102,5 +104,11 @@ const styles = StyleSheet.create({
       height: "25%",
       flex: 1, 
     },
+
+    menuRow: {
+      flexDirection: 'row',
+      justifyContent: 'center', 
+      alignItems: 'center'
+    }
 });
 

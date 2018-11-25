@@ -6,8 +6,8 @@ export default class MenuButton extends Component{
 
     constructor(props){
         super(props);
-        
-        this.state = {iconName: props.iconName, buttonTitle: props.buttonTitle, navPage: props.navPage};        
+
+        this.state = {iconName: props.iconName, buttonTitle: props.buttonTitle};        
     }
 
     render(){

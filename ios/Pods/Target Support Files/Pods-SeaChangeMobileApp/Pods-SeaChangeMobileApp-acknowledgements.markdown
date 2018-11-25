@@ -31,6 +31,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+<<<<<<< HEAD
 ## Firebase
 
 Copyright 2018 Google
@@ -1053,6 +1054,9 @@ Copyright 2018 Google
 Copyright 2018 Google
 
 ## GoogleUtilities
+=======
+## Folly
+>>>>>>> mapsbasics
 
 
                                  Apache License
@@ -1232,6 +1236,7 @@ Copyright 2018 Google
 
    END OF TERMS AND CONDITIONS
 
+<<<<<<< HEAD
    APPENDIX: How to apply the Apache License to your work.
 
       To apply the Apache License to your work, attach the following
@@ -1257,6 +1262,8 @@ Copyright 2018 Google
    See the License for the specific language governing permissions and
    limitations under the License.
 
+=======
+>>>>>>> mapsbasics
 
 ## React
 
@@ -1379,6 +1386,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+<<<<<<< HEAD
 ## nanopb
 
 Copyright (c) 2011 Petteri Aimonen <jpa at nanopb.mail.kapsi.fi>
@@ -1403,6 +1411,8 @@ redistribute it freely, subject to the following restrictions:
    distribution.
 
 
+=======
+>>>>>>> mapsbasics
 ## react-native-maps
 
 The MIT License (MIT)

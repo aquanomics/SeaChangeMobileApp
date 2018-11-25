@@ -50,6 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
+<<<<<<< HEAD
 			<string>Copyright 2018 Google</string>
 			<key>License</key>
 			<string>Copyright</string>
@@ -1125,6 +1126,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
+=======
+>>>>>>> mapsbasics
 			<string>
                                  Apache License
                            Version 2.0, January 2004
@@ -1302,6 +1305,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       of your accepting any such warranty or additional liability.
 
    END OF TERMS AND CONDITIONS
+<<<<<<< HEAD
 
    APPENDIX: How to apply the Apache License to your work.
 
@@ -1332,6 +1336,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			<string>Apache</string>
 			<key>Title</key>
 			<string>GoogleUtilities</string>
+=======
+</string>
+			<key>License</key>
+			<string>Apache License, Version 2.0</string>
+			<key>Title</key>
+			<string>Folly</string>
+>>>>>>> mapsbasics
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1476,6 +1487,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
+<<<<<<< HEAD
 			<string>Copyright (c) 2011 Petteri Aimonen &lt;jpa at nanopb.mail.kapsi.fi&gt;
 
 This software is provided 'as-is', without any express or 
@@ -1506,6 +1518,8 @@ redistribute it freely, subject to the following restrictions:
 		</dict>
 		<dict>
 			<key>FooterText</key>
+=======
+>>>>>>> mapsbasics
 			<string>The MIT License (MIT)
 
 Copyright (c) 2015 Airbnb

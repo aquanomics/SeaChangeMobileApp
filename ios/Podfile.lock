@@ -1,6 +1,7 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+<<<<<<< HEAD
   - Firebase/Auth (5.10.0):
     - Firebase/CoreOnly
     - FirebaseAuth (= 5.0.4)
@@ -30,11 +31,14 @@ PODS:
     - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.3)
     - GoogleUtilities/UserDefaults (~> 5.3)
+=======
+>>>>>>> mapsbasics
   - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
   - glog (0.3.5)
+<<<<<<< HEAD
   - GoogleAppMeasurement (5.2.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
     - GoogleUtilities/MethodSwizzler (~> 5.2)
@@ -68,6 +72,11 @@ PODS:
   - React (0.57.4):
     - React/Core (= 0.57.4)
   - react-native-maps (0.22.1):
+=======
+  - React (0.57.4):
+    - React/Core (= 0.57.4)
+  - react-native-maps (0.22.0):
+>>>>>>> mapsbasics
     - React
   - React/Core (0.57.4):
     - yoga (= 0.57.4.React)
@@ -114,17 +123,25 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+<<<<<<< HEAD
   - RNGestureHandler (1.0.9):
     - React
+=======
+>>>>>>> mapsbasics
   - yoga (0.57.4.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+<<<<<<< HEAD
   - Firebase/Auth
   - Firebase/Core
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - GoogleAppMeasurement (~> 5.2.0)
+=======
+  - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
+  - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+>>>>>>> mapsbasics
   - react-native-maps (from `../node_modules/react-native-maps`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
@@ -139,12 +156,16 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+<<<<<<< HEAD
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler/ios`)
+=======
+>>>>>>> mapsbasics
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
+<<<<<<< HEAD
     - Firebase
     - FirebaseAnalytics
     - FirebaseAuth
@@ -155,6 +176,8 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMSessionFetcher
     - nanopb
+=======
+>>>>>>> mapsbasics
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -167,14 +190,18 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
+<<<<<<< HEAD
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler/ios"
+=======
+>>>>>>> mapsbasics
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+<<<<<<< HEAD
   Firebase: 6691d47562a780c26281ce8464518faafc90c610
   FirebaseAnalytics: 831f1f127f4a75698e9875a87bf7e2668730d953
   FirebaseAuth: 504b198ceb3472dca5c65bb95544ea44cfc9439e
@@ -193,5 +220,14 @@ SPEC CHECKSUMS:
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
 PODFILE CHECKSUM: 68b45dd86ca49aaa36547a44ddba374c03e91e20
+=======
+  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
+  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+
+PODFILE CHECKSUM: f7985291bb9cc4f55012f930b6ff6ef489edc1de
+>>>>>>> mapsbasics
 
 COCOAPODS: 1.5.3

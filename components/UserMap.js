@@ -71,13 +71,13 @@ export default class UserMap extends Component{
 
       <View style={styles.menu}>
         <View style={styles.menuRow}>
-          <MenuButton iconName="md-create" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
-          <MenuButton iconName="md-create" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
-          <MenuButton iconName="md-create" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
+          <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
         </View>
         <View style={styles.menuRow}>
-          <MenuButton iconName="md-create" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
-          <MenuButton iconName="md-create" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
+          <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-create" buttonTitle="Feed" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
         </View>
       </View>

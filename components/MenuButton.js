@@ -15,7 +15,7 @@ export default class MenuButton extends Component{
         return (
             <View style={{alignItems:'center', justifyContent:'center',}}>
                 <TouchableOpacity style={styles.menuButton} onPress={() => this.props.onClick()}>
-                    <Icon  name={this.state.iconName}  size={30} color='#ffffff' />                   
+                    <Icon  name={this.state.iconName}  size={28} color='#ffffff' />                   
                 </TouchableOpacity>  
                 <Text >{this.state.buttonTitle}</Text>             
             </View>
@@ -34,10 +34,10 @@ const styles = StyleSheet.create({
         borderColor:'rgba(0,0,0,0.2)',
         alignItems:'center',
         justifyContent:'center',
-        width:40,
-        height:40,
+        width:45,
+        height:45,
         backgroundColor:'#3498db',
-        borderRadius:40,
+        borderRadius:45,
         marginLeft: 30,
         marginRight: 30,
         marginTop: 15

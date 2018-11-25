@@ -1,0 +1,8 @@
+2018-11-24 22:09:24.203175-0800 SeaChangeMobileApp[468:131280]  - <AppMeasurement>[I-ACS036002] Analytics screen reporting is enabled. Call +[FIRAnalytics setScreenName:setScreenClass:] to set the screen name or override the default screen class name. To disable screen reporting, set the flag FirebaseScreenReportingEnabled to NO (boolean) in the Info.plist
+2018-11-24 22:09:24.274487-0800 SeaChangeMobileApp[468:131280] 5.10.0 - [Firebase/Core][I-COR000012] Could not locate configuration file: 'GoogleService-Info.plist'.
+2018-11-24 22:09:24.274889-0800 SeaChangeMobileApp[468:131280] 5.10.0 - [Firebase/Core][I-COR000005] No app has been configured yet.
+2018-11-24 22:09:24.389580-0800 SeaChangeMobileApp[468:131216] *** Terminating app due to uncaught exception 'com.firebase.core', reason: '`[FIRApp configure];` (`FirebaseApp.configure()` in Swift) could not find a valid GoogleService-Info.plist in your project. Please download one from https://console.firebase.google.com/.'
+*** First throw call stack:
+(0x18286afe0 0x1812cc538 0x18286af28 0x10006d5b4 0x100007700 0x188a0d204 0x188c19738 0x188c1f1e0 0x188c33d18 0x188c1c474 0x184413884 0x1844136f0 0x184413aa0 0x18281942c 0x182818d9c 0x1828169a8 0x182746da4 0x188a06384 0x188a01058 0x100007b78 0x18175559c)
+libc++abi.dylib: terminating with uncaught exception of type NSException
+(lldb) 

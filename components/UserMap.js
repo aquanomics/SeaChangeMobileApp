@@ -50,6 +50,14 @@ export default class UserMap extends Component{
     <View style={{ flex: 1 }}>
       <View style={{height:"75%"}}>
         <MapView style={{ flex: 1 }} />
+        <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}}>
+            <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
+                <Icon name="md-create" style={styles.actionButtonIcon} />
+            </ActionButton.Item>
+                <ActionButton.Item buttonColor='#3498db' onPress={() => {}}>
+                    <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
+              	</ActionButton.Item>
+            </ActionButton>
         <View
             style={{
                 position: 'absolute',//use absolute position to show button on top of the map
@@ -58,19 +66,6 @@ export default class UserMap extends Component{
                 backgroundColor: '#f3f3f3'
             }}
         >
-          <View style={{width:60, backgroundColor: '#f3f3f3'}}>
-            {/* Rest of the app comes ABOVE the action button component !*/}
-            <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}}>
-              <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
-                <Icon name="md-create" style={styles.actionButtonIcon} />
-              </ActionButton.Item>
-              <ActionButton.Item buttonColor='#3498db' onPress={() => {}}>
-                <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
-              </ActionButton.Item>
-              
-            </ActionButton>
-          </View>
-            
         </View>
       </View>
 

@@ -1,10 +1,6 @@
 {
   "name": "react-native-maps",
-<<<<<<< HEAD
   "version": "0.22.1",
-=======
-  "version": "0.22.0",
->>>>>>> mapsbasics
   "summary": "React Native Mapview component for iOS + Android",
   "authors": {
     "intelligibabble": "leland.m.richardson@gmail.com"

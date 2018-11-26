@@ -43,18 +43,21 @@ export default class LoginPage extends Component<Props> {
      * (logged out) or an Object (logged in)
      */
     componentDidMount() {
+	console.log("Inside componentDidMount() for LoginPage");
 	this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
 	    if(user) {
 		console.log("Inside componentDidMount()'s callback function. Below is the user");
 		console.log(user);
 		console.log("Below is the unsubscriber");
 		console.log(this.unsubscriber);
+		console.log("Below is the user displayName");
+		console.log(user.displayName);
 		this.setState({'user':user});
 		user.getIdToken().then(function(idToken) {  // <------ Check this line
 		    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
 		});
 		console.log("Executing navigation switch to new component (UserMap)");
-		this.props.navigation.navigate('Home', { user: user });
+		this.props.navigation.navigate('Home');
 	    } else {
 		console.log('not logged in');
 		this.setState({user: null});

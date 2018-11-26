@@ -12,7 +12,8 @@ export default class SignupPage extends Component{
 	this.state = {
 	    user: null,
 	    email: '',
-	    password: ''
+	    password: '',
+	    name: ''
 	};
     }
 
@@ -25,6 +26,18 @@ export default class SignupPage extends Component{
     componentDidMount() {
 	this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
 	    if(user) {
+		firebase.auth().currentUser.updateProfile({displayName: this.state.name, photoURL: null})
+		    .then( () => {
+			console.log("Updating name in firebase authentication db successful");
+			console.log("Below is the new user object. It should contain a displayName field");
+			console.log(firebase.auth().currentUser);
+			console.log("Executing navigation switch to new component (UserMap)");
+			this.setState({'user': firebase.auth().currentUser});
+
+			//CHANGE SCREEN HERE
+			this.props.navigation.navigate('Home');
+		    })
+		    .catch( () => console.log("Updating name failed"));
 		console.log("Inside componentDidMount()'s callback function. Below is the user");
 		console.log(user);
 		console.log("Below is the unsubscriber");
@@ -33,8 +46,6 @@ export default class SignupPage extends Component{
 		user.getIdToken().then(function(idToken) {  // <------ Check this line
 		    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
 		});
-		console.log("Executing navigation switch to new component (UserMap)");
-		this.props.navigation.navigate('Home', { user: user });
 	    } else {
 		console.log('not logged in');
 		this.setState({user: null});
@@ -64,20 +75,30 @@ export default class SignupPage extends Component{
 	else if(this.state.password === "") {
 	    Alert.alert("Error: Password field is empty");
 	}
+	else if(this.state.name === "") {
+	    Alert.alert("Error: Name field is empty");
+	}
         else {
 	    console.log("Got inside the last else statement inside onPressSignup()");
 	    firebase
 		.auth()
 		.createUserWithEmailAndPassword(this.state.email, this.state.password)
-		.then(() => console.log("successfully signed up"))
+		.then(() => console.log("successfully signed up with email and password. Now update the name in the firebase auth db"))
 		.catch(e => console.log(e.message));
         }
     }
     
     render(){
+	console.log("this.state inside Login component render() is below");
+	console.log(this.state);
         return (
 	    <View style={styles.container}>
 		<Text>Testing</Text>
+		<TextInput
+		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+		    onChangeText={text => this.setState({"name":text})}
+		    placeholder={'name'}
+		/>
 		<TextInput
 		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
 		    onChangeText={text => this.setState({"email":text})}

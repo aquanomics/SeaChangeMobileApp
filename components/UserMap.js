@@ -1,9 +1,10 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet,Text ,TouchableOpacity} from "react-native";
+import {View, Button, StyleSheet,Text ,TouchableOpacity, ToastAndroid, BackHandler} from "react-native";
 import MapView from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
+import firebase from 'react-native-firebase';
 
 export default class UserMap extends Component{
     static navigationOptions = {
@@ -20,9 +21,25 @@ export default class UserMap extends Component{
 	console.log(props);
 	console.log("Inside constructor of UserMap. Below is the props passed from the last page");
 	console.log(this.props.navigation.state.params);
+	console.log("TESTING: Below is the object from firebase.auth().currentUser");
+	console.log(firebase.auth().currentUser);
 	
 	this.getUserLocation();  
 	console.log(this.state);
+    }
+
+    //componentDidMount only is executed once in stackNavigator. One way around this is to put this in the constructor so it's called everytime component is added to the stack
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+    //componentWillUnmount is NEVER executed in stackNavigator. One way around this is to call statements here before navigating to new pages
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton = () => {
+        ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        return true;
     }
     
     getUserLocation = () => {
@@ -83,7 +100,7 @@ export default class UserMap extends Component{
           <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
         </View>
         <View style={styles.menuRow}>
-            <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings', {user: this.props.navigation.state.params.user})}></MenuButton>
+            <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
           <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-create" buttonTitle="Feed" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
         </View>
@@ -113,4 +130,3 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     }
 });
-

@@ -13,7 +13,9 @@ import { createStackNavigator, StackActions, NavigationActions,createAppContaine
 import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
 import SettingsPage from "./components/SettingsPage";
-import EventsPage from "./components/EventsPage"
+import EventsPage from "./components/EventsPage";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -44,20 +46,26 @@ const styles = StyleSheet.create({
 });
 
 const MainNavigator = createStackNavigator({
-  Home: {
-   screen: UserMap,
-  },
-  Articles: {
-   screen: ArticlesPage,
-  },
-  Events: {
-   screen: EventsPage,
-  },
-  Settings: {
-   screen: SettingsPage,
-  },
-  }, {
-   initialRouteName: 'Home',
-  });
+    Login: {
+	screen: LoginPage
+    },
+    Signup: {
+	screen: SignupPage
+    },
+    Home: {
+	screen: UserMap,
+    },
+    Articles: {
+	screen: ArticlesPage,
+    },
+    Events: {
+	screen: EventsPage,
+    },
+    Settings: {
+	screen: SettingsPage,
+    },
+}, {
+    initialRouteName: 'Login',
+});
   
   export default createAppContainer(MainNavigator);

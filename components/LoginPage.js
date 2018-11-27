@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TextInput, Button, Alert} from 'react-native';
+import {Platform, StyleSheet, Text, View, TextInput, Button, Alert, Image, Dimensions} from 'react-native';
 import firebase from 'react-native-firebase';
 
 const instructions = Platform.select({
@@ -109,27 +109,40 @@ export default class LoginPage extends Component<Props> {
 	console.log(this.state);
 	return (
 	    <View style={styles.container}>
-		<Text>Testing</Text>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"email":text})}
-		    placeholder={'email'}
+		<Image
+		    source={require('./ocp-blue-main-logo.png')}
 		/>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"password":text})}
-		    placeholder={'password'}
-		/>
-		<Button
-		    onPress={this.onPressLogIn}
-		    title="Login"
-		    color="#841584"
-		/>
-		<Button
-		    onPress={this.onPressSignUp}
-		    title="SignUp"
-		    color="#841584"
-		/>
+		<Text
+		    style= {{color:"#00008b" , fontSize: 30}}
+			>
+		Aquanomics
+		</Text>
+		<View style={{margin: 30}}>
+			<TextInput
+			    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+			    onChangeText={text => this.setState({"email":text})}
+			    placeholder={'email'}
+			/>
+			<TextInput
+			    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+			    onChangeText={text => this.setState({"password":text})}
+			    placeholder={'password'}
+			/>
+		</View>
+		<View style={{margin: 10}}>
+			<Button
+			    onPress={this.onPressLogIn}
+			    title="Login"
+			    color="#841584"
+			    buttonStyle={{height: 40, width: 100, paddingTop: 20}}
+			/>
+			<Button
+			    onPress={this.onPressSignUp}
+			    title="SignUp"
+			    color="#841584"
+			    buttonStyle={{height: 40, width: 100}}
+			/>
+		</View>
 	    </View>
 	);
     }

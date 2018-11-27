@@ -84,7 +84,9 @@ export default class SignupPage extends Component{
 		.auth()
 		.createUserWithEmailAndPassword(this.state.email, this.state.password)
 		.then(() => console.log("successfully signed up with email and password. Now update the name in the firebase auth db"))
-		.catch(e => console.log(e.message));
+		.catch( (e) => {
+			console.log(e.message);
+			Alert.alert(e.message);});
         }
     }
     

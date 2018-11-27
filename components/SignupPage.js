@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View,Text, TextInput, StyleSheet, Button } from "react-native";
+import {View,Text, TextInput, StyleSheet, Button, Image, Alert } from "react-native";
 import firebase from 'react-native-firebase';
 
 export default class SignupPage extends Component{
@@ -93,27 +93,38 @@ export default class SignupPage extends Component{
 	console.log(this.state);
         return (
 	    <View style={styles.container}>
-		<Text>Testing</Text>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"name":text})}
-		    placeholder={'name'}
+		<Image
+		    source={require('./ocp-blue-main-logo.png')}
 		/>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"email":text})}
-		    placeholder={'email'}
-		/>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"password":text})}
-		    placeholder={'password'}
-		/>
-		<Button
-		    onPress={this.onPressSignUp}
-		    title="SignUp"
-		    color="#841584"
-		/>
+		<Text
+                    style= {{color:"#00008b" , fontSize: 30}}
+                        >
+                Aquanomics
+                </Text>
+		<View style={{margin: 30}}>	
+			<TextInput
+			    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+			    onChangeText={text => this.setState({"name":text})}
+			    placeholder={'name'}
+			/>
+			<TextInput
+			    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+			    onChangeText={text => this.setState({"email":text})}
+			    placeholder={'email'}
+			/>
+			<TextInput
+			    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+			    onChangeText={text => this.setState({"password":text})}
+			    placeholder={'password'}
+			/>
+		</View>
+		<View style={{margin: 10}}>
+			<Button
+			    onPress={this.onPressSignUp}
+			    title="SignUp"
+			    color="#841584"
+			/>
+		</View>
 	    </View>
         );
     }

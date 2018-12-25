@@ -65,7 +65,7 @@ const MainNavigator = createStackNavigator({
 	screen: SettingsPage,
     },
 }, {
-    initialRouteName: 'Login',
+    initialRouteName: 'Home',
 });
   
   export default createAppContainer(MainNavigator);

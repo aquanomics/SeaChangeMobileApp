@@ -10,8 +10,8 @@ export default class SettingsPage extends Component{
     }
 
     signOut = () => {
-	firebase.auth().signOut();
-	this.props.navigation.navigate('Login');
+	//firebase.auth().signOut();
+	//this.props.navigation.navigate('Login');
     }
     
     render(){

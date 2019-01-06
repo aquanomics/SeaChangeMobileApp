@@ -1,9 +1,6 @@
 import React, {Component} from "react";
-import {View,Text, StyleSheet, Button, Alert } from "react-native";
+import {View,Text, StyleSheet, Button} from "react-native";
 import firebase from 'react-native-firebase';
-
-import ModalDropdown from 'react-native-modal-dropdown';
-const DEMO_OPTIONS_1 = ['TopStories', 'Canada', 'World'];
 
 export default class SettingsPage extends Component{
     constructor(props) {
@@ -11,14 +8,6 @@ export default class SettingsPage extends Component{
 	console.log("Inside constructor of SettingsPage. Below is the props passed from the last page");
 	console.log(this.props.navigation.state.params);
     }
-
-    static navigationOptions = {
-	headerRight: (
-		<ModalDropdown options={DEMO_OPTIONS_1}
-	    	onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + "has been chosen")}
-		/>
-	),
-    };
 
     signOut = () => {
 	//firebase.auth().signOut();

@@ -9,3 +9,4 @@ react-native-firebase
 react-native-navigation
 react-native-gesture-handler
 react-native-maps
+react-native-modal-dropdown

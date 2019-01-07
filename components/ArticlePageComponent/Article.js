@@ -4,6 +4,15 @@ import { Text, Button, Card, Divider } from 'react-native-elements';
 import moment from 'moment';
 
 export default class Article extends React.Component {
+    constructor(props) {
+	super(props);
+    }
+
+    componentDidMount() {
+	console.log("inside Article.js");
+	console.log(this.props);
+    }
+
   render() {
     const {
       title,
@@ -20,7 +29,8 @@ export default class Article extends React.Component {
 
     return (
       <TouchableHighlight
-        onPress={() => Linking.openURL(url)}
+        //onPress={() => Linking.openURL(url)}		//If you want to open in chrome
+        onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: url})}	//opening another component using <WebView />
       >
         <Card
           featuredTitle={title}

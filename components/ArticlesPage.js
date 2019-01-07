@@ -22,7 +22,10 @@ export default class App extends React.Component {
 	this.state = { NewsArticle: [],
 		       refreshing: true,
 		       category: "TopStories",};		//assigned TopStories as default. Changed by using dropdown list in the header
+
+	//Handler bindings
 	this.fetchNews = this.fetchNews.bind(this);
+	this.dropdownHandler = this.dropdownHandler.bind(this);
     }
     
     static navigationOptions = ({ navigation }) => {
@@ -32,8 +35,10 @@ export default class App extends React.Component {
 		style={styles.dropdown}
 		defaultValue='Filter'
 		options={dropdownOptions}
+		//WARNING: context is lost within onSelect
 		//onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
-		onSelect={ (idx, value) => navigation.getParam('fetchNews')(value)}	//using getParam is the way to get around "this" context being lost
+		onSelect={ (idx, value) => {navigation.getParam('dropdownHandler')(value);
+					   }}	//using getParam is the way to get around "this" context being lost
 		    />
 	    ),
 	};
@@ -41,8 +46,10 @@ export default class App extends React.Component {
 
     // Called after a component is mounted
     componentDidMount() {
-	this.fetchNews(this.state.category);
-	this.props.navigation.setParams({ fetchNews: this.fetchNews });
+	this.fetchNews(this.state.category);	//fetch news for the first time
+	console.log("inside articlespage.js");
+	console.log(this.props);
+	this.props.navigation.setParams({ dropdownHandler: this.dropdownHandler });	//pass in props to the current component
     }
 
     fetchNews = (category) => {
@@ -51,6 +58,13 @@ export default class App extends React.Component {
 	    .catch(() => this.setState({NewsArticle: [], refreshing: false }));
     }
     
+    dropdownHandler = (value) => {
+	console.log("Inside dropdownHandler");
+	this.fetchNews(value);
+	//this.props.navigation.getParam('fetchNews')(value);
+	this.setState({category: value });	//Need to update the current category being viewed
+    }
+
     handleRefresh() {
 	this.setState(
 	    {
@@ -62,7 +76,7 @@ export default class App extends React.Component {
 
     render() {
 	return (
-		<DisplayArticles NewsArticle={this.state.NewsArticle} refreshing={this.state.refreshing} handleRefresh={this.handleRefresh.bind(this)} />
+		<DisplayArticles NewsArticle={this.state.NewsArticle} refreshing={this.state.refreshing} handleRefresh={this.handleRefresh.bind(this)} navigation={this.props.navigation} />
 	);
     }
 }
@@ -70,7 +84,7 @@ export default class App extends React.Component {
 function DisplayArticles(props) {
   return <FlatList
     data={props.NewsArticle}
-    renderItem={({ item }) => <Article article={item} />}
+    renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
     keyExtractor={item => item.url}
     refreshing={props.refreshing}
     onRefresh={props.handleRefresh}

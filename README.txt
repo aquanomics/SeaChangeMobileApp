@@ -10,3 +10,4 @@ react-native-navigation
 react-native-gesture-handler
 react-native-maps
 react-native-modal-dropdown
+react-native-webview	//Note: Just install and do not link. It's already been linked.

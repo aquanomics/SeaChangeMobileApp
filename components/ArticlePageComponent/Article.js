@@ -9,7 +9,7 @@ export default class Article extends React.Component {
     }
 
     componentDidMount() {
-	console.log("inside Article.js");
+	console.log("inside Article.js. Below is the this.props");
 	console.log(this.props);
     }
 
@@ -24,13 +24,17 @@ export default class Article extends React.Component {
     } = this.props.article;
     const { noteStyle, featuredTitleStyle } = styles;
     const time = moment(published_at || moment.now()).fromNow();
+    const MAXLENGTH = 150;
     const defaultImg =
       'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
 
     return (
       <TouchableHighlight
         //onPress={() => Linking.openURL(url)}		//If you want to open in chrome
-        onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: url})}	//opening another component using <WebView />
+
+	//Below is if you want to open up a new WebView to the actual article
+        //onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: url})}	//opening another component using <WebView />
+        onPress={() => this.props.navigation.navigate('ArticleAbstraction', {articleObject: this.props.article})}	//opens up abstraction page	
       >
         <Card
           featuredTitle={title}
@@ -40,7 +44,7 @@ export default class Article extends React.Component {
           }}
         >
           <Text style={{ marginBottom: 10 }}>
-            {description || 'Read More..'}
+			{description.substring(0, MAXLENGTH)+" ..." || 'Read More..'}
           </Text>
           <Divider style={{ backgroundColor: '#dfe6e9' }} />
           <View

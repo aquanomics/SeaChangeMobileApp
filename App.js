@@ -17,6 +17,7 @@ import EventsPage from "./components/EventsPage";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import ArticleWebViewPage from "./components/ArticlePageComponent/ArticleWebView";
+import ArticleAbstractionPage from "./components/ArticlePageComponent/ArticleAbstraction";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -67,6 +68,9 @@ const MainNavigator = createStackNavigator({
     },
     ArticleWebView: {
 	screen: ArticleWebViewPage,
+    },
+    ArticleAbstraction: {
+	screen: ArticleAbstractionPage,
     },
 }, {
     initialRouteName: 'Home',

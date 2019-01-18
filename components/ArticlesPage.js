@@ -16,7 +16,11 @@ import Article from './ArticlePageComponent/Article';
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
 
-export default class App extends React.Component {
+export default class ArticlesPage extends React.Component {
+    static navigationOptions = {
+	title: 'Articles',	//This code doesn't seem to work. Maybe if we get rid of the ModalDropdown it will work. Not tried yet
+    };
+
     constructor(props) {
 	super(props);
 	this.state = { NewsArticle: [],
@@ -31,15 +35,14 @@ export default class App extends React.Component {
     static navigationOptions = ({ navigation }) => {
 	return {
 	    headerRight: (
-		    <ModalDropdown
-		style={styles.dropdown}
-		defaultValue='Filter'
-		options={dropdownOptions}
-		//WARNING: context is lost within onSelect
-		//onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
-		onSelect={ (idx, value) => {navigation.getParam('dropdownHandler')(value);
-					   }}	//using getParam is the way to get around "this" context being lost
-		    />
+	        <ModalDropdown
+		    style={styles.dropdown}
+		    defaultValue='Filter'
+		    options={dropdownOptions}
+		    //WARNING: context is lost within onSelect
+		    //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
+		    onSelect={ (idx, value) => {navigation.getParam('dropdownHandler')(value);}}//using getParam is the way to get around "this" context being lost
+		/>
 	    ),
 	};
     };

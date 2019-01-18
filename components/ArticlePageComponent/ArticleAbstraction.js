@@ -6,6 +6,15 @@ import { Button } from 'react-native-elements';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
 
+var markers = [
+    {
+	latitude: 37.78825,
+	longitude: -122.4324,
+	title: 'Foo Place',
+	subtitle: '1234 Foo Drive'
+    }
+];
+
 export default class ArticleAbstraction extends React.Component {
     static navigationOptions = ({ navigation }) => ({
 	title: navigation.state.params.myTitle,
@@ -54,19 +63,29 @@ export default class ArticleAbstraction extends React.Component {
 
 		<View style={styles.buttonContainer}>
                 <Button
-	    onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
-	    title="See Full Article"/>
+					onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
+					title="See Full Article"
+				/>
 		</View>
 
 		<View style={styles.mapContainer}>
-		<MapView style={StyleSheet.absoluteFillObject} 
-	    initialRegion={{
-		latitude: 37.78825,
-		longitude: -122.4324,
-		latitudeDelta: 0.0922,
-		longitudeDelta: 0.0421,
-	    }}
-		/>
+			<MapView style={StyleSheet.absoluteFillObject} 
+				initialRegion={{
+				latitude: 37.78825,
+				longitude: -122.4324,
+				latitudeDelta: 0.0922,
+				longitudeDelta: 0.0421,
+				}}
+				annotations={markers}
+			>
+				<MapView.Marker
+					coordinate={{latitude: 37.78825,
+					longitude: -122.4324}}
+					title={"Article Location"}
+					description={"..."}
+				/>
+			</MapView>
+	
 		</View>
             </ScrollView>
 	);

@@ -6,21 +6,18 @@
  */
 
 import React from 'react';
-import { FlatList, StyleSheet, View, Text, Alert } from 'react-native';
+import {Button, FlatList, StyleSheet, View, Text, Alert } from 'react-native';
 
 // Import getNews function from news.js
 import { getNews } from './ArticlePageComponent/news';
 // We'll get to this one later
 import Article from './ArticlePageComponent/Article';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
 
 export default class ArticlesPage extends React.Component {
-    static navigationOptions = {
-	title: 'Articles',	//This code doesn't seem to work. Maybe if we get rid of the ModalDropdown it will work. Not tried yet
-    };
-
     constructor(props) {
 	super(props);
 	this.state = { NewsArticle: [],
@@ -34,15 +31,25 @@ export default class ArticlesPage extends React.Component {
     
     static navigationOptions = ({ navigation }) => {
 	return {
+	    title: 'Articles',	//This code doesn't seem to work. Maybe if we get rid of the ModalDropdown it will work. Not tried yet
+	    headerTitleStyle: {textAlign: 'center', flex: 1, },		//For some reason, flex 1 was required for title to be centered
 	    headerRight: (
-	        <ModalDropdown
-		    style={styles.dropdown}
-		    defaultValue='Filter'
-		    options={dropdownOptions}
-		    //WARNING: context is lost within onSelect
-		    //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
-		    onSelect={ (idx, value) => {navigation.getParam('dropdownHandler')(value);}}//using getParam is the way to get around "this" context being lost
-		/>
+		<View style={styles.headerRight}>
+		    <Icon
+		    name="ios-search"
+		    size={25}
+		    onPress={() => navigation.navigate('ArticleSearch')}	//opening another component using <WebView />
+		    />
+
+	            <ModalDropdown
+		        style={styles.dropdown}
+		        defaultValue='Filter'
+		        options={dropdownOptions}
+		        //WARNING: context is lost within onSelect
+		        //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
+		        onSelect={ (idx, value) => {navigation.getParam('dropdownHandler')(value);}}//using getParam is the way to get around "this" context being lost
+		    />
+		</View>
 	    ),
 	};
     };
@@ -91,11 +98,11 @@ function DisplayArticles(props) {
     keyExtractor={item => item.url}
     refreshing={props.refreshing}
     onRefresh={props.handleRefresh}
-    ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
+    ListEmptyComponent={<DisplayEmptyList styles={styles}  />}
   />;
 }
 
-function DisplayNoInternet(props) {
+function DisplayEmptyList(props) {
   return <View style={styles.container}>
     <Text style={styles.welcome}>Cannot Load Articles</Text>
     <Text style={styles.instructions}>Might want to check your internet</Text>
@@ -121,5 +128,9 @@ const styles = StyleSheet.create({
     },
     dropdown: {
 	marginHorizontal: 20,
+    },
+    headerRight: {
+	flexDirection: 'row',
+	alignItems: 'center',
     },
 });

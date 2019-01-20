@@ -8,7 +8,20 @@ export async function getNews(category) {
 }
 
 export async function getArticleSearch(search) {
-    let result = await fetch(urlSearch+search).then(response => response.json());
+    //cannot encode ' ' into the URL. Therefore, split and use '+'
+    //Gives the same result if there is only one keyword separated by ' '
+    
+    var encodedSearchArr = search.split(' ');
+    var encodedSearch = '';
+    for(var i = 0; i < encodedSearchArr.length; i++) {
+	if(i !== 0)
+	    encodedSeach += '+';
+	encodedSearch += encodedSearchArr[i];
+    }
+
+    console.log(encodedSearch);
+    
+    let result = await fetch(urlSearch + encodedSearch).then(response => response.json());
     console.log("getArticleSearch() has been invoked");
     console.log(result);
     return result.NewsArticle;

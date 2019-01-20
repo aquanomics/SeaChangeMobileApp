@@ -7,21 +7,13 @@ export async function getNews(category) {
     return result.NewsArticle;
 }
 
+//NOTE: I know the code looks like it's requesting a GET request on a url that has spaces/' 's
+//but the 'fetch' function is smart enough and encodes the spaces into '+'s which is standard practice.
+//Also, the backend's Express is smart enough to convert the '+' encoding into ' '.
+//Therefore, on the backend code, the url will have the '+', but when you extract the parameters through
+//express' functions, they will be converted to ' '
 export async function getArticleSearch(search) {
-    //cannot encode ' ' into the URL. Therefore, split and use '+'
-    //Gives the same result if there is only one keyword separated by ' '
-    
-    var encodedSearchArr = search.split(' ');
-    var encodedSearch = '';
-    for(var i = 0; i < encodedSearchArr.length; i++) {
-	if(i !== 0)
-	    encodedSeach += '+';
-	encodedSearch += encodedSearchArr[i];
-    }
-
-    console.log(encodedSearch);
-    
-    let result = await fetch(urlSearch + encodedSearch).then(response => response.json());
+    let result = await fetch(urlSearch + search).then(response => response.json());
     console.log("getArticleSearch() has been invoked");
     console.log(result);
     return result.NewsArticle;

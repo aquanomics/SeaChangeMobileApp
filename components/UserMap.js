@@ -6,48 +6,70 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 
 export default class UserMap extends Component{
-
+  
   state = {
     userLocation: null,
-    region: null
+    region: null,
+    events: [],
+    articles: []
   }
-
+  
   constructor(props){
     super(props);
+    this.state = {     
+      region: {
+        latitude: 37.68825,
+        longitude: -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421
+      }
+    };
 
-    this.getUserLocation();  
-    console.log(this.state);
+    this.getNewUserLocation(); 
+  }
+  
+  
+  getMapCenter = () => {
+    return {
+      latitude: this.state.region.latitude,
+      longitude: this.state.region.longitude
+    };
   }
 
-  getUserLocation = () => {
+  goToUserLocation = () => {
+
+    this.setRegion({
+      latitude: this.state.userLocation.latitude,
+      longitude: this.state.userLocation.longitude
+    });
+  }
+
+  setRegion = (position) =>{
+    this.setState({  
+      region: {         
+        latitude: position.latitude,
+        longitude: position.longitude,
+        latitudeDelta: this.state.region.latitudeDelta,
+        longitudeDelta: this.state.region.longitudeDelta
+      }
+    });
+  }
+
+  onRegionChange(region) {
+    this.setState({ region });
+  }
+
+  getNewUserLocation = () => {
     navigator.geolocation.getCurrentPosition(position => {
       console.log(position.coords.latitude);
-  
-      /*this.setState(
-        
-      loc = {
-        userLocation: {         
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
-        }
-      });*/
+   
       this.setState({
         userLocation: {         
           latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
-        },
-
-        region: {         
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
+          longitude: position.coords.longitude
         }
       });
+      this.goToUserLocation();
     }, error => console.log("Error fetching location"))
   }
 
@@ -64,7 +86,8 @@ export default class UserMap extends Component{
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}   
-          region={this.state.region}  
+          region={this.state.region} 
+          showsUserLocation={true} 
           
         />
         <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}}>
@@ -94,7 +117,7 @@ export default class UserMap extends Component{
         </View>
         <View style={styles.menuRow}>
           <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
-          <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.getUserLocation()}></MenuButton>
+          <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.goToUserLocation()}></MenuButton>
           <MenuButton iconName="md-create" buttonTitle="Feed" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
         </View>
       </View>

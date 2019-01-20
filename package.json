@@ -7,17 +7,18 @@
     "test": "jest"
   },
   "dependencies": {
-    "moment": "^2.22.2",
+    "moment": "^2.23.0",
     "react": "16.6.0-alpha.8af6728",
     "react-native": "0.57.4",
     "react-native-action-button": "^2.8.5",
     "react-native-elements": "^0.19.1",
-    "react-native-firebase": "^5.1.0",
-    "react-native-gesture-handler": "^1.0.9",
+    "react-native-firebase": "^5.2.0",
+    "react-native-gesture-handler": "^1.0.12",
     "react-native-maps": "^0.22.1",
     "react-native-modal-dropdown": "^0.6.2",
+    "react-native-navigation": "^2.7.1",
     "react-native-vector-icons": "^6.1.0",
-    "react-native-webview": "^2.14.3",
+    "react-native-webview": "^2.15.0",
     "react-navigation": "^3.0.0",
     "react-vector-icons": "0.0.1"
   },

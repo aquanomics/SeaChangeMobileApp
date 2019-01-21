@@ -6,12 +6,10 @@ export default class MenuButton extends Component{
 
     constructor(props){
         super(props);
-
         this.state = {iconName: props.iconName, buttonTitle: props.buttonTitle};        
     }
 
-    render(){
-        console.log(this.state.buttonTitle);
+    render(){        
         return (
             <View style={{alignItems:'center', justifyContent:'center',}}>
                 <TouchableOpacity style={styles.menuButton} onPress={() => this.props.onClick()}>

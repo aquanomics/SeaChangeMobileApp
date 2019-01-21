@@ -5,13 +5,17 @@ import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 
+import { getArticles } from './ServerRequests/nearbyArticles';
+
 export default class UserMap extends Component{
   
   state = {
     userLocation: null,
     region: null,
     events: [],
-    articles: []
+    articles: [],
+    //searchInfo: {},
+    result: null,
   }
   
   constructor(props){
@@ -22,10 +26,23 @@ export default class UserMap extends Component{
         longitude: -122.4324,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421
-      }
+      },
+      searchInfo: {},
+      events: [],
+      articles: []
     };
 
     this.getNewUserLocation(); 
+
+    //TEMP SEARCH PARAMS
+    var params = {
+      lat: 49.190077,
+      long: -123.103008,
+      distance: 100,
+      limit: 5
+    };
+    this.setSearchParameters(params);
+
   }
   
   
@@ -55,7 +72,11 @@ export default class UserMap extends Component{
     });
   }
 
-  onRegionChange(region) {
+  getEvents = (radius,location) => {
+
+  }
+
+  onRegionChange = (region) => {
     this.setState({ region });
   }
 
@@ -70,7 +91,31 @@ export default class UserMap extends Component{
         }
       });
       this.goToUserLocation();
+
     }, error => console.log("Error fetching location"))
+  }
+
+  setSearchParameters = (params) => {
+    if("lat" in params) {
+      this.state.searchInfo.lat = params.lat;
+    }
+    if("long" in params) {
+      this.state.searchInfo.long = params.long;
+    }
+    if("distance" in params) {
+      this.state.searchInfo.distance = params.distance;
+    }
+    if("limit" in params) {
+      this.state.searchInfo.limit = params.limit;
+    }
+  }
+
+  fetchArticles = () => {
+    getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+      this.setState({ articles:result, refreshing: false });
+      console.log("RES2");
+      console.log(this.state.articles);
+    });
   }
 
   render(){
@@ -94,10 +139,10 @@ export default class UserMap extends Component{
             <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
                 <Icon name="md-create" style={styles.actionButtonIcon} />
             </ActionButton.Item>
-                <ActionButton.Item buttonColor='#3498db' onPress={() => {}}>
-                    <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
-              	</ActionButton.Item>
-            </ActionButton>
+            <ActionButton.Item buttonColor='#3498db' onPress={this.fetchArticles}>
+                <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
+            </ActionButton.Item>
+        </ActionButton>
         <View
             style={{
                 position: 'absolute',//use absolute position to show button on top of the map

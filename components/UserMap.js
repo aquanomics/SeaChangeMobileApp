@@ -188,7 +188,7 @@ export default class UserMap extends Component{
                 <Icon name="md-create" style={styles.actionButtonIcon} />
             </ActionButton.Item>
             <ActionButton.Item buttonColor='#3498db' onPress={this.fetchArticles}>
-                <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
+                <Icon name="md-paper" style={styles.actionButtonIcon} />
             </ActionButton.Item>
         </ActionButton>
         <View

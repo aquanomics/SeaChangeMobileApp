@@ -20,8 +20,10 @@ export default class Article extends React.Component {
       published_at,
       source_name,
       urlToImage,
-      url
+	url,
     } = this.props.article;
+      const latitude = this.props.article.lat;
+      const longitude = this.props.article["long"];
     const { noteStyle, featuredTitleStyle } = styles;
     const time = moment(published_at || moment.now()).fromNow();
     const MAXLENGTH = 150;

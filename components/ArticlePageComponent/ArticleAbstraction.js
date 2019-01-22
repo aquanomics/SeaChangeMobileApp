@@ -6,15 +6,6 @@ import { Button } from 'react-native-elements';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
 
-var markers = [
-    {
-	latitude: 37.78825,
-	longitude: -122.4324,
-	title: 'Foo Place',
-	subtitle: '1234 Foo Drive'
-    }
-];
-
 export default class ArticleAbstraction extends React.Component {
     static navigationOptions = ({ navigation }) => ({
 	title: navigation.state.params.myTitle,
@@ -36,10 +27,42 @@ export default class ArticleAbstraction extends React.Component {
 
     render() {
 	//const time = moment(this.props.article.published_at || moment.now()).fromNow();
-	const defaultImg =
-	      'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
+	const defaultImg = 'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
+//	coordinate={{latitude: 37.78825,
+//		     longitude: -122.4324}}
 	const articleObject = this.props.navigation.getParam('articleObject', {});
-	
+
+	if (!articleObject.lat || !articleObject["long"]) {
+	return (
+	    <ScrollView style={styles.container}>
+		<View style={styles.imageContainer}>
+		    <ResizedImage
+                    source={{uri: articleObject.urlToImage || defaultImg}}
+	            margin={14}
+		    />
+		</View>
+
+		<View style={styles.titleContainer}>
+		    <Text style={styles.title}>
+		    {articleObject.title}
+	            </Text>
+		</View>
+
+		<View style={styles.summaryContainer}>
+		    <Text style={styles.summary}>
+		    {articleObject.description}
+	            </Text>
+		</View>
+
+		<View style={styles.buttonContainer}>
+                <Button
+					onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
+					title="See Full Article"
+				/>
+		</View>
+            </ScrollView>
+	);
+	} else {
 	return (
 	    <ScrollView style={styles.container}>
 		<View style={styles.imageContainer}>
@@ -71,16 +94,15 @@ export default class ArticleAbstraction extends React.Component {
 		<View style={styles.mapContainer}>
 			<MapView style={StyleSheet.absoluteFillObject} 
 				initialRegion={{
-				latitude: 37.78825,
-				longitude: -122.4324,
+				    latitude: articleObject.lat,
+				    longitude: articleObject["long"],
 				latitudeDelta: 0.0922,
 				longitudeDelta: 0.0421,
 				}}
-				annotations={markers}
 			>
 				<MapView.Marker
-					coordinate={{latitude: 37.78825,
-					longitude: -122.4324}}
+	    coordinate={{latitude: articleObject.lat,
+			 longitude: articleObject["long"]}}
 					title={"Article Location"}
 					description={"..."}
 				/>
@@ -89,6 +111,7 @@ export default class ArticleAbstraction extends React.Component {
 		</View>
             </ScrollView>
 	);
+	}
     }
 }
 

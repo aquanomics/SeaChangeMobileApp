@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {View, Button, StyleSheet,Text ,TouchableOpacity} from "react-native";
-import MapView from "react-native-maps";
+import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
@@ -45,6 +45,43 @@ export default class UserMap extends Component{
 
   }
   
+  getMinMaxLat = () =>{
+    var lowest = Number.POSITIVE_INFINITY;
+    var highest = Number.NEGATIVE_INFINITY;
+    var tmp;
+    console.log(this.state.articles.length);
+    for (var i=this.state.articles.length-1; i>=0; i--) {
+      tmp = this.state.articles[i].lat;
+      if (tmp < lowest) lowest = tmp;
+      if (tmp > highest) highest = tmp;
+    }
+    //console.log(highest, lowest);
+    return([highest,lowest]);
+  }
+
+  getMinMaxLong = () =>{
+    
+    var lowest = Number.POSITIVE_INFINITY;
+    var highest = Number.NEGATIVE_INFINITY;
+    var tmp;
+    for (var i=this.state.articles.length-1; i>=0; i--) {
+      tmp = this.state.articles[i].long;
+      if (tmp < lowest) lowest = tmp;
+      if (tmp > highest) highest = tmp;
+    }
+    //console.log(highest, lowest);
+    return([highest,lowest]);
+  }
+
+  fitToArticles = () => {
+    latrange = this.getMinMaxLat();
+    longrange = this.getMinMaxLong();
+    
+    lat = (latrange[0] + latrange[1])/2;
+    long = (longrange[0] + longrange[1])/2;
+    var region = {latitude:lat,longitude:long};
+    this.setRegion(region);
+  }
   
   getMapCenter = () => {
     return {
@@ -133,8 +170,19 @@ export default class UserMap extends Component{
           }}   
           region={this.state.region} 
           showsUserLocation={true} 
-          
-        />
+           
+        >
+          {this.state.articles.map(marker => (
+            <Marker
+              coordinate={{latitude:marker.lat,
+                           longitude:marker.long}}
+              title={marker.title}
+              description={marker.description}
+            />
+          ))}
+        </MapView>
+
+
         <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}}>
             <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
                 <Icon name="md-create" style={styles.actionButtonIcon} />

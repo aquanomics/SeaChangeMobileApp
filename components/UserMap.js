@@ -35,6 +35,7 @@ export default class UserMap extends Component{
     this.getNewUserLocation(); 
 
     //TEMP SEARCH PARAMS
+    //DEFAULT SEARCH AREA FOR NOW
     var params = {
       lat: 49.190077,
       long: -123.103008,
@@ -79,7 +80,14 @@ export default class UserMap extends Component{
     
     lat = (latrange[0] + latrange[1])/2;
     long = (longrange[0] + longrange[1])/2;
-    var region = {latitude:lat,longitude:long};
+    latD = latrange[0] - latrange[1];
+    longD = longrange[0] - longrange[1] + .02;
+    var region = {
+      latitude:lat,
+      longitude:long,
+      latitudeDelta: latD,
+      longitudeDelta: longD
+    };
     this.setRegion(region);
   }
   
@@ -103,8 +111,8 @@ export default class UserMap extends Component{
       region: {         
         latitude: position.latitude,
         longitude: position.longitude,
-        latitudeDelta: this.state.region.latitudeDelta,
-        longitudeDelta: this.state.region.longitudeDelta
+        latitudeDelta: position.latitudeDelta,
+        longitudeDelta: position.longitudeDelta
       }
     });
   }
@@ -148,6 +156,9 @@ export default class UserMap extends Component{
   }
 
   fetchArticles = () => {
+    var params = {lat:this.state.userLocation.latitude, long:this.state.userLocation.longitude};
+    this.setSearchParameters(params);
+
     getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
       this.setState({ articles:result, refreshing: false });
       this.fitToArticles();

@@ -150,9 +150,10 @@ export default class UserMap extends Component{
   fetchArticles = () => {
     getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
       this.setState({ articles:result, refreshing: false });
+      this.fitToArticles();
       console.log("RES2");
       console.log(this.state.articles);
-    });
+    });   
   }
 
   render(){

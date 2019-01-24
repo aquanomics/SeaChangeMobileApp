@@ -33,10 +33,10 @@ export default class Article extends React.Component {
     return (
       <TouchableHighlight
         //onPress={() => Linking.openURL(url)}		//If you want to open in chrome
-
 	//Below is if you want to open up a new WebView to the actual article
         //onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: url})}	//opening another component using <WebView />
         onPress={() => this.props.navigation.navigate('ArticleAbstraction', {articleObject: this.props.article})}	//opens up abstraction page	
+	underlayColor={'#fffad8'}
       >
         <Card
           featuredTitle={title}

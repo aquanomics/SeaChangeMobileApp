@@ -25,7 +25,7 @@ export default class FishPage extends React.Component {
 
     fetchSpecies = () => {
 	getSpecies(this.offset)
-	    .then(response => {this.setState({ data:[...this.state.data, ...response], refreshing: false});this.offset = this.offset + 10;})
+	    .then(response => {this.setState({ data:[...this.state.data, ...response], refreshing: false});})
 	    .catch(() => this.setState({data: [], refreshing: false }));
     }
 
@@ -47,7 +47,8 @@ export default class FishPage extends React.Component {
     }
 
     handleFetchMore() {
-  this.setState(
+      this.offset = this.offset + 10;
+      this.setState(
       {
     refreshing: true
       },

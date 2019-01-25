@@ -29,23 +29,34 @@ export default class FishPage extends React.Component {
 	    .catch(() => this.setState({data: [], refreshing: false }));
     }
 
-    fetchMoreSpecies = () => {
-  getSpecies(this.offset)
-      .then(List => {this.setState({ List:[...this.state.List, ...List.results], refreshing: false});this.offset = this.offset + 10;})
-      .catch(() => this.setState({List: [], refreshing: false }));
-    }
+  //   fetchMoreSpecies = () => {
+  // getSpecies(this.offset)
+  //     .then(List => {this.setState({ List:[...this.state.List, ...List.results], refreshing: false});this.offset = this.offset + 10;})
+  //     .catch(() => this.setState({List: [], refreshing: false }));
+  //   }
 
     handleRefresh() {
-	this.setState(
-	    {
-		refreshing: true
-	    },
-	    () => this.fetchSpecies(this.offset)
+       this.offset = 0;
+	     this.setState(
+	     {
+		    refreshing: true,
+        data : [],
+	     },
+	       () => this.fetchSpecies(this.offset)
 	);
+    }
+
+    handleFetchMore() {
+  this.setState(
+      {
+    refreshing: true
+      },
+      () => this.fetchSpecies(this.offset)
+  );
     }
     render() {
 	return (
-		<DisplaySpecies data={this.state.data} refreshing={this.state.refreshing} handleRefresh={this.handleRefresh.bind(this)}/>
+		<DisplaySpecies data={this.state.data} refreshing={this.state.refreshing} handleRefresh={this.handleRefresh.bind(this)} handleFetchMore={this.handleFetchMore.bind(this)}/>
 	);
     }
 }
@@ -57,7 +68,7 @@ function DisplaySpecies(props) {
     //keyExtractor={item => item.SpecCode.toString()}
     refreshing={props.refreshing}
     onRefresh={props.handleRefresh}
-    onEndReached={props.handleRefresh}
+    onEndReached={props.handleFetchMore}
 	  onEndThreshold={0}
     ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
   />;

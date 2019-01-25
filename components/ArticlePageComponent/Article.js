@@ -9,8 +9,6 @@ export default class Article extends React.Component {
     }
 
     componentDidMount() {
-	console.log("inside Article.js. Below is the this.props");
-	console.log(this.props);
     }
 
   render() {

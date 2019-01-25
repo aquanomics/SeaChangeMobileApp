@@ -7,13 +7,13 @@ import ModalDropdown from 'react-native-modal-dropdown';
 export default class FishPage extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = { List: [],
+	this.state = { data: [],
 		       refreshing: true,
 		       category: "animal",
 		   	   isLoading: true,
 			   fetching_Status: false,};
 		       // dataSource: ds.cloneWithRows(SpeciesList),};
-	this.fetchSpecies = this.fetchSpecies.bind(this);
+	 this.fetchSpecies = this.fetchSpecies.bind(this);
 	this.offset = 0;
     }
 
@@ -25,8 +25,14 @@ export default class FishPage extends React.Component {
 
     fetchSpecies = () => {
 	getSpecies(this.offset)
-	    .then(List => {this.setState({ List, refreshing: false});this.offset = this.offset + 10;})
-	    .catch(() => this.setState({List: [], refreshing: false }));
+	    .then(response => {this.setState({ data:[...this.state.data, ...response], refreshing: false});this.offset = this.offset + 10;})
+	    .catch(() => this.setState({data: [], refreshing: false }));
+    }
+
+    fetchMoreSpecies = () => {
+  getSpecies(this.offset)
+      .then(List => {this.setState({ List:[...this.state.List, ...List.results], refreshing: false});this.offset = this.offset + 10;})
+      .catch(() => this.setState({List: [], refreshing: false }));
     }
 
     handleRefresh() {
@@ -39,20 +45,20 @@ export default class FishPage extends React.Component {
     }
     render() {
 	return (
-		<DisplaySpecies List={this.state.List} refreshing={this.state.refreshing} handleRefresh={this.handleRefresh.bind(this)}/>
+		<DisplaySpecies data={this.state.data} refreshing={this.state.refreshing} handleRefresh={this.handleRefresh.bind(this)}/>
 	);
     }
 }
 
 function DisplaySpecies(props) {
   return <FlatList
-    data={props.List}
+    data={props.data}
     renderItem={({ item }) => <Species species={item} />}
-    keyExtractor={item => item.SpecCode}
+    //keyExtractor={item => item.SpecCode.toString()}
     refreshing={props.refreshing}
     onRefresh={props.handleRefresh}
-	   //onEndThreshold={0.5}
-    //onEndReached={this.Render_Footer}
+    onEndReached={props.handleRefresh}
+	  onEndThreshold={0}
     ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
   />;
 }

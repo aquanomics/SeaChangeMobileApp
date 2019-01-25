@@ -1,10 +1,3 @@
-/**
- * Tutorial for creating a News Article App
- *
- * @format
- * @flow
- */
-
 import React from 'react';
 import { BackHandler, Picker, TouchableHighlight, TextInput, Button, FlatList, StyleSheet, View, Text, Alert } from 'react-native';
 import { Header } from 'react-native-elements';

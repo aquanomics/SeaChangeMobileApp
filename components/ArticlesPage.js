@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackHandler, Picker, TouchableHighlight, TextInput, Button, FlatList, StyleSheet, View, Text, Alert } from 'react-native';
+import { Platform, BackHandler, Picker, TouchableHighlight, TextInput, Button, FlatList, StyleSheet, View, Text, Alert } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
@@ -116,32 +116,36 @@ export default class ArticlesPage extends React.Component {
 	//BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
 	if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
 	    return (
+		<View style={styles.headerLeft}>
 		    <TouchableHighlight
-		style={styles.headerLeft}
-		underlayColor={'#DCDCDC'}
-		onPress={() => this.props.navigation.goBack()}
+			style={styles.headerLeftIcon}
+			underlayColor={'#DCDCDC'}
+			onPress={() => this.props.navigation.goBack()}
 		    >
-		    <Icon
-		name="md-arrow-back"
-		size={25}
-		    />
+		        <Icon
+		            name="md-arrow-back"
+		            size={25}
+		        />
 		    </TouchableHighlight>
+		</View>
 	    );
 	} else {
 	    return (
+		<View style={styles.headerLeft}>
 		    <TouchableHighlight
-		style={styles.headerLeft}
-		underlayColor={'#DCDCDC'}
-		onPress={() => {
-		    this.setState({searchSubmitted: false});
-		    this.toggleSearchState();
-		} }
+			style={styles.headerLeftIcon}
+			underlayColor={'#DCDCDC'}
+			onPress={() => {
+			    this.setState({searchSubmitted: false});
+			    this.toggleSearchState();
+			} }
 		    >
-		    <Icon
-		name="md-close"
-		size={25}
-		    />
+		    	<Icon
+			    name="md-close"
+			    size={25}
+		    	/>
 		    </TouchableHighlight>
+		</View>
 	    );
 	}
     }
@@ -217,8 +221,9 @@ export default class ArticlesPage extends React.Component {
 	//Why didn't we just pass in this.state as a parameter rather than individually identifying what is needed in the component being rendered
 	//Answer: Because that is not good for optimization
 	return (
-		<View style={StyleSheet.absoluteFill}>
+		<View style={styles.myContainer}>
 	    	<Header
+	    outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
 	    		backgroundColor={'white'}
 	    leftComponent={this.leftComponentJSX()}
 	    centerComponent={this.centerComponentJSX()}
@@ -300,12 +305,16 @@ const styles = StyleSheet.create({
 	color: '#333333',
 	marginBottom: 5,
     },
+    myContainer: {
+	flex: 1,
+	//paddingTop: Constants.statusBarHeight,
+    },
     headerTitleContainer: {
 	flex: 1,
-	flexDirection: 'row',
+	//flexDirection: 'row',
 	justifyContent: 'center',
 	alignItems: 'center',
-	//backgroundColor: 'red',	//debugging use
+	//backgroundColor: 'blue',	//debugging use
     },		//For some reason, flex 1 was required for title to be centered
     dropdown: {
 	//flex direction is column orientation by default
@@ -328,7 +337,16 @@ const styles = StyleSheet.create({
 	flex: 1,
 	flexDirection: 'row',
 	alignItems: 'center',
-	padding: 12,
+	margin: 0,
+	//backgroundColor: 'red',	//debugging use
+    },
+    headerLeftIcon: {
+	marginLeft: 8,		//need this to position the back icon on left header like the other react-native-navigation headers
+				//because we're not using react-native-navigation headers. We're using react-native-elements header
+	paddingTop: 9,
+	paddingBottom: 9,
+	paddingLeft: 13,
+	paddingRight: 13,
 	borderRadius:100, 	//makes the TouchableHighlight circular
 	//backgroundColor: 'red',	//debugging use
     },

@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, Image, Button, Platform, TextInput} from 'react-native';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
 
 
@@ -75,28 +77,44 @@ export default class PostsPage extends Component{
     render() {
         const { photo } = this.state
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9f5ed' }}>
             {photo && (
               <React.Fragment>
                 <Image
                   source={{ uri: photo.uri }}
-                  style={{ width: 300, height: 300 }}
+                  style={{ width: 250, height: 250, borderRadius: 15 }}
                 />
-                <TextInput
+                <Fumi
                    style = {styles.input}
-                   placeholder="Input Name"
+                   label={'Name'}
+                   labelStyle={{ color: '#a3a3a3' }}
+                   inputStyle={{ color: '#f95a25' }}
+                   iconClass={FontAwesomeIcon}
+                   iconName={'pencil'}
+                   iconColor={'#f95a25'}
+                   iconSize={15}
                    onChangeText = {this.handleNameInput}
                 />
-                <TextInput
-                   style = {styles.input}
-                   placeholder="Input Comments"
-                   onChangeText={this.handleCommentsInput}
+                <Fumi
+                    style = {styles.input}
+                    label={'Comment'}
+                    labelStyle={{ color: '#a3a3a3' }}
+                    inputStyle={{ color: '#f95a25' }}
+                    iconClass={FontAwesomeIcon}
+                    iconName={'comment'}
+                    iconColor={'#f95a25'}
+                    iconSize={15}
+                    onChangeText={this.handleCommentsInput}
                 />
                 <Button title="Upload" onPress={() => this.handleUploadPhoto()} />
+                <Button title="Choose Another Photo" onPress={() => this.setState({photo: null})} />
                </React.Fragment>
             )}
+            {!photo && (<React.Fragment>
             <Button title="Choose existing Photo from Phone" onPress={() => this.handleGetPhoto(false)} />
             <Button title="Take Picture" onPress={() => this.handleGetPhoto(true)} />
+            </React.Fragment>
+            )}
           </View>
         )
     }
@@ -139,9 +157,10 @@ const styles = StyleSheet.create({
         margin: 10,
     },
     input: {
-        margin: 15,
-        height: 40,
+        margin: 10,
+        height: 60,
         borderColor: '#7a42f4',
-        borderWidth: 1
-     }
+        width: 250,
+        borderRadius: 15
+     },
 });

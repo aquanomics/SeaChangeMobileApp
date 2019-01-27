@@ -27,4 +27,5 @@ Step 3). modify app/src/main/AndroidManifest.xml by adding:
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
+-. npm install react-native-textinput-effects
+////////////////////

@@ -32,4 +32,8 @@ Step 3). modify app/src/main/AndroidManifest.xml by adding:
 -. npm install --save react-native-button-component 
    react-native link react-native-button-component
 
+-. npm install --save react-native-popup-dialog
+
+-. npm install react-native-typography
+
 ////////////////////

@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Image, Button, Platform} from 'react-native';
+import {View, StyleSheet, Image, Text, Platform} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
 import { RoundButton } from 'react-native-button-component';
+import Dialog, {DialogTitle, ScaleAnimation} from 'react-native-popup-dialog';
+import { material, sanFranciscoWeights } from 'react-native-typography';
 
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-upload";
@@ -19,6 +21,8 @@ export default class PostsPage extends Component{
             }
         },
         buttonUploadState: 'upload',
+        successDialog: false,
+        failDialog: false,
     };
 
     handleGetPhoto = (fromCamera) => {
@@ -54,12 +58,10 @@ export default class PostsPage extends Component{
         })
           .then(response => response.json())
           .then(response => {
-            this.setState({ buttonUploadState: 'upload' });
-            alert("Upload success!");
+            this.setState({ buttonUploadState: 'upload', successDialog: true  });
           })
           .catch(error => {
-            this.setState({ buttonUploadState: 'upload' });
-            alert("Upload failed!");
+            this.setState({ buttonUploadState: 'upload', failDialog: true });
           });
     };
 
@@ -84,6 +86,28 @@ export default class PostsPage extends Component{
                 <Image
                   source={{ uri: photo.uri }}
                   style={{ width: 250, height: 250, borderRadius: 15 }}
+                />
+                <Dialog
+                    onTouchOutside={() => {this.setState({ successDialog: false });}}
+                    width={0.9}
+                    visible={this.state.successDialog}
+                    dialogAnimation={new ScaleAnimation()}
+                    dialogTitle={
+                        <DialogTitle
+                        title="Photo Successfully Uploaded :)"
+                        hasTitleBar={false}
+                        />}
+                />
+                <Dialog
+                    onTouchOutside={() => {this.setState({ failDialog: false });}}
+                    width={0.9}
+                    visible={this.state.failDialog}
+                    dialogAnimation={new ScaleAnimation()}
+                    dialogTitle={
+                        <DialogTitle
+                        title="Failed to Upload Photo :("
+                        hasTitleBar={false}
+                        />}
                 />
                 <Fumi
                    style = {styles.input}
@@ -141,7 +165,12 @@ export default class PostsPage extends Component{
                     onPress={() => this.setState({photo: null})} />
                </React.Fragment>
             )}
-            {!photo && (<React.Fragment>
+            {!photo && (<React.Fragment> 
+            <Image
+                source={require('../img/icons/camera-logo.png')}
+                style={{ width: 80, height: 80, borderRadius: 15 }}
+            />
+              <Text style={styles.boldTitleText}>Post Your Findings !!</Text>   
             <RoundButton 
                 style = {styles.button}
                 type="primary"
@@ -155,7 +184,7 @@ export default class PostsPage extends Component{
                 style = {styles.button}
                 type="primary"
                 shape="rectangle"
-                text="Take Photo"
+                text="Take a Photo"
                 backgroundColors={['#ff5f6d', '#ffC371']}
                 gradientStart={{ x: 0.5, y: 1 }}
                 gradientEnd={{ x: 1, y: 1 }}
@@ -215,5 +244,10 @@ const styles = StyleSheet.create({
         margin: 10,
         height: 50,
         width: 250,
-     }
+     },
+     boldTitleText: {
+        fontSize: 60,
+        ...material.titleObject,
+        ...sanFranciscoWeights.bold,
+      },
 });

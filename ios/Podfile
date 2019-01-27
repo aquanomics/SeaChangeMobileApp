@@ -47,6 +47,10 @@ target 'SeaChangeMobileApp' do
 
   pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
+  pod 'react-native-spinkit', :path => '../node_modules/react-native-spinkit'
+
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
+
 end
 
 post_install do |installer|

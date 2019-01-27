@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Image, Button, Platform, TextInput} from 'react-native';
+import {View, StyleSheet, Image, Button, Platform} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
+import { RoundButton } from 'react-native-button-component';
 
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-upload";
@@ -17,6 +18,7 @@ export default class PostsPage extends Component{
                 comment: null,
             }
         },
+        buttonUploadState: 'upload',
     };
 
     handleGetPhoto = (fromCamera) => {
@@ -52,12 +54,11 @@ export default class PostsPage extends Component{
         })
           .then(response => response.json())
           .then(response => {
-            console.log("upload success", response);
+            this.setState({ buttonUploadState: 'upload' });
             alert("Upload success!");
-            this.setState({ photo: null });
           })
           .catch(error => {
-            console.log("upload error", error);
+            this.setState({ buttonUploadState: 'upload' });
             alert("Upload failed!");
           });
     };
@@ -106,13 +107,60 @@ export default class PostsPage extends Component{
                     iconSize={15}
                     onChangeText={this.handleCommentsInput}
                 />
-                <Button title="Upload" onPress={() => this.handleUploadPhoto()} />
-                <Button title="Choose Another Photo" onPress={() => this.setState({photo: null})} />
+                <RoundButton  
+                    style = {styles.button}        
+                    buttonState={this.state.buttonUploadState}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+                    states={{
+                        upload: {
+                        text: 'Upload Photo',
+                        backgroundColors: ['#4DC7A4', '#66D37A'],
+                        onPress: () => {
+                            this.setState({ buttonUploadState: 'uploading' });
+                            this.handleUploadPhoto();
+                        },
+                        },
+                        uploading: {
+                        text: 'Uploding Photo...',
+                        gradientStart: { x: 0.8, y: 1 },
+                        gradientEnd: { x: 1, y: 1 },
+                        backgroundColors: ['#ff4949', '#fe6060'],
+                        spinner: true,
+                        onPress: () => {},
+                        },
+                    }}/>
+                <RoundButton 
+                    style = {styles.button}
+                    type="primary"
+                    shape="rectangle"
+                    text="Choose a different Photo"
+                    backgroundColors={['#ff5f6d', '#ffC371']}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+                    onPress={() => this.setState({photo: null})} />
                </React.Fragment>
             )}
             {!photo && (<React.Fragment>
-            <Button title="Choose existing Photo from Phone" onPress={() => this.handleGetPhoto(false)} />
-            <Button title="Take Picture" onPress={() => this.handleGetPhoto(true)} />
+            <RoundButton 
+                style = {styles.button}
+                type="primary"
+                shape="rectangle"
+                text="Choose existing Photo from Phone"
+                backgroundColors={['#ff5f6d', '#ffC371']}
+                gradientStart={{ x: 0.5, y: 1 }}
+                gradientEnd={{ x: 1, y: 1 }}
+                onPress={() => this.handleGetPhoto(false)} />
+            <RoundButton 
+                style = {styles.button}
+                type="primary"
+                shape="rectangle"
+                text="Take Photo"
+                backgroundColors={['#ff5f6d', '#ffC371']}
+                gradientStart={{ x: 0.5, y: 1 }}
+                gradientEnd={{ x: 1, y: 1 }}
+                onPress={() => this.handleGetPhoto(false)} 
+                onPress={() => this.handleGetPhoto(true)} />
             </React.Fragment>
             )}
           </View>
@@ -163,4 +211,9 @@ const styles = StyleSheet.create({
         width: 250,
         borderRadius: 15
      },
+     button: {
+        margin: 10,
+        height: 50,
+        width: 250,
+     }
 });

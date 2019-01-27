@@ -217,7 +217,7 @@ export default class ArticlesPage extends React.Component {
 	//Why didn't we just pass in this.state as a parameter rather than individually identifying what is needed in the component being rendered
 	//Answer: Because that is not good for optimization
 	return (
-	    <View>
+		<View style={StyleSheet.absoluteFill}>
 	    	<Header
 	    		backgroundColor={'white'}
 	    leftComponent={this.leftComponentJSX()}

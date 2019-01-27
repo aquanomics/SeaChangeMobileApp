@@ -14,6 +14,7 @@ import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
 import SettingsPage from "./components/SettingsPage";
 import EventsPage from "./components/EventsPage";
+import PostsPage from "./components/PostsPage";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 
@@ -60,6 +61,9 @@ const MainNavigator = createStackNavigator({
     },
     Events: {
 	screen: EventsPage,
+    },
+    Posts: {
+    screen: PostsPage,    
     },
     Settings: {
 	screen: SettingsPage,

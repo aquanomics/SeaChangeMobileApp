@@ -179,37 +179,33 @@ export default class ArticlesPage extends React.Component {
 	    		onPress = {this.toggleSearchState}
 		    >
         	    	<Icon
-        		    name="md-search"
-        		    size={25}
+        		    	name="md-search"
+        		    	size={25}
         	    	/>
 		    </TouchableHighlight>
-                    <ModalDropdown
-        	        style={styles.dropdown}
-        	        defaultValue='Filter'
-        	        options={dropdownOptions}
-        	        //WARNING: context is lost within onSelect
-        	        //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
+            <ModalDropdown
+        	    style={styles.dropdown}
+        	    defaultValue='Filter'
+        	    options={dropdownOptions}
+        	    //WARNING: context is lost within onSelect
+        	    //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
             	onSelect={(idx, value) => this.dropdownHandler(value)}//using getParam is the way to get around "this" context being lost
-        	    />
-
+        	/>
 		</View>
             );
 	} else {
 	    //When search is active
             return (
            	    <View style={styles.headerRight}>
-           	    <TextInput
-	    	autoFocus={true}
-           	style={{width: 300, height: 40, borderColor: 'gray', borderWidth: 1}}
-           	placeholder={"search all categories"}
-	    	enablesReturnKeyAutomatically={true}
-	    	onSubmitEditing={() => {
-		    this.searchSubmitHandler();
-		} }
-	    	onChangeText={ (text) => {
-		    this.setState({searchText: text});
-		} }
-           	    />
+           	    	<TextInput
+						autoFocus={true}
+						style={{width: 300, height: 40, borderColor: 'gray', borderWidth: 1}}
+						placeholder={"search all categories"}
+						enablesReturnKeyAutomatically={true}
+						onSubmitEditing={() => {this.searchSubmitHandler();} }
+						onChangeText={ (text) => {
+						this.setState({searchText: text});} }
+					/>
            	    </View>
             );
 	}
@@ -221,13 +217,12 @@ export default class ArticlesPage extends React.Component {
 	return (
 		<View style={styles.myContainer}>
 	    	<Header
-	    outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
+	    		outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
 	    		backgroundColor={'white'}
-	    leftComponent={this.leftComponentJSX()}
-	    centerComponent={this.centerComponentJSX()}
-	    rightComponent={this.rightComponentJSX()}
+	    		leftComponent={this.leftComponentJSX()}
+	    		centerComponent={this.centerComponentJSX()}
+	    		rightComponent={this.rightComponentJSX()}
 	    	/>
-
 	    	<DisplayArticles
 	    		searchSubmitted={this.state.searchSubmitted}
 	    		SearchArticle={this.state.SearchArticle}
@@ -249,22 +244,22 @@ function DisplayArticles(props) {
        || props.searchSubmitted == false) {
 	//when search is not active
 	return <FlatList
-	data={props.NewsArticle}
-	renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
-	keyExtractor={item => item.url}
-	refreshing={props.refreshing}
-	onRefresh={() => props.handleRefresh("News")}
-	ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
-	/>;
+				data={props.NewsArticle}
+				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
+				keyExtractor={item => item.url}
+				refreshing={props.refreshing}
+				onRefresh={() => props.handleRefresh("News")}
+				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+			/>;
     } else {
 	//when search is active
 	return <FlatList
-	data={props.SearchArticle}
-	renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
-	keyExtractor={item => item.url}
-	refreshing={props.searchListRefreshing}
-	ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
-	/>;
+				data={props.SearchArticle}
+				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
+				keyExtractor={item => item.url}
+				refreshing={props.searchListRefreshing}
+				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+			/>;
     }
 
 }
@@ -274,15 +269,15 @@ function DisplayEmptyList(props) {
     if(props.emptySearchReturned == true) {
 	//empty case
 	return <View style={styles.container}>
-	    <Text style={styles.welcome}>No results</Text>
-	    <Text style={styles.instructions}>Try a different keyword</Text>
-	    </View>;
+				<Text style={styles.welcome}>No results</Text>
+				<Text style={styles.instructions}>Try a different keyword</Text>
+	       </View>;
     } else {
 	//not empty case --> means there is no internet
 	return <View style={styles.container}>
-	    <Text style={styles.welcome}>Cannot Load Articles</Text>
-	    <Text style={styles.instructions}>Might want to check your internet</Text>
-	    </View>;
+				<Text style={styles.welcome}>Cannot Load Articles</Text>
+				<Text style={styles.instructions}>Might want to check your internet</Text>
+	       </View>;
     }
 }
 

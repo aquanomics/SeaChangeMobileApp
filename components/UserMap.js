@@ -6,6 +6,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 
 export default class UserMap extends Component{
+    static navigationOptions = ({ navigation }) => ({
+	header: null,	//gets rid of the header
+    });
 
   state = {
     userLocation: null,
@@ -51,6 +54,8 @@ export default class UserMap extends Component{
     }, error => console.log("Error fetching location"))
   }
 
+
+    //WARNING (Ben H): MapView needs the height of its container defined
   render(){
     console.log(this.state.userLocation);
     return (

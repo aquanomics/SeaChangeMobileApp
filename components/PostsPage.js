@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Image, Text, Platform} from 'react-native';
+import {View, StyleSheet, Image, Text, Platform, KeyboardAvoidingView} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
 import { RoundButton } from 'react-native-button-component';
-import Dialog, {DialogTitle, ScaleAnimation} from 'react-native-popup-dialog';
+import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import { material, sanFranciscoWeights } from 'react-native-typography';
 
 
@@ -61,7 +61,7 @@ export default class PostsPage extends Component{
             this.setState({ buttonUploadState: 'upload', successDialog: true  });
           })
           .catch(error => {
-            this.setState({ buttonUploadState: 'upload', failDialog: true });
+            this.setState({ buttonUploadState: 'upload', failDialog: true, errorDialogMessage: error });
           });
     };
 
@@ -78,14 +78,14 @@ export default class PostsPage extends Component{
     };
 
     render() {
-        const { photo } = this.state
+        const { photo } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9f5ed' }}>
             {photo && (
               <React.Fragment>
                 <Image
                   source={{ uri: photo.uri }}
-                  style={{ width: 250, height: 250, borderRadius: 15 }}
+                  style={ styles.image }
                 />
                 <Dialog
                     onTouchOutside={() => {this.setState({ successDialog: false });}}
@@ -97,6 +97,13 @@ export default class PostsPage extends Component{
                         title="Photo Successfully Uploaded :)"
                         hasTitleBar={false}
                         />}
+                    footer={
+                        <DialogFooter>
+                            <DialogButton
+                            text="Continue"
+                            onPress={() => {this.setState({ successDialog: false });}}
+                            />
+                        </DialogFooter>}     
                 />
                 <Dialog
                     onTouchOutside={() => {this.setState({ failDialog: false });}}
@@ -108,7 +115,15 @@ export default class PostsPage extends Component{
                         title="Failed to Upload Photo :("
                         hasTitleBar={false}
                         />}
+                    footer={
+                        <DialogFooter>
+                            <DialogButton
+                            text="Continue"
+                            onPress={() => {this.setState({ failDialog: false });}}
+                            />
+                        </DialogFooter>}
                 />
+                <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                 <Fumi
                    style = {styles.input}
                    label={'Name'}
@@ -131,6 +146,7 @@ export default class PostsPage extends Component{
                     iconSize={15}
                     onChangeText={this.handleCommentsInput}
                 />
+                </KeyboardAvoidingView>
                 <RoundButton  
                     style = {styles.button}        
                     buttonState={this.state.buttonUploadState}
@@ -233,10 +249,16 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         margin: 10,
     },
+    image :{
+        width: 250, 
+        height: 250, 
+        borderRadius: 15, 
+        borderColor: 'black',
+        borderWidth: 2,
+    },
     input: {
         margin: 10,
         height: 60,
-        borderColor: '#7a42f4',
         width: 250,
         borderRadius: 15
      },

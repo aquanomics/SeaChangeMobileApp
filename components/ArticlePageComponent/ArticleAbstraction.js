@@ -1,7 +1,6 @@
 import React from 'react';
-import { Dimensions, StyleSheet, View, ScrollView, Linking, TouchableNativeFeedback, TouchableHighlight, Image} from 'react-native';
-import { Text, Card, Divider } from 'react-native-elements';
-import moment from 'moment';
+import { Dimensions, StyleSheet, View, ScrollView } from 'react-native';
+import { Text } from 'react-native-elements';
 import { Button } from 'react-native-elements';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
@@ -35,81 +34,73 @@ export default class ArticleAbstraction extends React.Component {
 	if (!articleObject.lat || !articleObject["long"]) {
 	return (
 	    <ScrollView style={styles.container}>
-		<View style={styles.imageContainer}>
-		    <ResizedImage
-                    source={{uri: articleObject.urlToImage || defaultImg}}
-	            margin={14}
-		    />
-		</View>
-
-		<View style={styles.titleContainer}>
-		    <Text style={styles.title}>
-		    {articleObject.title}
-	            </Text>
-		</View>
-
-		<View style={styles.summaryContainer}>
-		    <Text style={styles.summary}>
-		    {articleObject.description}
-	            </Text>
-		</View>
-
-		<View style={styles.buttonContainer}>
-                <Button
-					onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
-					title="See Full Article"
+			<View style={styles.imageContainer}>
+				<ResizedImage
+					source={{uri: articleObject.urlToImage || defaultImg}}
+					margin={14}
 				/>
-		</View>
-            </ScrollView>
+			</View>
+
+			<View style={styles.titleContainer}>
+				<Text style={styles.title}> {articleObject.title} </Text>
+			</View>
+
+			<View style={styles.summaryContainer}>
+				<Text style={styles.summary}> {articleObject.description} </Text>
+			</View>
+
+			<View style={styles.buttonContainer}>
+					<Button
+						onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
+						title="See Full Article"
+					/>
+			</View>
+        </ScrollView>
 	);
 	} else {
 	return (
 	    <ScrollView style={styles.container}>
-		<View style={styles.imageContainer}>
-		    <ResizedImage
-                    source={{uri: articleObject.urlToImage || defaultImg}}
-	            margin={14}
-		    />
-		</View>
-
-		<View style={styles.titleContainer}>
-		    <Text style={styles.title}>
-		    {articleObject.title}
-	            </Text>
-		</View>
-
-		<View style={styles.summaryContainer}>
-		    <Text style={styles.summary}>
-		    {articleObject.description}
-	            </Text>
-		</View>
-
-		<View style={styles.buttonContainer}>
-                <Button
-					onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
-					title="See Full Article"
+			<View style={styles.imageContainer}>
+				<ResizedImage
+						source={{uri: articleObject.urlToImage || defaultImg}}
+					margin={14}
 				/>
-		</View>
+			</View>
 
-		<View style={styles.mapContainer}>
-			<MapView style={StyleSheet.absoluteFillObject} 
-				initialRegion={{
-				    latitude: articleObject.lat,
-				    longitude: articleObject["long"],
-				latitudeDelta: 0.0922,
-				longitudeDelta: 0.0421,
-				}}
-			>
-				<MapView.Marker
-	    coordinate={{latitude: articleObject.lat,
-			 longitude: articleObject["long"]}}
+			<View style={styles.titleContainer}>
+				<Text style={styles.title}> {articleObject.title} </Text>
+			</View>
+
+			<View style={styles.summaryContainer}>
+				<Text style={styles.summary}> {articleObject.description} </Text>
+			</View>
+
+			<View style={styles.buttonContainer}>
+					<Button
+						onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
+						title="See Full Article"
+					/>
+			</View>
+
+			<View style={styles.mapContainer}>
+				<MapView style={StyleSheet.absoluteFillObject} 
+					initialRegion={{
+						latitude: articleObject.lat,
+						longitude: articleObject["long"],
+					latitudeDelta: 0.0922,
+					longitudeDelta: 0.0421,
+					}}
+				>
+					<MapView.Marker
+					coordinate={{latitude: articleObject.lat,
+					longitude: articleObject["long"]}}
 					title={"Article Location"}
 					description={"..."}
-				/>
-			</MapView>
-	
-		</View>
-            </ScrollView>
+					/>
+				</MapView>
+		
+			</View>
+        </ScrollView>
 	);
 	}
     }

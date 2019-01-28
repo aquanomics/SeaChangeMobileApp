@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, View, Text, Alert } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 // We'll get to this one later
 import { WebView } from "react-native-webview";

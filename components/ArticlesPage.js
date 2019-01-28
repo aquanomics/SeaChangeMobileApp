@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, BackHandler, Picker, TouchableHighlight, TextInput, Button, FlatList, StyleSheet, View, Text, Alert } from 'react-native';
+import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
@@ -162,10 +162,8 @@ export default class ArticlesPage extends React.Component {
 		    </Text>
 		</View>
 	    );
-	} else {
-	    return null;
 	}
-	return this.state.isSearchActive ? null : 'Articles'
+	return null;
     }
 
     rightComponentJSX = () => {

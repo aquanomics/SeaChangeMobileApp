@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Image, Text, Platform, KeyboardAvoidingView} from 'react-native';
+import {View, StyleSheet, Image, Text, Platform, KeyboardAvoidingView, Header} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
@@ -23,6 +23,10 @@ export default class PostsPage extends Component{
         buttonUploadState: 'upload',
         successDialog: false,
         failDialog: false,
+    };
+
+    static navigationOptions = {
+        title: 'Posts',
     };
 
     handleGetPhoto = (fromCamera) => {
@@ -81,8 +85,8 @@ export default class PostsPage extends Component{
         const { photo } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9f5ed' }}>
-            {photo && (
-              <React.Fragment>
+            {photo && ( 
+              <React.Fragment> 
                 <Image
                   source={{ uri: photo.uri }}
                   style={ styles.image }
@@ -124,28 +128,28 @@ export default class PostsPage extends Component{
                         </DialogFooter>}
                 />
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                <Fumi
-                   style = {styles.input}
-                   label={'Name'}
-                   labelStyle={{ color: '#a3a3a3' }}
-                   inputStyle={{ color: '#f95a25' }}
-                   iconClass={FontAwesomeIcon}
-                   iconName={'pencil'}
-                   iconColor={'#f95a25'}
-                   iconSize={15}
-                   onChangeText = {this.handleNameInput}
-                />
-                <Fumi
-                    style = {styles.input}
-                    label={'Comment'}
-                    labelStyle={{ color: '#a3a3a3' }}
-                    inputStyle={{ color: '#f95a25' }}
-                    iconClass={FontAwesomeIcon}
-                    iconName={'comment'}
-                    iconColor={'#f95a25'}
-                    iconSize={15}
-                    onChangeText={this.handleCommentsInput}
-                />
+                    <Fumi
+                        style = {styles.input}
+                        label={'Name'}
+                        labelStyle={{ color: '#a3a3a3' }}
+                        inputStyle={{ color: '#f95a25' }}
+                        iconClass={FontAwesomeIcon}
+                        iconName={'pencil'}
+                        iconColor={'#f95a25'}
+                        iconSize={15}
+                        onChangeText = {this.handleNameInput}
+                    />
+                    <Fumi
+                        style = {styles.input}
+                        label={'Comment'}
+                        labelStyle={{ color: '#a3a3a3' }}
+                        inputStyle={{ color: '#f95a25' }}
+                        iconClass={FontAwesomeIcon}
+                        iconName={'comment'}
+                        iconColor={'#f95a25'}
+                        iconSize={15}
+                        onChangeText={this.handleCommentsInput}
+                    />
                 </KeyboardAvoidingView>
                 <RoundButton  
                     style = {styles.button}        
@@ -179,33 +183,34 @@ export default class PostsPage extends Component{
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
                     onPress={() => this.setState({photo: null})} />
-               </React.Fragment>
+            </React.Fragment>
             )}
-            {!photo && (<React.Fragment> 
-            <Image
-                source={require('../img/icons/camera-logo.png')}
-                style={{ width: 80, height: 80, borderRadius: 15 }}
-            />
-              <Text style={styles.boldTitleText}>Post Your Findings !!</Text>   
-            <RoundButton 
-                style = {styles.button}
-                type="primary"
-                shape="rectangle"
-                text="Choose existing Photo from Phone"
-                backgroundColors={['#ff5f6d', '#ffC371']}
-                gradientStart={{ x: 0.5, y: 1 }}
-                gradientEnd={{ x: 1, y: 1 }}
-                onPress={() => this.handleGetPhoto(false)} />
-            <RoundButton 
-                style = {styles.button}
-                type="primary"
-                shape="rectangle"
-                text="Take a Photo"
-                backgroundColors={['#ff5f6d', '#ffC371']}
-                gradientStart={{ x: 0.5, y: 1 }}
-                gradientEnd={{ x: 1, y: 1 }}
-                onPress={() => this.handleGetPhoto(false)} 
-                onPress={() => this.handleGetPhoto(true)} />
+            {!photo && (
+            <React.Fragment> 
+                <Image
+                    source={require('../img/icons/camera-logo.png')}
+                    style={{ width: 80, height: 80, borderRadius: 15 }}
+                />
+                <Text style={styles.boldTitleText}>Post Your Findings !!</Text>   
+                <RoundButton 
+                    style = {styles.button}
+                    type="primary"
+                    shape="rectangle"
+                    text="Choose existing Photo from Phone"
+                    backgroundColors={['#ff5f6d', '#ffC371']}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+                    onPress={() => this.handleGetPhoto(false)} />
+                <RoundButton 
+                    style = {styles.button}
+                    type="primary"
+                    shape="rectangle"
+                    text="Take a Photo"
+                    backgroundColors={['#ff5f6d', '#ffC371']}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+                    onPress={() => this.handleGetPhoto(false)} 
+                    onPress={() => this.handleGetPhoto(true)} />
             </React.Fragment>
             )}
           </View>

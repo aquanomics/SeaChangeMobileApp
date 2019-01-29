@@ -65,6 +65,7 @@ export default class PostsPage extends Component{
             this.setState({ buttonUploadState: 'upload', successDialog: true  });
           })
           .catch(error => {
+            console.log(error);
             this.setState({ buttonUploadState: 'upload', failDialog: true, errorDialogMessage: error });
           });
     };

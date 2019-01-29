@@ -6,9 +6,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 
 export default class UserMap extends Component{
-    static navigationOptions = ({ navigation }) => ({
-	header: null,	//gets rid of the header
-    });
 
   state = {
     userLocation: null,
@@ -54,8 +51,6 @@ export default class UserMap extends Component{
     }, error => console.log("Error fetching location"))
   }
 
-
-    //WARNING (Ben H): MapView needs the height of its container defined
   render(){
     console.log(this.state.userLocation);
     return (
@@ -95,7 +90,7 @@ export default class UserMap extends Component{
         <View style={styles.menuRow}>
           <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
-          <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
         </View>
         <View style={styles.menuRow}>
           <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>

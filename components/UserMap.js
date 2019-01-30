@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 
 import { getArticles } from './ServerRequests/nearbyArticles';
+import { isConnected } from './ServerRequests/checkConnection';
 
 export default class UserMap extends Component{
   
@@ -102,7 +103,9 @@ export default class UserMap extends Component{
 
     this.setRegion({
       latitude: this.state.userLocation.latitude,
-      longitude: this.state.userLocation.longitude
+      longitude: this.state.userLocation.longitude,
+      latitudeDelta: this.state.region.latitudeDelta,
+      longitudeDelta: this.state.region.longitudeDelta
     });
   }
 
@@ -156,8 +159,24 @@ export default class UserMap extends Component{
   }
 
   fetchArticles = () => {
-    var params = {lat:this.state.userLocation.latitude, long:this.state.userLocation.longitude};
-    this.setSearchParameters(params);
+    //var params = {lat:this.state.userLocation.latitude, long:this.state.userLocation.longitude,distance};
+    
+    //this.setSearchParameters(params);
+    
+    isConnected().then(result => {
+      if(result){
+        getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          this.setState({ articles:result, refreshing: false });
+          this.fitToArticles();
+          console.log("RES2");
+          console.log(this.state.articles);
+        }); 
+      }
+      else{
+        //popup
+      }
+    });
+
 
     getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
       this.setState({ articles:result, refreshing: false });

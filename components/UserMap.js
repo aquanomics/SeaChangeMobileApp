@@ -4,9 +4,12 @@ import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
+import { NetInfo } from 'react-native';
+import Modal from "react-native-modal";
 
+
+const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
-import { isConnected } from './ServerRequests/checkConnection';
 
 export default class UserMap extends Component{
   
@@ -17,6 +20,7 @@ export default class UserMap extends Component{
     articles: [],
     //searchInfo: {},
     result: null,
+    isModalVisible: false,
   }
   
   constructor(props){
@@ -74,7 +78,7 @@ export default class UserMap extends Component{
     //console.log(highest, lowest);
     return([highest,lowest]);
   }
-
+  /*
   fitToArticles = () => {
     latrange = this.getMinMaxLat();
     longrange = this.getMinMaxLong();
@@ -91,7 +95,7 @@ export default class UserMap extends Component{
     };
     this.setRegion(region);
   }
-  
+  */
   getMapCenter = () => {
     return {
       latitude: this.state.region.latitude,
@@ -125,6 +129,8 @@ export default class UserMap extends Component{
   }
 
   onRegionChange = (region) => {
+    //console.log("region change:");
+    //console.log(region);
     this.setState({ region });
   }
 
@@ -158,39 +164,69 @@ export default class UserMap extends Component{
     }
   }
 
-  fetchArticles = () => {
-    //var params = {lat:this.state.userLocation.latitude, long:this.state.userLocation.longitude,distance};
-    
-    //this.setSearchParameters(params);
-    
-    isConnected().then(result => {
-      if(result){
-        getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
-          this.setState({ articles:result, refreshing: false });
-          this.fitToArticles();
-          console.log("RES2");
-          console.log(this.state.articles);
-        }); 
-      }
-      else{
-        //popup
-      }
-    });
-
-
-    getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
-      this.setState({ articles:result, refreshing: false });
-      this.fitToArticles();
-      console.log("RES2");
-      console.log(this.state.articles);
-    });   
+  calcDistance = (loc1,loc2) => {
+    return haversine(loc1, loc2)
   }
 
+  fetchArticles = () => {
+    let loc1 = {
+      latitude:this.state.region.latitude,
+      longitude:this.state.region.longitude
+    }
+    let loc2 = {
+      latitude:this.state.region.latitude,
+      longitude:(this.state.region.longitude + this.state.region.longitudeDelta)
+    }
+    let distance = this.calcDistance(loc1,loc2)/2;
+    //let distance = 30;
+    //console.log("DISTANCE");
+    console.log(distance);
+ 
+    var params = {lat:this.state.region.latitude, long:this.state.region.longitude,distance};
+    console.log(params);
+    this.setSearchParameters(params);
+  
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected)
+      {
+        getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          this.setState({ articles:result, refreshing: false });
+          console.log("RES2");
+          console.log(this.state.articles);
+        });  
+      }
+      else{
+        console.log("Internet is not connected");
+        this.setState({ isModalVisible: !this.state.isModalVisible });
+      }
+    }).catch((error) => console.log(error));
+    
+  }
+ 
+
+  _toggleModal = () =>
+    this.setState({ isModalVisible: !this.state.isModalVisible });
   render(){
-    console.log(this.state.userLocation);
+    //console.log(this.state.userLocation);
     return (
     
     <View style={{ flex: 1 }}>
+
+      <View>
+        <Modal isVisible={this.state.isModalVisible}>
+          <View style={styles.modalContent}>
+            <Text>Please Connect</Text>
+            <TouchableOpacity onPress={this._toggleModal}>
+              <View style={styles.button}>
+                <Text>Close</Text>
+              </View>
+            </TouchableOpacity>
+            
+          </View>
+
+        </Modal>
+      </View>
+
       <View style={{height:"75%"}}>
         <MapView style={{ flex: 1 }} 
           initialRegion={{
@@ -200,6 +236,7 @@ export default class UserMap extends Component{
             longitudeDelta: 0.0421,
           }}   
           region={this.state.region} 
+          onRegionChange={this.onRegionChange}
           showsUserLocation={true} 
            
         >
@@ -252,7 +289,14 @@ export default class UserMap extends Component{
 }
 
 const styles = StyleSheet.create({
-
+    modalContent: {
+      backgroundColor: "white",
+      padding: 22,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 4,
+      borderColor: "rgba(0, 0, 0, 0.1)"
+    },
     actionButtonIcon: {
       fontSize: 20,
       height: 22,

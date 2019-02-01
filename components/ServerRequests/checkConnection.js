@@ -11,5 +11,6 @@ export async function isConnected() {
             console.log("Internet is not connected");
         }
     }).catch((error) => console.log(error));
+    console.log(result);
     return result;
 }

@@ -20,7 +20,7 @@ export default class UserMap extends Component{
     articles: [],
     //searchInfo: {},
     result: null,
-    isModalVisible: false,
+    isModalVisible: null,
   }
   
   constructor(props){
@@ -191,13 +191,20 @@ export default class UserMap extends Component{
       {
         getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
           this.setState({ articles:result, refreshing: false });
+          if(result.length == 0){
+            this.setState({
+              isModalVisible: 2           
+            });
+          }
           console.log("RES2");
           console.log(this.state.articles);
         });  
       }
       else{
         console.log("Internet is not connected");
-        this.setState({ isModalVisible: !this.state.isModalVisible });
+        this.setState({
+          isModalVisible: 1           
+        });
       }
     }).catch((error) => console.log(error));
     
@@ -213,10 +220,12 @@ export default class UserMap extends Component{
     <View style={{ flex: 1 }}>
 
       <View>
-        <Modal isVisible={this.state.isModalVisible}>
+        <Modal isVisible={this.state.isModalVisible === 1}>
+        
           <View style={styles.modalContent}>
-            <Text>Please Connect</Text>
-            <TouchableOpacity onPress={this._toggleModal}>
+            <Text>Please Connect to the Internet</Text>
+            <TouchableOpacity 
+              onPress={() => this.setState({ isModalVisible: null })}>
               <View style={styles.button}>
                 <Text>Close</Text>
               </View>
@@ -224,6 +233,23 @@ export default class UserMap extends Component{
             
           </View>
 
+        </Modal>
+      </View>
+
+      <View>
+        <Modal isVisible={this.state.isModalVisible === 2}>
+        
+          <View style={styles.modalContent}>
+            <Text>No articles in this Area</Text>
+            <Text>Try somewhere else?</Text>
+            <TouchableOpacity 
+              onPress={() => this.setState({ isModalVisible: null })}>
+            
+              <View style={styles.button}>
+                <Text>Close</Text>
+              </View>
+            </TouchableOpacity>           
+          </View>
         </Modal>
       </View>
 
@@ -237,8 +263,7 @@ export default class UserMap extends Component{
           }}   
           region={this.state.region} 
           onRegionChange={this.onRegionChange}
-          showsUserLocation={true} 
-           
+          showsUserLocation={true}  
         >
           {this.state.articles.map(marker => (
             <Marker

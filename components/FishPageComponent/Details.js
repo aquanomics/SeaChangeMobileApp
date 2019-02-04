@@ -1,7 +1,6 @@
 import React from 'react';
-import { withNavigation } from 'react-navigation';
 import { Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight} from 'react-native';
-class Species extends React.Component {
+export default class Details extends React.Component {
 
 
   constructor(props) {
@@ -9,7 +8,6 @@ class Species extends React.Component {
       this.state = {
         scaleValue: new Animated.Value(0)
       }
-      this.render = this.render.bind(this);
   }   
 
   //TODO: IN-PROGESS TO MAKE GOOD ANIMATION FOR EACH CARD RENDER
@@ -20,21 +18,20 @@ class Species extends React.Component {
         delay: this.props.index * 300
     }).start();
   } 
-
-  render() {
+   render() {
     const {
-    	SpecCode,
-    	FBname,
-    	Genus,
-    	Species,
-    	PicPreferredName
-    } = this.props.species;
+      FBname,
+      Genus,
+      Species,
+      PicPreferredName,
+      Length,
+      Weight,
+      Comments
+    } = this.props.details;
     const defaultImage = "https://previews.123rf.com/images/shock77/shock770906/shock77090600028/5010370-funny-cartoon-fish.jpg";
     return (
-    <TouchableHighlight onPress={() => this.props.navigation.navigate('FishDetails',{
-    	code:SpecCode,
-    })}> 
-    	<Animated.View style={{ opacity: this.state.scaleValue }}>
+    <TouchableHighlight onPress={() => Linking.openURL("https://www.fishbase.ca/summary/" + SpecCode)}> 
+      <Animated.View style={{ opacity: this.state.scaleValue }}>
         <View style={styles.row}>
           <Image
             style={styles.imageContainer}
@@ -44,6 +41,7 @@ class Species extends React.Component {
           <View style={styles.textContainer}>
             <Text style={styles.fishName} numberOfLines={1}> {FBname} </Text>
             <Text style={styles.petDescription} numberOfLines={2}> {Genus + " " + Species} </Text>
+            <Text style={styles.petDescription} numberOfLines={7}> {Comments} </Text>
           </View>
         </View>
       </Animated.View>
@@ -51,7 +49,6 @@ class Species extends React.Component {
     );
 }
 }
-
 const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
@@ -111,4 +108,3 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
 });
-export default withNavigation(Species);

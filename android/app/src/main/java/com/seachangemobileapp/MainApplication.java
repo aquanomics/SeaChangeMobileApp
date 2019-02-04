@@ -3,6 +3,10 @@ package com.seachangemobileapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.BV.LinearGradient.LinearGradientPackage;
+import com.react.rnspinkit.RNSpinkitPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage; // <-- Add this line
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -29,6 +33,10 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
 			new MainReactPackage(),
+            new LinearGradientPackage(),
+            new RNSpinkitPackage(),
+            new ImagePickerPackage(),
+            new RNCWebViewPackage(),
 			new RNFirebasePackage(),
 			new RNFirebaseAuthPackage(), // <-- Add this line
             new VectorIconsPackage(),

@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet,Text ,TouchableOpacity} from "react-native";
+import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,} from "react-native";
 import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -34,7 +34,9 @@ export default class UserMap extends Component{
       },
       searchInfo: {},
       events: [],
-      articles: []
+      articles: [],
+
+     
     };
 
     this.getNewUserLocation(); 
@@ -142,9 +144,14 @@ export default class UserMap extends Component{
         userLocation: {         
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
+        },
+        region:{
+          latitude: 49.190077,
+          longitude: -123.103008
         }
       });
-      this.goToUserLocation();
+      //TEMP
+      //this.goToUserLocation();
 
     }, error => console.log("Error fetching location"))
   }
@@ -266,15 +273,19 @@ export default class UserMap extends Component{
           showsUserLocation={true}  
         >
           {this.state.articles.map(marker => (
-            <Marker
-              coordinate={{latitude:marker.lat,
-                           longitude:marker.long}}
-              title={marker.title}
-              description={marker.description}
-            />
+            <MapView.Marker
+                coordinate={{latitude:marker.lat,
+                  longitude:marker.long}}
+                title={marker.title}
+                description={marker.description}>
+                <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
+                  <View>
+                    <Text numberOfLines={2}>{marker.title}{"\n"}{marker.description}</Text>
+                  </View>
+                </MapView.Callout>
+            </MapView.Marker>
           ))}
         </MapView>
-
 
         <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}}>
             <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
@@ -299,7 +310,7 @@ export default class UserMap extends Component{
         <View style={styles.menuRow}>
           <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
           <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
-          <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+          <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
         </View>
         <View style={styles.menuRow}>
           <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
@@ -327,16 +338,17 @@ const styles = StyleSheet.create({
       height: 22,
       color: 'white',
     },
-
     menu: {
       height: "25%",
       flex: 1, 
     },
-
     menuRow: {
       flexDirection: 'row',
       justifyContent: 'center', 
       alignItems: 'center'
+    },
+    plainView: {
+      width: 100
     }
 });
 

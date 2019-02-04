@@ -63,12 +63,10 @@ export default class UserMap extends Component{
       if (tmp < lowest) lowest = tmp;
       if (tmp > highest) highest = tmp;
     }
-    //console.log(highest, lowest);
     return([highest,lowest]);
   }
 
-  getMinMaxLong = () =>{
-    
+  getMinMaxLong = () =>{  
     var lowest = Number.POSITIVE_INFINITY;
     var highest = Number.NEGATIVE_INFINITY;
     var tmp;
@@ -77,7 +75,6 @@ export default class UserMap extends Component{
       if (tmp < lowest) lowest = tmp;
       if (tmp > highest) highest = tmp;
     }
-    //console.log(highest, lowest);
     return([highest,lowest]);
   }
   /*
@@ -147,11 +144,13 @@ export default class UserMap extends Component{
         },
         region:{
           latitude: 49.190077,
-          longitude: -123.103008
+          longitude: -123.103008,
+          latitudeDelta: this.state.region.latitudeDelta,
+          longitudeDelta: this.state.region.longitudeDelta
         }
       });
       //TEMP
-      //this.goToUserLocation();
+      this.goToUserLocation();
 
     }, error => console.log("Error fetching location"))
   }
@@ -217,9 +216,9 @@ export default class UserMap extends Component{
     
   }
  
-
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
+
   render(){
     //console.log(this.state.userLocation);
     return (
@@ -269,7 +268,7 @@ export default class UserMap extends Component{
             longitudeDelta: 0.0421,
           }}   
           region={this.state.region} 
-          onRegionChange={this.onRegionChange}
+          onRegionChangeComplete={this.onRegionChange}
           showsUserLocation={true}  
         >
           {this.state.articles.map(marker => (

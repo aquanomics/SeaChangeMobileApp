@@ -268,7 +268,7 @@ export default class UserMap extends Component{
             longitudeDelta: 0.0421,
           }}   
           region={this.state.region} 
-          onRegionChangeComplete={() => this.onRegionChange()}
+          onRegionChangeComplete={this.onRegionChange}
           showsUserLocation={true}  
         >
           {this.state.articles.map(marker => (

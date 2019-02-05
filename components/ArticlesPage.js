@@ -7,6 +7,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
+const LIMIT = 5;	//this is used as a constant for BOTH SearchArticle[] and NewsArticle[]
+const OFFSET_CONST = 5;	//this is used as a constant for BOTH SearchArticle[] and NewsArticle[]
 
 export default class ArticlesPage extends React.Component {
     //The 2 lines below are using the technique endorsed by offical react-native-navigation documentation
@@ -21,6 +23,13 @@ export default class ArticlesPage extends React.Component {
 
     constructor(props) {
 	super(props);
+
+	//https://stackoverflow.com/questions/47910127/flatlist-calls-onendreached-when-its-rendered
+	//we ONLY do this for search and not for news because the normal fetch and onEndReached fetch
+	//functions are one and the same.
+	this.searchOnEndReachedCalledDuringMomentum = true;	
+
+
 	this.state = {
 	    NewsArticle: [],			//for news FlatList
 	    SearchArticle: [],			//for search FlatList
@@ -31,9 +40,13 @@ export default class ArticlesPage extends React.Component {
 	    searchSubmitted: false,		//to keep track of whether search has been submitted at least once during the search session
 	    					//This is used in the logic so that when you first try to search something before submission,
 	    					//the empty list doesn't show up
+	    lastSearchText: '',			//This is used for searchList during pagination because if the list is at the end and if we were
+	    					//to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
 	    isSearchActive: false,        	//state for search transition
 	    emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
-	    					//This is used in the logic to differentiate whether to say No Internet or No Results
+						//This is used in the logic to differentiate whether to say No Internet or No Results
+	    offset: 0,				//used for offsetting for pagination FOR NewsArticle[]	
+	    searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]	
 	};		
 
         this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
@@ -56,7 +69,6 @@ export default class ArticlesPage extends React.Component {
 
     onBackButtonPressAndroid = () => {
 	if (this.state.isSearchActive == true) {
-	    this.setState({searchSubmitted: false});
 	    this.toggleSearchState();
 	    return true;
 	} else {
@@ -66,48 +78,93 @@ export default class ArticlesPage extends React.Component {
 
     toggleSearchState = () => {
 	if(this.state.isSearchActive == true) {
-	    this.setState({ isSearchActive: false});
+	    this.setState({
+		isSearchActive: false,
+		SearchArticle: [],
+		searchListRefreshing: false,
+		searchOffset: 0,
+		searchSubmitted: false,
+		lastSearchText: this.state.searchText,
+	    });
 	} else {
 	    this.setState({ isSearchActive: true});
 	}
     }
 
+    //WARNING: fetch does not replace the state.NewsArticle anymore. Therefore, before this function is called,
+    //NewsArticle should be emptied unless you want the new fetched material to be concatenated with the old array
+    //which you sometimes want it to happen aka pagination
     fetchNews = (category) => {
-	getNews(category)
-	    .then(NewsArticle => this.setState({ NewsArticle, refreshing: false }))
+	getNews(category, this.state.offset, LIMIT)
+	    .then(response => this.setState({ NewsArticle: [...this.state.NewsArticle, ...response], refreshing: false }))
 	    .catch(() => this.setState({NewsArticle: [], refreshing: false }));
     }
     
     dropdownHandler = (value) => {
-	this.fetchNews(value);
-	this.setState({category: value });	//Need to update the current category being viewed
+	//this.fetchNews(value);
+	this.setState({
+	    NewsArticle: [],
+	    refreshing: true,
+	    category: value,
+	    offset: 0,
+	}, () => this.fetchNews(value));	//Need to update the current category being viewed
     }
 
-    handleRefresh(code) {
+    handleRefresh() {
 	this.setState(
 	    {
-		refreshing: true
+		refreshing: true,
+		offset: 0,
+		NewsArticle: [],
 	    },
 	    () => this.fetchNews(this.state.category)
 	);
     }
 
-    handleSearch = (search) => {
-	getArticleSearch(search)
-	//Warning: TODO: It says NewsArticle, but it's really SearchArticle. I didn't change backend code to pass back SearchArticle yet
-	    .then( (NewsArticle) => {
-		this.setState({ SearchArticle: NewsArticle, searchListRefreshing: false });
-	    })
-	    .catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
+    searchSubmitHandler = (forPagination) => {
+	console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
+	if(forPagination === undefined) {
+	    this.setState({
+		searchSubmitted: true,
+		lastSearchText: this.state.searchText,
+		SearchArticle: [],			//clear the browser
+		searchListRefreshing: true,
+		searchOffset: 0,
+	    }, () => {
+		getArticleSearch(this.state.searchText, this.state.searchOffset, LIMIT)
+		    .then( returnedObject => {
+			this.setState({ SearchArticle: returnedObject.SearchArticle, emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
+		    })
+		    .catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
+	    });
+	} else {
+	    //this branch is for pagination
+	    getArticleSearch(this.state.lastSearchText, this.state.searchOffset, LIMIT)
+		.then( returnedObject => {
+		    this.setState({ SearchArticle: [...this.state.SearchArticle, ...returnedObject.SearchArticle], emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
+		})
+		.catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
+
+	}
     }
 
-    searchSubmitHandler = () => {
-	this.setState({searchSubmitted: true});
-	getArticleSearch(this.state.searchText)
-	    .then( returnedObject => {
-		this.setState({ SearchArticle: returnedObject.SearchArticle, emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
-	    })
-	    .catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
+    newsHandleFetchMore = () => {
+	this.setState({offset: this.state.offset + OFFSET_CONST, refreshing: true}, () => this.fetchNews(this.state.category));
+    }
+
+    searchHandleFetchMore = () => {
+	if(!this.searchOnEndReachedCalledDuringMomentum) {
+	    console.log("Inside searchHandleFetchMore. fetch executed");
+	    this.setState({searchOffset: this.state.searchOffset + OFFSET_CONST, searchListRefreshing: true}, () => this.searchSubmitHandler(true));
+	    this.searchOnEndReachedCalledDuringMomentum = true;
+	} else {
+	    console.log("Inside searchHandleFetchMore. fetch NOT executed");
+	}
+    }
+
+
+    searchOnEndReachedCalledDuringMomentumHandler = () => {
+	this.searchOnEndReachedCalledDuringMomentum = false;
     }
 
     //render functions that return JSX
@@ -136,7 +193,6 @@ export default class ArticlesPage extends React.Component {
 			style={styles.headerLeftIcon}
 			underlayColor={'#DCDCDC'}
 			onPress={() => {
-			    this.setState({searchSubmitted: false});
 			    this.toggleSearchState();
 			} }
 		    >
@@ -233,6 +289,9 @@ export default class ArticlesPage extends React.Component {
 	    		isSearchActive={this.state.isSearchActive}
 	    		navigation={this.props.navigation}
 	    		emptySearchReturned={this.state.emptySearchReturned}
+	    		newsHandleFetchMore={this.newsHandleFetchMore}		//no need to bind if use arrow functions
+	    		searchHandleFetchMore={this.searchHandleFetchMore}	//no need to bind if use arrow functions
+	    searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
 	    	/>
 	    </View>
 	);
@@ -248,7 +307,9 @@ function DisplayArticles(props) {
 				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
 				keyExtractor={item => item.url}
 				refreshing={props.refreshing}
-				onRefresh={() => props.handleRefresh("News")}
+				onRefresh={() => props.handleRefresh()}
+        			onEndReached={props.newsHandleFetchMore}
+        			onEndReachedThreshold={0.1}
 				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
 			/>;
     } else {
@@ -258,7 +319,10 @@ function DisplayArticles(props) {
 				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
 				keyExtractor={item => item.url}
 				refreshing={props.searchListRefreshing}
+        			onEndReached={props.searchHandleFetchMore}
+        			onEndReachedThreshold={0.1}
 				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+	onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
 			/>;
     }
 

@@ -147,9 +147,13 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+<<<<<<< HEAD
   - RNGestureHandler (1.0.12):
+=======
+  - RNGestureHandler (1.0.14):
+>>>>>>> fish-dev-details
     - React
-  - RNVectorIcons (6.1.0):
+  - RNVectorIcons (6.2.0):
     - React
   - yoga (0.57.4.React)
 
@@ -251,6 +255,7 @@ SPEC CHECKSUMS:
   react-native-google-maps: b946d62e25dc66097921ed82520e45b0b081768a
   react-native-image-picker: f42de90075c5b1af53417af927631d909a1a746e
   react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
+<<<<<<< HEAD
   react-native-spinkit: c9f5826e1a0bf0da889b3795278eb96ae15c1350
   react-native-webview: a42108b827082f8f0333529b0772102031d5960d
   RNGestureHandler: 282af6ea58ed8483612365159c58a3ca5f55e7da
@@ -258,5 +263,12 @@ SPEC CHECKSUMS:
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
 PODFILE CHECKSUM: b70be28545c7ed5a0e9508fa388480abb52d5ca1
+=======
+  RNGestureHandler: afde2addc517e85cc97a25bfe119acbee779a7ce
+  RNVectorIcons: 8c52e1e8da1153613fdef44748e865c25556cb9c
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+
+PODFILE CHECKSUM: fa6a4a5e7cefd7a6b47421806c5d941e1c7b8ae9
+>>>>>>> fish-dev-details
 
 COCOAPODS: 1.5.3

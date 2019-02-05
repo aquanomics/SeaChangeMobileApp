@@ -313,7 +313,7 @@ export default class UserMap extends Component{
         </View>
         <View style={styles.menuRow}>
           <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
-          <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.getUserLocation()}></MenuButton>
+          <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
           <MenuButton iconName="ios-boat" buttonTitle="Fishes" onClick={() => this.props.navigation.navigate('Fishes')}></MenuButton>
         </View>
       </View>

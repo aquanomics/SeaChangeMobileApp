@@ -28,7 +28,7 @@ export default class ArticlesPage extends React.Component {
 	//we ONLY do this for search and not for news because the normal fetch and onEndReached fetch
 	//functions are one and the same.
 	this.searchOnEndReachedCalledDuringMomentum = true;	
-
+	this.newsOnEndReachedCalledDuringMomentum = true;	
 
 	this.state = {
 	    NewsArticle: [],			//for news FlatList
@@ -128,7 +128,7 @@ export default class ArticlesPage extends React.Component {
 		searchSubmitted: true,
 		lastSearchText: this.state.searchText,
 		SearchArticle: [],			//clear the browser
-		searchListRefreshing: true,
+		//searchListRefreshing: true,
 		searchOffset: 0,
 	    }, () => {
 		getArticleSearch(this.state.searchText, this.state.searchOffset, LIMIT)
@@ -149,13 +149,25 @@ export default class ArticlesPage extends React.Component {
     }
 
     newsHandleFetchMore = () => {
-	this.setState({offset: this.state.offset + OFFSET_CONST, refreshing: true}, () => this.fetchNews(this.state.category));
+	if(!this.newsOnEndReachedCalledDuringMomentum) {
+	    console.log("Inside newsHandleFetchMore. fetch executed");
+	    this.setState({
+		offset: this.state.offset + OFFSET_CONST,
+		//refreshing: true,
+	    }, () => this.fetchNews(this.state.category));
+	    this.newsOnEndReachedCalledDuringMomentum = true;
+	} else {
+	    console.log("Inside newsHandleFetchMore. fetch NOT executed");
+	}
     }
 
     searchHandleFetchMore = () => {
 	if(!this.searchOnEndReachedCalledDuringMomentum) {
 	    console.log("Inside searchHandleFetchMore. fetch executed");
-	    this.setState({searchOffset: this.state.searchOffset + OFFSET_CONST, searchListRefreshing: true}, () => this.searchSubmitHandler(true));
+	    this.setState({
+		searchOffset: this.state.searchOffset + OFFSET_CONST,
+		//searchListRefreshing: true,
+	    }, () => this.searchSubmitHandler(true));
 	    this.searchOnEndReachedCalledDuringMomentum = true;
 	} else {
 	    console.log("Inside searchHandleFetchMore. fetch NOT executed");
@@ -165,6 +177,10 @@ export default class ArticlesPage extends React.Component {
 
     searchOnEndReachedCalledDuringMomentumHandler = () => {
 	this.searchOnEndReachedCalledDuringMomentum = false;
+    }
+
+    newsOnEndReachedCalledDuringMomentumHandler = () => {
+	this.newsOnEndReachedCalledDuringMomentum = false;
     }
 
     //render functions that return JSX
@@ -292,6 +308,7 @@ export default class ArticlesPage extends React.Component {
 	    		newsHandleFetchMore={this.newsHandleFetchMore}		//no need to bind if use arrow functions
 	    		searchHandleFetchMore={this.searchHandleFetchMore}	//no need to bind if use arrow functions
 	    searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
+	    newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
 	    	/>
 	    </View>
 	);
@@ -311,6 +328,7 @@ function DisplayArticles(props) {
         			onEndReached={props.newsHandleFetchMore}
         			onEndReachedThreshold={0.1}
 				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+	onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
 			/>;
     } else {
 	//when search is active

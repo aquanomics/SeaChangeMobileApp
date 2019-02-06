@@ -32,7 +32,7 @@ export default class ArticleAbstraction extends React.Component {
 //		     longitude: -122.4324}}
 	const articleObject = this.props.navigation.getParam('articleObject', {});
 
-	if (!articleObject.lat || !articleObject["long"]) {
+	if (!articleObject.lat || !articleObject["lng"]) {
 	return (
 	    <ScrollView style={styles.container}>
 			<View style={styles.imageContainer}>
@@ -97,14 +97,14 @@ export default class ArticleAbstraction extends React.Component {
 				<MapView style={StyleSheet.absoluteFillObject} 
 					initialRegion={{
 						latitude: articleObject.lat,
-						longitude: articleObject["long"],
+						longitude: articleObject["lng"],
 					latitudeDelta: 0.0922,
 					longitudeDelta: 0.0421,
 					}}
 				>
 					<MapView.Marker
 					coordinate={{latitude: articleObject.lat,
-					longitude: articleObject["long"]}}
+					longitude: articleObject["lng"]}}
 					title={"Article Location"}
 					description={"..."}
 					/>

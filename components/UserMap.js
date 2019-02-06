@@ -71,7 +71,7 @@ export default class UserMap extends Component{
     var highest = Number.NEGATIVE_INFINITY;
     var tmp;
     for (var i=this.state.articles.length-1; i>=0; i--) {
-      tmp = this.state.articles[i].long;
+      tmp = this.state.articles[i].lng;
       if (tmp < lowest) lowest = tmp;
       if (tmp > highest) highest = tmp;
     }
@@ -159,8 +159,8 @@ export default class UserMap extends Component{
     if("lat" in params) {
       this.state.searchInfo.lat = params.lat;
     }
-    if("long" in params) {
-      this.state.searchInfo.long = params.long;
+    if("lng" in params) {
+      this.state.searchInfo.lng = params.lng;
     }
     if("distance" in params) {
       this.state.searchInfo.distance = params.distance;
@@ -188,14 +188,14 @@ export default class UserMap extends Component{
     //console.log("DISTANCE");
     console.log(distance);
  
-    var params = {lat:this.state.region.latitude, long:this.state.region.longitude,distance};
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude,distance};
     console.log(params);
     this.setSearchParameters(params);
   
     NetInfo.isConnected.fetch().then(isConnected => {
       if(isConnected)
       {
-        getArticles(this.state.searchInfo.lat,this.state.searchInfo.long,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+        getArticles(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
           this.setState({ articles:result, refreshing: false });
           if(result.length == 0){
             this.setState({
@@ -274,7 +274,7 @@ export default class UserMap extends Component{
           {this.state.articles.map(marker => (
             <MapView.Marker
                 coordinate={{latitude:marker.lat,
-                  longitude:marker.long}}
+                  longitude:marker.lng}}
                 title={marker.title}
                 description={marker.description}>
                 <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            

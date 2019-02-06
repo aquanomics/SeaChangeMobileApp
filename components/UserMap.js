@@ -14,6 +14,7 @@ import { getArticles } from './ServerRequests/nearbyArticles';
 import SlidingUpPanel from 'rn-sliding-up-panel'
 
 const {height} = Dimensions.get('window')
+const actionButtonOffsetY = 65
 
 export default class UserMap extends Component{
 
@@ -294,7 +295,7 @@ export default class UserMap extends Component{
         ))}
       </MapView>
 
-      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}}>
+      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}} offsetY={actionButtonOffsetY}>
           <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
               <Icon name="md-create" style={styles.actionButtonIcon} />
           </ActionButton.Item>

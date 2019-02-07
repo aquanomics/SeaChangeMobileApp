@@ -2,6 +2,7 @@ import React from 'react';
 import { Dimensions, StyleSheet, View, ScrollView } from 'react-native';
 import { Text } from 'react-native-elements';
 import { Button } from 'react-native-elements';
+import { RoundButton } from 'react-native-button-component';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
 
@@ -31,7 +32,7 @@ export default class ArticleAbstraction extends React.Component {
 //		     longitude: -122.4324}}
 	const articleObject = this.props.navigation.getParam('articleObject', {});
 
-	if (!articleObject.lat || !articleObject["long"]) {
+	if (!articleObject.lat || !articleObject["lng"]) {
 	return (
 	    <ScrollView style={styles.container}>
 			<View style={styles.imageContainer}>
@@ -50,9 +51,15 @@ export default class ArticleAbstraction extends React.Component {
 			</View>
 
 			<View style={styles.buttonContainer}>
-					<Button
+					<RoundButton
+                    style = {styles.button}
 						onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
-						title="See Full Article"
+                    type="primary"
+                    shape="rectangle"
+                    backgroundColors={['#0099cc', '#0099cc']}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+            					text="See Full Article"
 					/>
 			</View>
         </ScrollView>
@@ -76,9 +83,13 @@ export default class ArticleAbstraction extends React.Component {
 			</View>
 
 			<View style={styles.buttonContainer}>
-					<Button
+					<RoundButton
+                    style = {styles.button}
 						onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
-						title="See Full Article"
+            					text="See Full Article"
+                    backgroundColors={['#0099cc', '#0099cc']}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
 					/>
 			</View>
 
@@ -86,14 +97,14 @@ export default class ArticleAbstraction extends React.Component {
 				<MapView style={StyleSheet.absoluteFillObject} 
 					initialRegion={{
 						latitude: articleObject.lat,
-						longitude: articleObject["long"],
+						longitude: articleObject["lng"],
 					latitudeDelta: 0.0922,
 					longitudeDelta: 0.0421,
 					}}
 				>
 					<MapView.Marker
 					coordinate={{latitude: articleObject.lat,
-					longitude: articleObject["long"]}}
+					longitude: articleObject["lng"]}}
 					title={"Article Location"}
 					description={"..."}
 					/>
@@ -112,7 +123,13 @@ const styles = {
         //justifyContent: 'center',
     },
     buttonContainer: {
+	justifyContent: 'center',
+	alignItems: 'center',
 	marginTop: 20,	//adds space at the top so that the buttons don't go underneath the header
+    },
+    button: {
+        height: 50,
+        width: 250,
     },
     imageContainer:{
 	justifyContent: 'center',

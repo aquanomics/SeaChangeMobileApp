@@ -15,7 +15,7 @@ export default class App extends React.Component {
 	this.state = { EventCard: [],
 		       refreshing: true,
 	};	
-	    this.getEvent = this.getEvent.bind(this);
+	    this.fetchEvent = this.fetchEvent.bind(this);
     }
     
     static navigationOptions = ({ navigation }) => {
@@ -25,7 +25,7 @@ export default class App extends React.Component {
 		style={styles.dropdown}
 		defaultValue='Filter'
 		options={dropdownOptions}
-		onSelect={ (idx, value) => navigation.getParam('getEvent')(value)}	
+		onSelect={ (idx, value) => navigation.getParam('fetchEvent')(value)}	
 		    />
 	    ),
 	};
@@ -33,8 +33,8 @@ export default class App extends React.Component {
 
     // Called after a component is mounted
     componentDidMount() {
-	this.getArticle(this.state.category);
-	this.props.navigation.setParams({ getEvent: this.getEvent });
+	this.fetchEvent();
+	this.props.navigation.setParams({ fetchEvent: this.fetchEvent });
     }
 
 //    fetchNews = (category) => {
@@ -42,13 +42,17 @@ export default class App extends React.Component {
 //	    .then(NewsArticle => this.setState({ NewsArticle, refreshing: false }))
 //	    .catch(() => this.setState({NewsArticle: [], refreshing: false }));
 //    }
+	fetchEvent = () =>
+		getEvent()
+			.then(EventCard => this.setState({EventCard, refreshing:false}))
+			.catch(()=> this.setState({EventCard: [], refreshing:false}));
 //    
     handleRefresh() {
 	this.setState(
 	    {
 		refreshing: true
 	    },
-	    () => this.getEvent()
+	    () => this.fetchEvent()
 	);
     }
 
@@ -57,7 +61,7 @@ export default class App extends React.Component {
 		<DisplayEvents EventCard={this.state.EventCard} refreshing={this.state.refreshing} handleRefresh={this.handleRefresh.bind(this)} />
 	);
     }
-}
+}	
 
 function DisplayEvents(props) {
   return <FlatList
@@ -74,7 +78,7 @@ function DisplayNoInternet(props) {
   return <View style={styles.container}>
     <Text style={styles.welcome}>Cannot Load Articles</Text>
     <Text style={styles.instructions}>Might want to check your internet</Text>
-  </View>;
+    </View>;
 }
 
 const styles = StyleSheet.create({

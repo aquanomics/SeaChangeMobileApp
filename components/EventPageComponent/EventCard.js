@@ -13,7 +13,7 @@ export default class Event extends React.Component {
       endDate,
       lat,
       lng
-	} = this.props.Event;
+	   } = this.props.Event;
     const { noteStyle, featuredTitleStyle } = styles;
     const defaultImg =
       'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
@@ -31,9 +31,7 @@ export default class Event extends React.Component {
             {description || 'Read More..'}
           </Text>
           <Divider style={{ backgroundColor: '#dfe6e9' }} />
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={noteStyle}>{startDate}</Text>
             <Text style={noteStyle}>{location}</Text>
           </View>
@@ -61,4 +59,5 @@ const styles = {
     textShadowOffset: { width: 3, height: 3 },
     textShadowRadius: 3
   }
+}
 

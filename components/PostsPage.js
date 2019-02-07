@@ -18,11 +18,15 @@ export default class PostsPage extends Component{
             name: null,
             body: {
                 comment: null,
+                lat: null,
+                lng: null,
             }
         },
+        buttonFetchLocationState: 'init',
+        failAddLocationDialog: false,
         buttonUploadState: 'upload',
-        successDialog: false,
-        failDialog: false,
+        successUploadDialog: false,
+        failUploadDialog: false,
     };
 
     static navigationOptions = {
@@ -62,12 +66,31 @@ export default class PostsPage extends Component{
         })
           .then(response => response.json())
           .then(response => {
-            this.setState({ buttonUploadState: 'upload', successDialog: true  });
+            this.setState({ buttonUploadState: 'upload', successUploadDialog: true  });
           })
           .catch(error => {
             console.log(error);
-            this.setState({ buttonUploadState: 'upload', failDialog: true, errorDialogMessage: error });
+            this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: error });
           });
+    };
+
+    handleGetUserLocation = () => {
+        navigator.geolocation.getCurrentPosition(position => {
+          console.log(position.coords);
+       
+          var currState = this.state
+          if (position.coords.latitude == null || position.coords.longitude == null) {
+            currState = setUserLocation(currState, null, null, 'init', true);  
+          } else {
+            currState = setUserLocation(currState, position.coords.latitude, position.coords.longitude, 'done', false);  
+          }
+
+          this.setState({currState});
+        }, error => {
+            console.log(error)
+            var currState = setUserLocation(this.state, null, null, 'init', true); 
+            this.setState({currState});
+        })
     };
 
     handleNameInput = (text) => {
@@ -93,9 +116,9 @@ export default class PostsPage extends Component{
                   style={ styles.image }
                 />
                 <Dialog
-                    onTouchOutside={() => {this.setState({ successDialog: false });}}
+                    onTouchOutside={() => {this.setState({ successUploadDialog: false });}}
                     width={0.9}
-                    visible={this.state.successDialog}
+                    visible={this.state.successUploadDialog}
                     dialogAnimation={new ScaleAnimation()}
                     dialogTitle={
                         <DialogTitle
@@ -106,14 +129,14 @@ export default class PostsPage extends Component{
                         <DialogFooter>
                             <DialogButton
                             text="Continue"
-                            onPress={() => {this.setState({ successDialog: false });}}
+                            onPress={() => {this.setState({ successUploadDialog: false });}}
                             />
                         </DialogFooter>}     
                 />
                 <Dialog
-                    onTouchOutside={() => {this.setState({ failDialog: false });}}
+                    onTouchOutside={() => {this.setState({ failUploadDialog: false });}}
                     width={0.9}
-                    visible={this.state.failDialog}
+                    visible={this.state.failUploadDialog}
                     dialogAnimation={new ScaleAnimation()}
                     dialogTitle={
                         <DialogTitle
@@ -124,7 +147,25 @@ export default class PostsPage extends Component{
                         <DialogFooter>
                             <DialogButton
                             text="Continue"
-                            onPress={() => {this.setState({ failDialog: false });}}
+                            onPress={() => {this.setState({ failUploadDialog: false });}}
+                            />
+                        </DialogFooter>}
+                />
+                <Dialog
+                    onTouchOutside={() => {this.setState({ failAddLocationDialog: false });}}
+                    width={0.9}
+                    visible={this.state.failAddLocationDialog}
+                    dialogAnimation={new ScaleAnimation()}
+                    dialogTitle={
+                        <DialogTitle
+                        title="Failed to Include User Location"
+                        hasTitleBar={false}
+                        />}
+                    footer={
+                        <DialogFooter>
+                            <DialogButton
+                            text="Continue"
+                            onPress={() => {this.setState({ failAddLocationDialog: false });}}
                             />
                         </DialogFooter>}
                 />
@@ -152,6 +193,29 @@ export default class PostsPage extends Component{
                         onChangeText={this.handleCommentsInput}
                     />
                 </KeyboardAvoidingView>
+                <RoundButton   
+                    style = {styles.button}        
+                    buttonState={this.state.buttonFetchLocationState}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+                    states={{
+                        init: {
+                        text: '+ Include User Location',
+                        backgroundColors: ['#56CCF2', '#56CCF2'],
+                        onPress: () => {this.handleGetUserLocation();},
+                        },
+                        done: {
+                            text: '- Exclude User Location',
+                            backgroundColors: ['#F37335', '#F37335'],
+                            onPress: () => {
+                                var currState = this.state;
+                                currState.param.body.lat = null;
+                                currState.param.body.lng = null;
+                                currState.buttonFetchLocationState = 'init';
+                                this.setState({currState});
+                            },
+                        },
+                    }}/>
                 <RoundButton  
                     style = {styles.button}        
                     buttonState={this.state.buttonUploadState}
@@ -170,7 +234,7 @@ export default class PostsPage extends Component{
                         text: 'Uploding Photo...',
                         gradientStart: { x: 0.8, y: 1 },
                         gradientEnd: { x: 1, y: 1 },
-                        backgroundColors: ['#ff4949', '#fe6060'],
+                        backgroundColors: ['#FF416C', '#FF4B2B'],
                         spinner: true,
                         onPress: () => {},
                         },
@@ -247,6 +311,14 @@ const setUrlParam = (url, param) => {
     }
 
     return resultUrl;
+};
+
+const setUserLocation = (state, lat, lng, btnState, fail) => {
+    state.param.body.lat = lat;
+    state.param.body.lng = lng;
+    state.failAddLocationDialog = fail;
+    state.buttonFetchLocationState = btnState;
+    return state;
 };
 
 const styles = StyleSheet.create({

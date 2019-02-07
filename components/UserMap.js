@@ -60,7 +60,7 @@ export default class UserMap extends Component{
     //DEFAULT SEARCH AREA FOR NOW
     var params = {
       lat: 49.190077,
-      long: -123.103008,
+      lng: -123.103008,
       distance: 100,
       limit: 5
     };
@@ -279,14 +279,18 @@ export default class UserMap extends Component{
         }}   
         region={this.state.region} 
         onRegionChangeComplete={this.onRegionChange}
-        showsUserLocation={true}  
+        showsUserLocation={true} 
+        //customMapStyle={mapStyle} 
+        //provider={PROVIDER_GOOGLE}
       >
         {this.state.articles.map(marker => (
           <MapView.Marker
               coordinate={{latitude:marker.lat,
-                longitude:marker.long}}
+                longitude:marker.lng}}
               title={marker.title}
-              description={marker.description}>
+              description={marker.description}
+              image={require('../img/map_icons/marker.png')}
+              >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
                   <Text numberOfLines={2}>{marker.title}{"\n"}{marker.description}</Text>
@@ -296,11 +300,11 @@ export default class UserMap extends Component{
         ))}
       </MapView>
 
-      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}} offsetY={actionButtonOffsetY}>
-          <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
+      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
+          <ActionButton.Item buttonColor='#3B3BD4'  onPress={() => console.log("notes tapped!")}>
               <Icon name="md-create" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3498db' onPress={this.fetchArticles}>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
               <Icon name="md-paper" style={styles.actionButtonIcon} />
           </ActionButton.Item>
       </ActionButton>
@@ -366,7 +370,7 @@ const styles = StyleSheet.create({
     },
     actionButtonIcon: {
       fontSize: 20,
-      height: 22,
+      height: 26,
       color: 'white',
     },
     menu: {

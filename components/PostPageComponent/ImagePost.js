@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Image, Text, Platform, KeyboardAvoidingView, Header} from 'react-native';
+import { View, StyleSheet, Image, Text, Platform, KeyboardAvoidingView } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
@@ -11,7 +11,7 @@ import { material, sanFranciscoWeights } from 'react-native-typography';
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-upload";
 const URL_TEST = "http://192.168.1.84:8080/post-img/image-upload";
 
-export default class PostsPage extends Component{
+export default class ImagePost extends Component{
     state = {
         photo: null,
         param: {
@@ -30,7 +30,7 @@ export default class PostsPage extends Component{
     };
 
     static navigationOptions = {
-        title: 'Posts',
+        title: 'Image Post',
     };
 
     handleGetPhoto = (fromCamera) => {
@@ -231,7 +231,7 @@ export default class PostsPage extends Component{
                         },
                         },
                         uploading: {
-                        text: 'Uploding Photo...',
+                        text: 'Uploading Photo...',
                         gradientStart: { x: 0.8, y: 1 },
                         gradientEnd: { x: 1, y: 1 },
                         backgroundColors: ['#FF416C', '#FF4B2B'],
@@ -242,7 +242,6 @@ export default class PostsPage extends Component{
                 <RoundButton 
                     style = {styles.button}
                     type="primary"
-                    shape="rectangle"
                     text="Choose a different Photo"
                     backgroundColors={['#ff5f6d', '#ffC371']}
                     gradientStart={{ x: 0.5, y: 1 }}
@@ -253,10 +252,10 @@ export default class PostsPage extends Component{
             {!photo && (
             <React.Fragment> 
                 <Image
-                    source={require('../img/icons/camera-logo.png')}
+                    source={require('../../img/icons/camera-logo.png')}
                     style={{ width: 80, height: 80, borderRadius: 15 }}
                 />
-                <Text style={styles.boldTitleText}>Post Your Findings !!</Text>   
+                <Text style={styles.boldTitleText}>Post Photos !!</Text>   
                 <RoundButton 
                     style = {styles.button}
                     type="primary"
@@ -332,6 +331,7 @@ const styles = StyleSheet.create({
         height: 250, 
         borderRadius: 15, 
         borderColor: 'black',
+        resizeMode: 'cover',
         borderWidth: 2,
     },
     input: {

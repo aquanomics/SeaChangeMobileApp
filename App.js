@@ -14,7 +14,9 @@ import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
 import SettingsPage from "./components/SettingsPage";
 import EventsPage from "./components/EventsPage";
-import PostsPage from "./components/PostsPage";
+import PostPage from "./components/PostPage";
+import ImagePost from "./components/PostPageComponent/ImagePost";
+import ArticlePost from "./components/PostPageComponent/ArticlePost";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import ArticleWebViewPage from "./components/ArticlePageComponent/ArticleWebView";
@@ -52,37 +54,43 @@ const styles = StyleSheet.create({
 
 const MainNavigator = createStackNavigator({
     Login: {
-	screen: LoginPage
+        screen: LoginPage
     },
     Fishes: {
-  screen: FishPage
+        screen: FishPage
     },
     Signup: {
-	screen: SignupPage
+        screen: SignupPage
     },
     Home: {
-	screen: UserMap,
+        screen: UserMap,
     },
     Articles: {
-	screen: ArticlesPage,
+        screen: ArticlesPage,
     },
     Events: {
-	screen: EventsPage,
-    }, 
+        screen: EventsPage,
+    },
     FishDetails: {
-  screen: FishDetailPage,
+        screen: FishDetailPage,
     },
     Posts: {
-    screen: PostsPage,    
+        screen: PostPage,
+    },
+    ImagePost: {
+        screen: ImagePost,
+    },
+    ArticlePost: {
+        screen: ArticlePost,
     },
     Settings: {
-	screen: SettingsPage,
+        screen: SettingsPage,
     },
     ArticleWebView: {
-	screen: ArticleWebViewPage,
+        screen: ArticleWebViewPage,
     },
     ArticleAbstraction: {
-	screen: ArticleAbstractionPage,
+        screen: ArticleAbstractionPage,
     },
 }, {
     initialRouteName: 'Home',

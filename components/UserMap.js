@@ -352,7 +352,9 @@ export default class UserMap extends Component{
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {}}>            
                 <View>
-                  <Text numberOfLines={2}>{marker.partner_name}{"\n"}{marker.address_1}</Text>
+                  <Text numberOfLines={2}>{marker.partner_name}{"\n"}</Text>
+                  <Text >{"Address: "}{marker.address_1}</Text>
+                  <Text >{"#: "}{marker.phone_number}</Text>
                 </View>
               </MapView.Callout>
           </MapView.Marker>

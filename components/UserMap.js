@@ -10,11 +10,16 @@ import Modal from "react-native-modal";
 
 const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
+import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 
 import SlidingUpPanel from 'rn-sliding-up-panel'
 
 const {height} = Dimensions.get('window')
 const actionButtonOffsetY = 65
+
+const NO_INTERNET_POPUP = 1
+const NO_ARTICLES_POPUP = 2
+const NO_RESTAURANTS_POP = 3
 
 export default class UserMap extends Component{
 
@@ -28,15 +33,7 @@ export default class UserMap extends Component{
 
   _draggedValue = new Animated.Value(-120)
 
-  state = {
-    userLocation: null,
-    region: null,
-    events: [],
-    articles: [],
-    //searchInfo: {},
-    result: null,
-    isModalVisible: null,
-  }
+  state = {}
   
   constructor(props){
     super(props);
@@ -50,22 +47,22 @@ export default class UserMap extends Component{
       searchInfo: {},
       events: [],
       articles: [],
-
-     
+      restaurants: [],
+      result: null,
+      isModalVisible: null,
     };
 
     this.getNewUserLocation(); 
 
     //TEMP SEARCH PARAMS
-    //DEFAULT SEARCH AREA FOR NOW
+    //when we add a settings page these can be configurable
     var params = {
       lat: 49.190077,
       lng: -123.103008,
       distance: 100,
-      limit: 5
+      limit: 40
     };
     this.setSearchParameters(params);
-
   }
   
   getMinMaxLat = () =>{
@@ -118,7 +115,6 @@ export default class UserMap extends Component{
   }
 
   goToUserLocation = () => {
-
     this.setRegion({
       latitude: this.state.userLocation.latitude,
       longitude: this.state.userLocation.longitude,
@@ -138,13 +134,7 @@ export default class UserMap extends Component{
     });
   }
 
-  getEvents = (radius,location) => {
-
-  }
-
   onRegionChange = (region) => {
-    //console.log("region change:");
-    //console.log(region);
     this.setState({ region });
   }
 
@@ -164,7 +154,7 @@ export default class UserMap extends Component{
           longitudeDelta: this.state.region.longitudeDelta
         }
       });
-      //TEMP
+
       this.goToUserLocation();
 
     }, error => console.log("Error fetching location"))
@@ -189,7 +179,10 @@ export default class UserMap extends Component{
     return haversine(loc1, loc2)
   }
 
-  fetchArticles = () => {
+  /**
+   * calculates rough radius or search from how zoomed in the map is on the screen
+   */
+  getScreenDistance = () => {
     let loc1 = {
       latitude:this.state.region.latitude,
       longitude:this.state.region.longitude
@@ -198,12 +191,14 @@ export default class UserMap extends Component{
       latitude:this.state.region.latitude,
       longitude:(this.state.region.longitude + this.state.region.longitudeDelta)
     }
-    let distance = this.calcDistance(loc1,loc2)/2;
-    //let distance = 30;
-    //console.log("DISTANCE");
-    console.log(distance);
- 
-    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude,distance};
+    return distance = this.calcDistance(loc1,loc2)/2;
+  }
+  
+  fetchArticles = () => {  
+    this.setState({restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
+
+    distance = this.getScreenDistance();
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
     console.log(params);
     this.setSearchParameters(params);
   
@@ -214,17 +209,51 @@ export default class UserMap extends Component{
           this.setState({ articles:result, refreshing: false });
           if(result.length == 0){
             this.setState({
-              isModalVisible: 2           
+              isModalVisible: NO_ARTICLES_POPUP           
             });
           }
-          console.log("RES2");
+          console.log("Articles:");
           console.log(this.state.articles);
         });  
       }
       else{
         console.log("Internet is not connected");
         this.setState({
-          isModalVisible: 1           
+          isModalVisible: NO_INTERNET_POPUP           
+        });
+      }
+    }).catch((error) => console.log(error));
+    
+  }
+  fetchRestaurants = () => {
+    
+    this.setState({articles:[]}); //clear articles from the marker state, so they don't show up on the map
+
+
+    distance = this.getScreenDistance();
+    
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
+    console.log(params);
+    this.setSearchParameters(params);
+  
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected)
+      {
+        getRestaurants(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          this.setState({ restaurants:result, refreshing: false });
+          if(result.length == 0){
+            this.setState({
+              isModalVisible: NO_RESTAURANTS_POP          
+            });
+          }
+          console.log("Restaurants:");
+          console.log(this.state.restaurants);
+        });  
+      }
+      else{
+        console.log("Internet is not connected");
+        this.setState({
+          isModalVisible: NO_INTERNET_POPUP         
         });
       }
     }).catch((error) => console.log(error));
@@ -241,7 +270,7 @@ export default class UserMap extends Component{
     <View style={{ flex: 1 }}>
 
       <View>
-        <Modal isVisible={this.state.isModalVisible === 1}>      
+        <Modal isVisible={this.state.isModalVisible === NO_INTERNET_POPUP}>      
           <View style={styles.modalContent}>
             <Text>Please Connect to the Internet</Text>
             <TouchableOpacity 
@@ -255,9 +284,24 @@ export default class UserMap extends Component{
       </View>
 
       <View>
-        <Modal isVisible={this.state.isModalVisible === 2}>       
+        <Modal isVisible={this.state.isModalVisible === NO_ARTICLES_POPUP}>       
           <View style={styles.modalContent}>
             <Text>No articles in this Area</Text>
+            <Text>Try somewhere else?</Text>
+            <TouchableOpacity 
+              onPress={() => this.setState({ isModalVisible: null })}>          
+              <View style={styles.button}>
+                <Text>Close</Text>
+              </View>
+            </TouchableOpacity>           
+          </View>
+        </Modal>
+      </View>
+
+      <View>
+        <Modal isVisible={this.state.isModalVisible === NO_RESTAURANTS_POP}>       
+          <View style={styles.modalContent}>
+            <Text>No restaurants in this Area</Text>
             <Text>Try somewhere else?</Text>
             <TouchableOpacity 
               onPress={() => this.setState({ isModalVisible: null })}>          
@@ -298,15 +342,31 @@ export default class UserMap extends Component{
               </MapView.Callout>
           </MapView.Marker>
         ))}
+        {this.state.restaurants.map(marker => (
+          <MapView.Marker
+              coordinate={{latitude:marker.latitude, //consistent naming is nessesary
+                longitude:marker.longitude}}
+              title={marker.partner_name}
+              description={marker.address_1}
+              image={require('../img/map_icons/marker.png')}
+              >
+              <MapView.Callout style={styles.plainView} onPress= {() => {}}>            
+                <View>
+                  <Text numberOfLines={2}>{marker.partner_name}{"\n"}{marker.address_1}</Text>
+                </View>
+              </MapView.Callout>
+          </MapView.Marker>
+        ))}
       </MapView>
 
       <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
-          <ActionButton.Item buttonColor='#3B3BD4'  onPress={() => console.log("notes tapped!")}>
-              <Icon name="md-create" style={styles.actionButtonIcon} />
+          <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
+              <Icon name="md-pizza" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
               <Icon name="md-paper" style={styles.actionButtonIcon} />
           </ActionButton.Item>
+
       </ActionButton>
 
       <SlidingUpPanel

@@ -5,7 +5,7 @@ import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
 import { RoundButton } from 'react-native-button-component';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
-import { material, sanFranciscoWeights } from 'react-native-typography';
+import { material, sanFranciscoWeights, materialColors, robotoWeights } from 'react-native-typography';
 
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-upload";
@@ -198,6 +198,7 @@ export default class ImagePost extends Component{
                     buttonState={this.state.buttonFetchLocationState}
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
+                    textStyle= {styles.buttonTextFont}
                     states={{
                         init: {
                         text: '+ Include User Location',
@@ -221,6 +222,7 @@ export default class ImagePost extends Component{
                     buttonState={this.state.buttonUploadState}
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
+                    textStyle= {styles.buttonTextFont}
                     states={{
                         upload: {
                         text: 'Upload Photo',
@@ -243,6 +245,7 @@ export default class ImagePost extends Component{
                     style = {styles.button}
                     type="primary"
                     text="Choose a different Photo"
+                    textStyle= {styles.buttonTextFont}
                     backgroundColors={['#ff5f6d', '#ffC371']}
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
@@ -260,7 +263,8 @@ export default class ImagePost extends Component{
                     style = {styles.button}
                     type="primary"
                     shape="rectangle"
-                    text="Choose existing Photo from Phone"
+                    text="Choose existing Photo"
+                    textStyle= {styles.buttonTextFont}
                     backgroundColors={['#ff5f6d', '#ffC371']}
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
@@ -270,6 +274,7 @@ export default class ImagePost extends Component{
                     type="primary"
                     shape="rectangle"
                     text="Take a Photo"
+                    textStyle= {styles.buttonTextFont}
                     backgroundColors={['#ff5f6d', '#ffC371']}
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
@@ -326,10 +331,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         margin: 10,
     },
-    image :{
-        width: 250, 
-        height: 250, 
-        borderRadius: 15, 
+    image: {
+        width: 380,
+        height: 250,
+        borderRadius: 15,
         borderColor: 'black',
         resizeMode: 'cover',
         borderWidth: 2,
@@ -337,17 +342,26 @@ const styles = StyleSheet.create({
     input: {
         margin: 10,
         height: 60,
-        width: 250,
+        width: 350,
         borderRadius: 15
-     },
-     button: {
+    },
+    button: {
         margin: 10,
         height: 50,
-        width: 250,
-     },
-     boldTitleText: {
-        fontSize: 60,
+        width: 300,
+    },
+    boldTitleText: {
         ...material.titleObject,
-        ...sanFranciscoWeights.bold,
-      },
+        ...robotoWeights.condensedBold,
+        fontSize: 30,
+        marginTop: 10,
+        //color: materialColors.whitePrimary,
+    },
+    buttonTextFont: {
+        ...material.button,
+        ...sanFranciscoWeights.thin,
+        color: materialColors.whitePrimary,
+        fontSize: 17,
+        textAlign: 'center',
+    },
 });

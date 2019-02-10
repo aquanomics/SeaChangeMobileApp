@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text } from 'react-native';
+import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
@@ -287,9 +287,9 @@ export default class ArticlesPage extends React.Component {
 	//Why didn't we just pass in this.state as a parameter rather than individually identifying what is needed in the component being rendered
 	//Answer: Because that is not good for optimization
 	return (
-		<View style={styles.myContainer}>
+		<SafeAreaView style={styles.myContainer}>
 	    	<Header
-	    		outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
+	    		outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 25 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
 	    		backgroundColor={'white'}
 	    		leftComponent={this.leftComponentJSX()}
 	    		centerComponent={this.centerComponentJSX()}
@@ -310,7 +310,7 @@ export default class ArticlesPage extends React.Component {
 	    searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
 	    newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
 	    	/>
-	    </View>
+	    </SafeAreaView>
 	);
     }
 }

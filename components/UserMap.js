@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,} from "react-native";
+import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated} from "react-native";
 import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,18 +10,30 @@ import Modal from "react-native-modal";
 
 const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
+import { getRestaurants } from './ServerRequests/nearbyRestaurants';
+
+import SlidingUpPanel from 'rn-sliding-up-panel'
+
+const {height} = Dimensions.get('window')
+const actionButtonOffsetY = 65
+
+const NO_INTERNET_POPUP = 1
+const NO_ARTICLES_POPUP = 2
+const NO_RESTAURANTS_POP = 3
 
 export default class UserMap extends Component{
-  
-  state = {
-    userLocation: null,
-    region: null,
-    events: [],
-    articles: [],
-    //searchInfo: {},
-    result: null,
-    isModalVisible: null,
+
+  static defaultProps = {
+    draggableRange: {
+      //top: height / 1.75,
+      top: 320, // make this flexible to screen size later
+      bottom: 140
+    }
   }
+
+  _draggedValue = new Animated.Value(-120)
+
+  state = {}
   
   constructor(props){
     super(props);
@@ -35,22 +47,22 @@ export default class UserMap extends Component{
       searchInfo: {},
       events: [],
       articles: [],
-
-     
+      restaurants: [],
+      result: null,
+      isModalVisible: null,
     };
 
     this.getNewUserLocation(); 
 
     //TEMP SEARCH PARAMS
-    //DEFAULT SEARCH AREA FOR NOW
+    //when we add a settings page these can be configurable
     var params = {
       lat: 49.190077,
-      long: -123.103008,
+      lng: -123.103008,
       distance: 100,
-      limit: 5
+      limit: 40
     };
     this.setSearchParameters(params);
-
   }
   
   getMinMaxLat = () =>{
@@ -103,7 +115,6 @@ export default class UserMap extends Component{
   }
 
   goToUserLocation = () => {
-
     this.setRegion({
       latitude: this.state.userLocation.latitude,
       longitude: this.state.userLocation.longitude,
@@ -123,13 +134,7 @@ export default class UserMap extends Component{
     });
   }
 
-  getEvents = (radius,location) => {
-
-  }
-
   onRegionChange = (region) => {
-    //console.log("region change:");
-    //console.log(region);
     this.setState({ region });
   }
 
@@ -149,7 +154,7 @@ export default class UserMap extends Component{
           longitudeDelta: this.state.region.longitudeDelta
         }
       });
-      //TEMP
+
       this.goToUserLocation();
 
     }, error => console.log("Error fetching location"))
@@ -174,7 +179,10 @@ export default class UserMap extends Component{
     return haversine(loc1, loc2)
   }
 
-  fetchArticles = () => {
+  /**
+   * calculates rough radius or search from how zoomed in the map is on the screen
+   */
+  getScreenDistance = () => {
     let loc1 = {
       latitude:this.state.region.latitude,
       longitude:this.state.region.longitude
@@ -183,12 +191,14 @@ export default class UserMap extends Component{
       latitude:this.state.region.latitude,
       longitude:(this.state.region.longitude + this.state.region.longitudeDelta)
     }
-    let distance = this.calcDistance(loc1,loc2)/2;
-    //let distance = 30;
-    //console.log("DISTANCE");
-    console.log(distance);
- 
-    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude,distance};
+    return distance = this.calcDistance(loc1,loc2)/2;
+  }
+  
+  fetchArticles = () => {  
+    this.setState({restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
+
+    distance = this.getScreenDistance();
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
     console.log(params);
     this.setSearchParameters(params);
   
@@ -199,17 +209,51 @@ export default class UserMap extends Component{
           this.setState({ articles:result, refreshing: false });
           if(result.length == 0){
             this.setState({
-              isModalVisible: 2           
+              isModalVisible: NO_ARTICLES_POPUP           
             });
           }
-          console.log("RES2");
+          console.log("Articles:");
           console.log(this.state.articles);
         });  
       }
       else{
         console.log("Internet is not connected");
         this.setState({
-          isModalVisible: 1           
+          isModalVisible: NO_INTERNET_POPUP           
+        });
+      }
+    }).catch((error) => console.log(error));
+    
+  }
+  fetchRestaurants = () => {
+    
+    this.setState({articles:[]}); //clear articles from the marker state, so they don't show up on the map
+
+
+    distance = this.getScreenDistance();
+    
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
+    console.log(params);
+    this.setSearchParameters(params);
+  
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected)
+      {
+        getRestaurants(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          this.setState({ restaurants:result, refreshing: false });
+          if(result.length == 0){
+            this.setState({
+              isModalVisible: NO_RESTAURANTS_POP          
+            });
+          }
+          console.log("Restaurants:");
+          console.log(this.state.restaurants);
+        });  
+      }
+      else{
+        console.log("Internet is not connected");
+        this.setState({
+          isModalVisible: NO_INTERNET_POPUP         
         });
       }
     }).catch((error) => console.log(error));
@@ -226,8 +270,7 @@ export default class UserMap extends Component{
     <View style={{ flex: 1 }}>
 
       <View>
-        <Modal isVisible={this.state.isModalVisible === 1}>
-        
+        <Modal isVisible={this.state.isModalVisible === NO_INTERNET_POPUP}>      
           <View style={styles.modalContent}>
             <Text>Please Connect to the Internet</Text>
             <TouchableOpacity 
@@ -235,22 +278,18 @@ export default class UserMap extends Component{
               <View style={styles.button}>
                 <Text>Close</Text>
               </View>
-            </TouchableOpacity>
-            
+            </TouchableOpacity>            
           </View>
-
         </Modal>
       </View>
 
       <View>
-        <Modal isVisible={this.state.isModalVisible === 2}>
-        
+        <Modal isVisible={this.state.isModalVisible === NO_ARTICLES_POPUP}>       
           <View style={styles.modalContent}>
             <Text>No articles in this Area</Text>
             <Text>Try somewhere else?</Text>
             <TouchableOpacity 
-              onPress={() => this.setState({ isModalVisible: null })}>
-            
+              onPress={() => this.setState({ isModalVisible: null })}>          
               <View style={styles.button}>
                 <Text>Close</Text>
               </View>
@@ -259,65 +298,101 @@ export default class UserMap extends Component{
         </Modal>
       </View>
 
-      <View style={{height:"75%"}}>
-        <MapView style={{ flex: 1 }} 
-          initialRegion={{
-            latitude: 37.68825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}   
-          region={this.state.region} 
-          onRegionChangeComplete={this.onRegionChange}
-          showsUserLocation={true}  
-        >
-          {this.state.articles.map(marker => (
-            <MapView.Marker
-                coordinate={{latitude:marker.lat,
-                  longitude:marker.lng}}
-                title={marker.title}
-                description={marker.description}>
-                <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
-                  <View>
-                    <Text numberOfLines={2}>{marker.title}{"\n"}{marker.description}</Text>
-                  </View>
-                </MapView.Callout>
-            </MapView.Marker>
-          ))}
-        </MapView>
-
-        <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3498db'}}>
-            <ActionButton.Item buttonColor='#3498db'  onPress={() => console.log("notes tapped!")}>
-                <Icon name="md-create" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-            <ActionButton.Item buttonColor='#3498db' onPress={this.fetchArticles}>
-                <Icon name="md-paper" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-        </ActionButton>
-        <View
-            style={{
-                position: 'absolute',//use absolute position to show button on top of the map
-                bottom: '20%', //for center align
-                right: '20%',
-                backgroundColor: '#f3f3f3'
-            }}
-        >
-        </View>
+      <View>
+        <Modal isVisible={this.state.isModalVisible === NO_RESTAURANTS_POP}>       
+          <View style={styles.modalContent}>
+            <Text>No restaurants in this Area</Text>
+            <Text>Try somewhere else?</Text>
+            <TouchableOpacity 
+              onPress={() => this.setState({ isModalVisible: null })}>          
+              <View style={styles.button}>
+                <Text>Close</Text>
+              </View>
+            </TouchableOpacity>           
+          </View>
+        </Modal>
       </View>
 
-      <View style={styles.menu}>
-        <View style={styles.menuRow}>
-          <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
-          <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
-          <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
-        </View>
-        <View style={styles.menuRow}>
-          <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
-          <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
-          <MenuButton iconName="ios-boat" buttonTitle="Fishes" onClick={() => this.props.navigation.navigate('Fishes')}></MenuButton>
-        </View>
-      </View>
 
+      <MapView style={{ flex: 1 }} 
+        initialRegion={{
+          latitude: 37.68825,
+          longitude: -122.4324,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}   
+        region={this.state.region} 
+        onRegionChangeComplete={this.onRegionChange}
+        showsUserLocation={true} 
+        //customMapStyle={mapStyle} 
+        //provider={PROVIDER_GOOGLE}
+      >
+        {this.state.articles.map(marker => (
+          <MapView.Marker
+              coordinate={{latitude:marker.lat,
+                longitude:marker.lng}}
+              title={marker.title}
+              description={marker.description}
+              image={require('../img/map_icons/marker.png')}
+              >
+              <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
+                <View>
+                  <Text numberOfLines={2}>{marker.title}{"\n"}{marker.description}</Text>
+                </View>
+              </MapView.Callout>
+          </MapView.Marker>
+        ))}
+        {this.state.restaurants.map(marker => (
+          <MapView.Marker
+              coordinate={{latitude:marker.latitude, //consistent naming is nessesary
+                longitude:marker.longitude}}
+              title={marker.partner_name}
+              description={marker.address_1}
+              image={require('../img/map_icons/marker.png')}
+              >
+              <MapView.Callout style={styles.plainView} onPress= {() => {}}>            
+                <View>
+                  <Text numberOfLines={2}>{marker.partner_name}{"\n"}{marker.address_1}</Text>
+                </View>
+              </MapView.Callout>
+          </MapView.Marker>
+        ))}
+      </MapView>
+
+      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
+          <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
+              <Icon name="md-pizza" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
+              <Icon name="md-paper" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+
+      </ActionButton>
+
+      <SlidingUpPanel
+        visible
+        startCollapsed
+        showBackdrop={false}
+        ref={c => this._panel = c}
+        draggableRange={this.props.draggableRange}
+        onDrag={v => this._draggedValue.setValue(v)}>
+        <View style={styles.panel}>
+          <Icon style={styles.dropup} size={30} name='ios-arrow-dropup' />
+
+          <View style={styles.menu}>
+            <View style={styles.menuRow}>
+              <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+              <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
+              <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+            </View>
+            <View style={styles.menuRow}>
+              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
+              <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+              <MenuButton iconName="ios-boat" buttonTitle="Fishes" onClick={() => this.props.navigation.navigate('Fishes')}></MenuButton>
+            </View>
+          </View>
+        </View>
+      </SlidingUpPanel>
     </View>
     );
   }
@@ -332,14 +407,34 @@ const styles = StyleSheet.create({
       borderRadius: 4,
       borderColor: "rgba(0, 0, 0, 0.1)"
     },
+    dropup: {
+      //alignItems:"center",
+      //justifyContent: "center",
+      marginTop: 10,
+      
+    },
+    panel: {
+      flex: 1,
+      backgroundColor: 'white',
+      alignItems:"center",
+      position: 'relative',
+      marginLeft: 20,
+      marginRight: 20,
+      borderRadius: 10
+    },
+    panelHeader: {
+      height: 120,
+      backgroundColor: '#b197fc',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
     actionButtonIcon: {
       fontSize: 20,
-      height: 22,
+      height: 26,
       color: 'white',
     },
     menu: {
-      height: "25%",
-      flex: 1, 
+      marginTop: 10,
     },
     menuRow: {
       flexDirection: 'row',

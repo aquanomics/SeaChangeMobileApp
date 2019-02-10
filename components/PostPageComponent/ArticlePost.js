@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     },
     boldTitleText: {
         ...material.titleObject,
-        ...robotoWeights.condensedBold,
+        //...robotoWeights.condensedBold,
         fontSize: 30,
         margin: 15,
     },

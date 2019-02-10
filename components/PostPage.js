@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     },
     boldTitleText: {
         ...material.titleObject,
-        ...robotoWeights.condensedBold,
+        //...robotoWeights.condensedBold,
         fontSize: 30,
         marginTop: 10,
         color: materialColors.whitePrimary,

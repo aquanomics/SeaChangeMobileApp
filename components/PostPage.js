@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { View, StyleSheet, Image, Text, ImageBackground } from 'react-native';
 import { RoundButton } from 'react-native-button-component';
-import { material, sanFranciscoWeights, materialColors, robotoWeights } from 'react-native-typography';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 
 export default class PostPage extends Component{
     constructor(props) {
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     },
     boldTitleText: {
         ...material.titleObject,
-        //...robotoWeights.condensedBold,
+        ...systemWeights.bold,
         fontSize: 30,
         marginTop: 10,
         color: materialColors.whitePrimary,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     },
     buttonTextFont: {
         ...material.button,
-        ...sanFranciscoWeights.thin,
+        ...systemWeights.light,
         color: materialColors.whitePrimary,
         fontSize: 17,
         textAlign: 'center',

@@ -4,7 +4,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import { RoundButton } from 'react-native-button-component';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
-import { material, sanFranciscoWeights, materialColors, robotoWeights } from 'react-native-typography';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-article/article-upload";
 
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     },
     boldTitleText: {
         ...material.titleObject,
-        //...robotoWeights.condensedBold,
+        ...systemWeights.bold,
         fontSize: 30,
         margin: 15,
     },
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     },
     buttonTextFont: {
         ...material.button,
-        ...sanFranciscoWeights.thin,
+        ...systemWeights.light,
         color: materialColors.whitePrimary,
         fontSize: 17,
         textAlign: 'center',

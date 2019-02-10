@@ -5,7 +5,7 @@ import { Fumi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
 import { RoundButton } from 'react-native-button-component';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
-import { material, sanFranciscoWeights, materialColors, robotoWeights } from 'react-native-typography';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-upload";
@@ -352,14 +352,14 @@ const styles = StyleSheet.create({
     },
     boldTitleText: {
         ...material.titleObject,
-        //...robotoWeights.condensedBold,
+        ...systemWeights.bold,
         fontSize: 30,
         marginTop: 10,
         //color: materialColors.whitePrimary,
     },
     buttonTextFont: {
         ...material.button,
-        ...sanFranciscoWeights.thin,
+        ...systemWeights.light,
         color: materialColors.whitePrimary,
         fontSize: 17,
         textAlign: 'center',

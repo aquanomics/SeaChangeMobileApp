@@ -58,11 +58,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Firebase
 
-Copyright 2018 Google
+Copyright 2019 Google
 
 ## FirebaseAnalytics
 
-Copyright 2018 Google
+Copyright 2019 Google
 
 ## FirebaseAuth
 
@@ -684,7 +684,7 @@ Copyright 2018 Google
 
 ## FirebaseInstanceID
 
-Copyright 2018 Google
+Copyright 2019 Google
 
 ## Folly
 
@@ -1270,7 +1270,7 @@ third-party archives.
 
 ## GoogleAppMeasurement
 
-Copyright 2018 Google
+Copyright 2019 Google
 
 ## GoogleMaps
 
@@ -1537,7 +1537,7 @@ SOFTWARE.
 
 MIT License
 
-Copyright (c) 2015-present, Facebook, Inc.
+Copyright (c) Facebook, Inc. and its affiliates.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -373,6 +373,9 @@ export default class UserMap extends Component{
       </MapView>
 
       <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.goToUserLocation}>
+              <Icon name="md-locate" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
               <Icon name="md-pizza" style={styles.actionButtonIcon} />
           </ActionButton.Item>

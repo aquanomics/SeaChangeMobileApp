@@ -33,10 +33,11 @@ export default class UserMap extends Component{
 
   _draggedValue = new Animated.Value(-120)
 
-  state = {}
+  //state = {}
   
   constructor(props){
     super(props);
+    console.log("why")
     this.state = {     
       region: {
         latitude: 37.68825,
@@ -51,9 +52,13 @@ export default class UserMap extends Component{
       result: null,
       isModalVisible: null,
     };
+    
+    
+  }
 
+  componentDidMount(){
     this.getNewUserLocation(); 
-
+    
     //TEMP SEARCH PARAMS
     //when we add a settings page these can be configurable
     var params = {
@@ -63,6 +68,8 @@ export default class UserMap extends Component{
       limit: 40
     };
     this.setSearchParameters(params);
+   
+    
   }
   
   getMinMaxLat = () =>{
@@ -115,12 +122,24 @@ export default class UserMap extends Component{
   }
 
   goToUserLocation = () => {
-    this.setRegion({
-      latitude: this.state.userLocation.latitude,
-      longitude: this.state.userLocation.longitude,
-      latitudeDelta: this.state.region.latitudeDelta,
-      longitudeDelta: this.state.region.longitudeDelta
-    });
+    console.log("GO TO USER LOCATION")
+    if(this.state.region){
+      this.setRegion({
+        latitude: this.state.userLocation.latitude,
+        longitude: this.state.userLocation.longitude,
+        latitudeDelta: this.state.region.latitudeDelta,
+        longitudeDelta: this.state.region.longitudeDelta
+      });
+    }
+    else{
+      this.setRegion({
+        latitude: this.state.userLocation.latitude,
+        longitude: this.state.userLocation.longitude,
+        latitudeDelta: .09,
+        longitudeDelta: .04
+      });
+    }
+      
   }
 
   setRegion = (position) =>{
@@ -135,10 +154,15 @@ export default class UserMap extends Component{
   }
 
   onRegionChange = (region) => {
+    console.log("region change");
+    console.log(region);
     this.setState({ region });
+    console.log("region change");
+    console.log("region.state");
   }
 
   getNewUserLocation = () => {
+
     navigator.geolocation.getCurrentPosition(position => {
       console.log(position.coords.latitude);
    
@@ -146,12 +170,6 @@ export default class UserMap extends Component{
         userLocation: {         
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
-        },
-        region:{
-          latitude: 49.190077,
-          longitude: -123.103008,
-          latitudeDelta: this.state.region.latitudeDelta,
-          longitudeDelta: this.state.region.longitudeDelta
         }
       });
 
@@ -265,6 +283,14 @@ export default class UserMap extends Component{
 
   render(){
     //console.log(this.state.userLocation);
+    if(this.state.region){
+      console.log("region")
+      console.log(this.state.region)
+
+    }
+    else{
+      console.log("region not initialized yet")
+    }
     return (
     
     <View style={{ flex: 1 }}>
@@ -315,14 +341,9 @@ export default class UserMap extends Component{
 
 
       <MapView style={{ flex: 1 }} 
-        initialRegion={{
-          latitude: 37.68825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}   
+
         region={this.state.region} 
-        onRegionChangeComplete={this.onRegionChange}
+        onRegionChangeComplete={() => this.onRegionChange()}
         showsUserLocation={true} 
         //customMapStyle={mapStyle} 
         //provider={PROVIDER_GOOGLE}

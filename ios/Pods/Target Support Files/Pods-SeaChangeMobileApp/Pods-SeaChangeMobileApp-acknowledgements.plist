@@ -81,7 +81,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2018 Google</string>
+			<string>Copyright 2019 Google</string>
 			<key>License</key>
 			<string>Copyright</string>
 			<key>Title</key>
@@ -91,7 +91,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2018 Google</string>
+			<string>Copyright 2019 Google</string>
 			<key>License</key>
 			<string>Copyright</string>
 			<key>Title</key>
@@ -737,7 +737,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2018 Google</string>
+			<string>Copyright 2019 Google</string>
 			<key>License</key>
 			<string>Copyright</string>
 			<key>Title</key>
@@ -1347,7 +1347,7 @@ third-party archives.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2018 Google</string>
+			<string>Copyright 2019 Google</string>
 			<key>License</key>
 			<string>Copyright</string>
 			<key>Title</key>
@@ -1644,7 +1644,7 @@ SOFTWARE.
 			<key>FooterText</key>
 			<string>MIT License
 
-Copyright (c) 2015-present, Facebook, Inc.
+Copyright (c) Facebook, Inc. and its affiliates.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

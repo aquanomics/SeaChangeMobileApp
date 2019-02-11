@@ -1,10 +1,6 @@
 {
   "name": "RNGestureHandler",
-<<<<<<< HEAD
-  "version": "1.0.12",
-=======
   "version": "1.0.14",
->>>>>>> fish-dev-details
   "summary": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "homepage": "https://github.com/kmagiera/react-native-gesture-handler",
   "license": "MIT",
@@ -16,11 +12,7 @@
   },
   "source": {
     "git": "https://github.com/kmagiera/react-native-gesture-handler",
-<<<<<<< HEAD
-    "tag": "1.0.12"
-=======
     "tag": "1.0.14"
->>>>>>> fish-dev-details
   },
   "source_files": "ios/**/*.{h,m}",
   "dependencies": {

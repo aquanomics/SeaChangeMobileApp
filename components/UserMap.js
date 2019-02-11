@@ -343,7 +343,7 @@ export default class UserMap extends Component{
       <MapView style={{ flex: 1 }} 
 
         region={this.state.region} 
-        onRegionChangeComplete={() => this.onRegionChange()}
+        onRegionChangeComplete={this.onRegionChange}
         showsUserLocation={true} 
         //customMapStyle={mapStyle} 
         //provider={PROVIDER_GOOGLE}

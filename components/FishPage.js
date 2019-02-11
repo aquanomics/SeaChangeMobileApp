@@ -1,13 +1,17 @@
 import React from 'react';
-import { ActivityIndicator, ListView, Platform, StyleSheet, Text, View, Linking, FlatList} from 'react-native';
+import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text } from 'react-native';
+import { Header } from 'react-native-elements';
 import { getSpecies } from './FishPageComponent/Fish';
+import { getSpeciesSearch } from './FishPageComponent/Fish';
 import Species from './FishPageComponent/Species'
 import ModalDropdown from 'react-native-modal-dropdown';
-//const dropdownOptions = ['animal'];
+import Icon from 'react-native-vector-icons/Ionicons';
+const dropdownOptions = [21,67];
 export default class FishPage extends React.Component {
     constructor(props) {
 	super(props);
 	this.state = { data: [],
+                 search: [],
 		            refreshing: true,
                 category: "animal",
                 isLoading: true,
@@ -15,6 +19,7 @@ export default class FishPage extends React.Component {
                 // dataSource: ds.cloneWithRows(SpeciesList),};
                 this.fetchSpecies = this.fetchSpecies.bind(this);
                 this.offset = 0;
+                this.faoCode = 67;
   }
 
   static navigationOptions = {
@@ -27,7 +32,7 @@ export default class FishPage extends React.Component {
   }
 
   fetchSpecies = () => {
-    getSpecies(this.offset)
+    getSpecies(this.offset,this.faoCode)
         .then(response => {this.setState({ data:[...this.state.data, ...response], refreshing: false});})
         .catch(() => this.setState({data: [], refreshing: false }));
   }
@@ -38,27 +43,79 @@ export default class FishPage extends React.Component {
   //     .catch(() => this.setState({List: [], refreshing: false }));
   //   }
 
+  dropdownHandler = (value) => {
+  //this.fetchNews(value);
+  this.faoCode = value;
+  this.offset = 0;
+  this.setState({
+      data: [],
+      refreshing: true
+  }, () => this.fetchSpecies(this.offset,this.faoCode));  //Need to update the current category being viewed
+  }
+
   handleRefresh() {
       this.offset = 0;
-	    this.setState({refreshing: true, data : [], }, () => this.fetchSpecies(this.offset));
+	    this.setState({refreshing: true, data : [], }, () => this.fetchSpecies(this.offset,this.faoCode));
   }
 
   handleFetchMore() {
     this.offset = this.offset + 10;
-    this.setState({refreshing: true}, () => this.fetchSpecies(this.offset));
+    this.setState({refreshing: true}, () => this.fetchSpecies(this.offset,this.faoCode));
   }
+    rightComponentJSX = () => {
+  //we check for undefined because when using setState to change states,
+  //the state values can momentarily be undefined
+  if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+      //When search is not active
+            return (
+    <View style={styles.headerRight}>
+        <TouchableHighlight
+          style={styles.headerSearchIcon}
+          underlayColor={'#DCDCDC'}
+          onPress = {this.toggleSearchState}
+        >
+                <Icon
+                  name="md-search"
+                  size={25}
+                />
+        </TouchableHighlight>
+            <ModalDropdown
+              style={styles.dropdown}
+              defaultValue='Filter'
+              options={dropdownOptions}
+              //WARNING: context is lost within onSelect
+              //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
+              onSelect={(idx, value) => this.dropdownHandler(value)}//using getParam is the way to get around "this" context being lost
+          />
+    </View>
+            );
+  } else {
+      //When search is active
+            return (
+                <View style={styles.headerRight}>
+                  <TextInput
+            autoFocus={true}
+            style={{width: 300, height: 40, borderColor: 'gray', borderWidth: 1}}
+            placeholder={"search all categories"}
+            enablesReturnKeyAutomatically={true}
+            onSubmitEditing={() => {this.searchSubmitHandler();} }
+            onChangeText={ (text) => {
+            this.setState({searchText: text});} }
+          />
+                </View>
+            );
+  }
+    }
 
-
-  // renderItem(item) {
-  //   return (
-  //       <CustomItem index={ item.index } >
-  //           <Text>{ item.first_name }</Text>
-  //       </CustomItem>
-  //   );
-  // }
 
   render() {
 	  return (
+    <View style={styles.myContainer}>
+      <Header
+          outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}  //need padding because by default Header has padding on the sides
+          backgroundColor={'white'}
+          rightComponent={this.rightComponentJSX()}
+      />
       <DisplaySpecies 
         data={this.state.data} 
         refreshing={this.state.refreshing} 
@@ -66,6 +123,7 @@ export default class FishPage extends React.Component {
         handleFetchMore={this.handleFetchMore.bind(this)}
         key={this._keyExtractor}
       />
+    </View>
 	  );
   }
 }
@@ -114,7 +172,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18
   },
-
+  myContainer: {
+  flex: 1,
+  //paddingTop: Constants.statusBarHeight,
+    },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -134,4 +195,22 @@ const styles = StyleSheet.create({
   dropdown: {
     marginHorizontal: 20,
   },
+  headerRight: {
+  flex: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+  margin: 0,
+  //backgroundColor: 'red', //debugging use
+  },
+  headerSearchIcon: {
+  //flex: 1,
+  //marginLeft: 8,  //WARNING: The padding cannot be all same like headerLeft. The boundary gets messed up
+  paddingTop: 9,
+  paddingBottom: 9,
+  paddingLeft: 13,
+  paddingRight: 13,
+  borderRadius:100,   //makes the TouchableHighlight circular
+  alignItems: 'center',
+  //backgroundColor: 'red', //debugging use
+    }
 });

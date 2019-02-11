@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated} from "react-native";
+import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated,Image} from "react-native";
 import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -12,7 +12,7 @@ const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 
-import SlidingUpPanel from 'rn-sliding-up-panel'
+import SlidingUpPanel from 'rn-sliding-up-panel';
 
 const {height} = Dimensions.get('window')
 const actionButtonOffsetY = 65
@@ -337,7 +337,17 @@ export default class UserMap extends Component{
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
-                  <Text numberOfLines={2}>{marker.title}{"\n"}{marker.description}</Text>
+                  <Image
+                    source={{ uri: ((marker.urlToImage) ? marker.urlToImage : "") }} resizeMode={"cover"}
+                    style={{
+                      width: 120, //static for now...
+                      height: 80 
+                    }}
+                  />
+                  <Text style={{fontSize:16}} numberOfLines={2}>{marker.title}</Text>
+                  <Text numberOfLines={2}>{marker.description}</Text>
+
+                  
                 </View>
               </MapView.Callout>
           </MapView.Marker>
@@ -350,11 +360,12 @@ export default class UserMap extends Component{
               description={marker.address_1}
               image={require('../img/map_icons/marker.png')}
               >
-              <MapView.Callout style={styles.plainView} onPress= {() => {}}>            
+              <MapView.Callout style={styles.plainView} >            
                 <View>
                   <Text numberOfLines={2}>{marker.partner_name}{"\n"}</Text>
                   <Text >{"Address: "}{marker.address_1}</Text>
-                  <Text >{"#: "}{marker.phone_number}</Text>
+                  <Text >{"#: "}</Text>
+                  <Text>{marker.phone_number}</Text>
                 </View>
               </MapView.Callout>
           </MapView.Marker>
@@ -444,7 +455,7 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     plainView: {
-      width: 100
+      width: 120
     }
 });
 

@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated,Image} from "react-native";
+import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated,Image, Linking} from "react-native";
 import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -13,7 +13,7 @@ import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 
 import SlidingUpPanel from 'rn-sliding-up-panel';
-
+//import Communications from 'react-native-communications';
 const {height} = Dimensions.get('window')
 const actionButtonOffsetY = 65
 
@@ -360,12 +360,12 @@ export default class UserMap extends Component{
               description={marker.address_1}
               image={require('../img/map_icons/marker.png')}
               >
-              <MapView.Callout style={styles.plainView} >            
+              <MapView.Callout style={styles.plainView} onPress={()=>{(marker.phone_number == "") ? console.log("no num"):Linking.openURL("tel:18008675309")}}>            
                 <View>
-                  <Text numberOfLines={2}>{marker.partner_name}{"\n"}</Text>
+                  <Text numberOfLines={2} style={{fontSize:18}}>{marker.partner_name}{"\n"}</Text>
                   <Text >{"Address: "}{marker.address_1}</Text>
-                  <Text >{"#: "}</Text>
-                  <Text>{marker.phone_number}</Text>
+                  <Text >{"#: "}{marker.phone_number}</Text>
+                
                 </View>
               </MapView.Callout>
           </MapView.Marker>

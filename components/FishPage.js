@@ -15,16 +15,40 @@ export default class FishPage extends React.Component {
 		            refreshing: true,
                 category: "animal",
                 isLoading: true,
+                searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
+                //This is used in the logic so that when you first try to search something before submission,
+                //the empty list doesn't show up
+                lastSearchText: '',     //This is used for searchList during pagination because if the list is at the end and if we were
+                //to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
+                isSearchActive: false,          //state for search transition
+                emptySearchReturned: false, 
                 fetching_Status: false,};
                 // dataSource: ds.cloneWithRows(SpeciesList),};
                 this.fetchSpecies = this.fetchSpecies.bind(this);
                 this.offset = 0;
+                this.searchOffset = 0;
                 this.faoCode = 67;
+                this.keyword ='';
+
   }
 
   static navigationOptions = {
     title: 'Fishes',
   };
+
+  toggleSearchState = () => {
+  if(this.state.isSearchActive == true) {
+      this.setState({
+    isSearchActive: false,
+    search: [],
+    searchListRefreshing: false,
+    searchSubmitted: false,
+    lastSearchText: this.state.searchText,
+      });
+  } else {
+      this.setState({ isSearchActive: true});
+  }
+    }
 
 	componentDidMount() {
   this.fetchSpecies(this.state.category);
@@ -37,11 +61,11 @@ export default class FishPage extends React.Component {
         .catch(() => this.setState({data: [], refreshing: false }));
   }
 
-  //   fetchMoreSpecies = () => {
-  // getSpecies(this.offset)
-  //     .then(List => {this.setState({ List:[...this.state.List, ...List.results], refreshing: false});this.offset = this.offset + 10;})
-  //     .catch(() => this.setState({List: [], refreshing: false }));
-  //   }
+  fetchSpeciesSearch = () => {
+    getSpeciesSearch(this.offset,this.keyword)
+        .then(response => {this.setState({ search:[...this.state.data, ...response], refreshing: false});console.log("SUCCESS")})
+        .catch(() => this.setState({search: [], refreshing: false }));
+  }
 
   dropdownHandler = (value) => {
   //this.fetchNews(value);
@@ -53,6 +77,22 @@ export default class FishPage extends React.Component {
   }, () => this.fetchSpecies(this.offset,this.faoCode));  //Need to update the current category being viewed
   }
 
+  searchSubmitHandler = (value) => {
+  //this.fetchNews(value);
+  this.keyword = value;
+  this.offset = 0;
+  this.setState({
+      search: [],
+      refreshing: true,
+      searchSubmitted: true,
+  }, () => this.fetchSpeciesSearch(this.offset,this.keyword));  //Need to update the current category being viewed
+  }
+
+  handleSearchRefresh() {
+      this.offset = 0;
+      this.setState({refreshing: true, data : [], }, () => this.fetchSpeciesSearch(this.offset,this.keyword));
+  }
+
   handleRefresh() {
       this.offset = 0;
 	    this.setState({refreshing: true, data : [], }, () => this.fetchSpecies(this.offset,this.faoCode));
@@ -62,6 +102,35 @@ export default class FishPage extends React.Component {
     this.offset = this.offset + 10;
     this.setState({refreshing: true}, () => this.fetchSpecies(this.offset,this.faoCode));
   }
+
+  handleSearchFetchMore() {
+    this.searchOffset = this.searchOffset + 10; 
+    this.setState({refreshing: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
+  }
+
+
+
+leftComponentJSX = () => {
+  //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+  if(this.state.isSearchActive == true) {
+      return (
+    <View style={styles.headerLeft}>
+        <TouchableHighlight
+      style={styles.headerLeftIcon}
+      underlayColor={'#DCDCDC'}
+      onPress={() => {
+          this.toggleSearchState();
+      } }
+        >
+          <Icon
+          name="md-close"
+          size={25}
+          />
+        </TouchableHighlight>
+    </View>
+      );
+  }
+    }
     rightComponentJSX = () => {
   //we check for undefined because when using setState to change states,
   //the state values can momentarily be undefined
@@ -98,9 +167,9 @@ export default class FishPage extends React.Component {
             style={{width: 300, height: 40, borderColor: 'gray', borderWidth: 1}}
             placeholder={"search all categories"}
             enablesReturnKeyAutomatically={true}
-            onSubmitEditing={() => {this.searchSubmitHandler();} }
-            onChangeText={ (text) => {
-            this.setState({searchText: text});} }
+            //onSubmitEditing={(value) => {this.searchSubmitHandler(value);} }
+             onChangeText={ (value) => {this.searchSubmitHandler(value);}
+              }
           />
                 </View>
             );
@@ -114,6 +183,7 @@ export default class FishPage extends React.Component {
       <Header
           outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}  //need padding because by default Header has padding on the sides
           backgroundColor={'white'}
+          leftComponent={this.leftComponentJSX()}
           rightComponent={this.rightComponentJSX()}
       />
       <DisplaySpecies 
@@ -129,6 +199,8 @@ export default class FishPage extends React.Component {
 }
 
 function DisplaySpecies(props) {
+  if(props.isSearchActive == false || props.isSearchActive === undefined
+       || props.searchSubmitted == false) {
   return <FlatList
             keyExtractor={props.key}
             data={props.data}
@@ -140,6 +212,19 @@ function DisplaySpecies(props) {
             onEndThreshold={0}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
           />;
+    }else{
+  return <FlatList
+            keyExtractor={props.key}
+            data={props.search}
+            renderItem={({ item }) => <Species species={item} index={item.index} />}
+            //keyExtractor={item => item.SpecCode.toString()}
+            refreshing={props.refreshing}
+            onRefresh={props.handleSearchRefresh}
+            onEndReached={props.handleSearchFetchMore}
+            onEndThreshold={0}
+            ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
+          />;
+    }
 }
 
 function DisplayNoInternet(props) {
@@ -194,6 +279,23 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     marginHorizontal: 20,
+  },
+  headerLeft: {
+  flex: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+  margin: 0,
+  //backgroundColor: 'red', //debugging use
+  },
+    headerLeftIcon: {
+  marginLeft: 8,    //need this to position the back icon on left header like the other react-native-navigation headers
+        //because we're not using react-native-navigation headers. We're using react-native-elements header
+  paddingTop: 9,
+  paddingBottom: 9,
+  paddingLeft: 13,
+  paddingRight: 13,
+  borderRadius:100,   //makes the TouchableHighlight circular
+  //backgroundColor: 'red', //debugging use
   },
   headerRight: {
   flex: 1,

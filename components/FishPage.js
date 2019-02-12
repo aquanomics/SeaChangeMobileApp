@@ -13,6 +13,7 @@ export default class FishPage extends React.Component {
 	this.state = { data: [],
                  search: [],
 		            refreshing: true,
+                refreshingSearch: true,
                 category: "animal",
                 isLoading: true,
                 searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
@@ -64,11 +65,11 @@ export default class FishPage extends React.Component {
 
   fetchSpeciesSearch = (offset, searchText) => {
     getSpeciesSearch(offset, searchText)
-        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshing: false}, () => {
+        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshingSearch: false}, () => {
           console.log("Below is the state.search");
           console.log(this.state.search);
         }); console.log("SUCCESS")})
-        .catch(() => this.setState({search: [], refreshing: false }));
+        .catch(() => this.setState({search: [], refreshingSearch: false }));
   }
 
   dropdownHandler = (value) => {
@@ -88,15 +89,15 @@ export default class FishPage extends React.Component {
     this.offset = 0;
     this.setState({
         search: [],
-        refreshing: true,
+        refreshingSearch: true,
         searchSubmitted: true,
         lastSearchText: this.state.searchText,
     }, () => this.fetchSpeciesSearch(this.offset,this.state.searchText));  //Need to update the current category being viewed
   }
 
-  handleSearchRefresh() {
-      this.offset = 0;
-      this.setState({refreshing: true, data : [], }, () => this.fetchSpeciesSearch(this.offset,this.keyword));
+  handleSearchRefresh = () => {
+      this.searchOffset = 0;
+      this.setState({refreshingSearch: true, search : [], }, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
   }
 
   handleRefresh() {
@@ -111,7 +112,7 @@ export default class FishPage extends React.Component {
 
   handleSearchFetchMore = () => {
     this.searchOffset = this.searchOffset + 10; 
-    this.setState({refreshing: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
+    this.setState({refreshingSearch: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
   }
 
 
@@ -204,6 +205,9 @@ leftComponentJSX = () => {
         handleSearchFetchMore={this.handleSearchFetchMore}
         isSearchActive={this.state.isSearchActive}
         searchSubmitted={this.state.searchSubmitted}
+        handleSearchFetchMore={this.handleSearchFetchMore}
+        handleSearchRefresh={this.handleSearchRefresh}
+        refreshingSearch={this.state.refreshingSearch}
         key={this._keyExtractor}
       />
     </View>
@@ -231,7 +235,7 @@ function DisplaySpecies(props) {
             data={props.search}
             renderItem={({ item }) => <Species species={item} index={item.index} />}
             //keyExtractor={item => item.SpecCode.toString()}
-            refreshing={props.refreshing}
+            refreshing={props.refreshingSearch}
             onRefresh={props.handleSearchRefresh}
             onEndReached={props.handleSearchFetchMore}
             onEndThreshold={0}

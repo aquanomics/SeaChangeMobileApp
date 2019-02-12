@@ -7,6 +7,7 @@ import Species from './FishPageComponent/Species'
 import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/Ionicons';
 const dropdownOptions = [21,67];
+const dropdownOptionsLocation =["Northwest Atlantic","Pacific, Northeast"]
 export default class FishPage extends React.Component {
     constructor(props) {
 	super(props);
@@ -74,7 +75,7 @@ export default class FishPage extends React.Component {
 
   dropdownHandler = (value) => {
     //this.fetchNews(value);
-    this.faoCode = value;
+    this.faoCode = dropdownOptions[value];
     this.offset = 0;
     this.setState({
         data: [],
@@ -158,10 +159,10 @@ leftComponentJSX = () => {
             <ModalDropdown
               style={styles.dropdown}
               defaultValue='Filter'
-              options={dropdownOptions}
+              options={dropdownOptionsLocation}
               //WARNING: context is lost within onSelect
               //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
-              onSelect={(idx, value) => this.dropdownHandler(value)}//using getParam is the way to get around "this" context being lost
+              onSelect={(idx, value) => this.dropdownHandler(idx)}//using getParam is the way to get around "this" context being lost
           />
     </View>
             );

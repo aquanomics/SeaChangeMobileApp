@@ -31,9 +31,10 @@ class Species extends React.Component {
     } = this.props.species;
     const defaultImage = "https://previews.123rf.com/images/shock77/shock770906/shock77090600028/5010370-funny-cartoon-fish.jpg";
     return (
-    <TouchableHighlight onPress={() => this.props.navigation.navigate('FishDetails',{
-    	code:SpecCode,
-    })}> 
+    <TouchableHighlight 
+    onPress={() => this.props.navigation.navigate('FishDetails',{code:SpecCode})}
+    underlayColor={'#fffad8'}
+    > 
     	<Animated.View style={{ opacity: this.state.scaleValue }}>
         <View style={styles.row}>
           <Image

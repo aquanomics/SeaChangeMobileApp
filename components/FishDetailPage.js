@@ -25,7 +25,9 @@ export default class FishDetailPage extends Component{
 
   fetchDetails = () => {
     getSpeciesDetails(this.SpeciesCode)
-        .then(response => {this.setState({ data:response, refreshing: false});console.log("SUCCESS")})
+        .then(response => {
+          this.setState({ data:response, refreshing: false});
+          console.log("SUCCESS")})
         .catch(() => {this.setState({data: [], refreshing: false });console.log("ERROR")});
   }
 
@@ -50,6 +52,7 @@ render() {
         handleRefresh={this.handleRefresh.bind(this)} 
         //handleFetchMore={this.handleFetchMore.bind(this)}
         key={this._keyExtractor}
+        navigation={this.props.navigation}
       />
       );
   }
@@ -59,7 +62,7 @@ function DisplaySpecies(props) {
   return <FlatList
             keyExtractor={props.key}
             data={props.data}
-            renderItem={({ item }) => <Details details={item} index={item.index} />}
+            renderItem={({ item }) => <Details navigation={props.navigation} details={item} index={item.index} />}
             //keyExtractor={item => item.SpecCode.toString()}
             refreshing={props.refreshing}
             onRefresh={props.handleRefresh}

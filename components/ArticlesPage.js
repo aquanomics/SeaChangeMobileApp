@@ -149,29 +149,29 @@ export default class ArticlesPage extends React.Component {
     }
 
     newsHandleFetchMore = () => {
-	if(!this.newsOnEndReachedCalledDuringMomentum) {
-	    console.log("Inside newsHandleFetchMore. fetch executed");
-	    this.setState({
-		offset: this.state.offset + OFFSET_CONST,
-		//refreshing: true,
-	    }, () => this.fetchNews(this.state.category));
-	    this.newsOnEndReachedCalledDuringMomentum = true;
-	} else {
-	    console.log("Inside newsHandleFetchMore. fetch NOT executed");
-	}
+		if(!this.newsOnEndReachedCalledDuringMomentum) {
+		    console.log("Inside newsHandleFetchMore. fetch executed");
+		    this.setState({
+			offset: this.state.offset + OFFSET_CONST,
+			//refreshing: true,
+		    }, () => this.fetchNews(this.state.category));
+		    this.newsOnEndReachedCalledDuringMomentum = true;
+		} else {
+		    console.log("Inside newsHandleFetchMore. fetch NOT executed");
+		}
     }
 
     searchHandleFetchMore = () => {
-	if(!this.searchOnEndReachedCalledDuringMomentum) {
-	    console.log("Inside searchHandleFetchMore. fetch executed");
-	    this.setState({
-		searchOffset: this.state.searchOffset + OFFSET_CONST,
-		//searchListRefreshing: true,
-	    }, () => this.searchSubmitHandler(true));
-	    this.searchOnEndReachedCalledDuringMomentum = true;
-	} else {
-	    console.log("Inside searchHandleFetchMore. fetch NOT executed");
-	}
+		if(!this.searchOnEndReachedCalledDuringMomentum) {
+		    console.log("Inside searchHandleFetchMore. fetch executed");
+		    this.setState({
+			searchOffset: this.state.searchOffset + OFFSET_CONST,
+			//searchListRefreshing: true,
+		    }, () => this.searchSubmitHandler(true));
+		    this.searchOnEndReachedCalledDuringMomentum = true;
+		} else {
+		    console.log("Inside searchHandleFetchMore. fetch NOT executed");
+		}
     }
 
 

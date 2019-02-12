@@ -19,6 +19,7 @@ export default class FishPage extends React.Component {
                 //This is used in the logic so that when you first try to search something before submission,
                 //the empty list doesn't show up
                 lastSearchText: '',     //This is used for searchList during pagination because if the list is at the end and if we were
+                searchText: '',
                 //to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
                 isSearchActive: false,          //state for search transition
                 emptySearchReturned: false, 
@@ -39,11 +40,11 @@ export default class FishPage extends React.Component {
   toggleSearchState = () => {
   if(this.state.isSearchActive == true) {
       this.setState({
-    isSearchActive: false,
-    search: [],
-    searchListRefreshing: false,
-    searchSubmitted: false,
-    lastSearchText: this.state.searchText,
+        isSearchActive: false,
+        search: [],
+        searchListRefreshing: false,
+        searchSubmitted: false,
+        lastSearchText: this.state.searchText,
       });
   } else {
       this.setState({ isSearchActive: true});
@@ -61,31 +62,36 @@ export default class FishPage extends React.Component {
         .catch(() => this.setState({data: [], refreshing: false }));
   }
 
-  fetchSpeciesSearch = () => {
-    getSpeciesSearch(this.offset,this.keyword)
-        .then(response => {this.setState({ search:[...this.state.data, ...response], refreshing: false});console.log("SUCCESS")})
+  fetchSpeciesSearch = (offset, searchText) => {
+    getSpeciesSearch(offset, searchText)
+        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshing: false}, () => {
+          console.log("Below is the state.search");
+          console.log(this.state.search);
+        }); console.log("SUCCESS")})
         .catch(() => this.setState({search: [], refreshing: false }));
   }
 
   dropdownHandler = (value) => {
-  //this.fetchNews(value);
-  this.faoCode = value;
-  this.offset = 0;
-  this.setState({
-      data: [],
-      refreshing: true
-  }, () => this.fetchSpecies(this.offset,this.faoCode));  //Need to update the current category being viewed
+    //this.fetchNews(value);
+    this.faoCode = value;
+    this.offset = 0;
+    this.setState({
+        data: [],
+        refreshing: true
+    }, () => this.fetchSpecies(this.offset,this.faoCode));  //Need to update the current category being viewed
   }
 
-  searchSubmitHandler = (value) => {
-  //this.fetchNews(value);
-  this.keyword = value;
-  this.offset = 0;
-  this.setState({
-      search: [],
-      refreshing: true,
-      searchSubmitted: true,
-  }, () => this.fetchSpeciesSearch(this.offset,this.keyword));  //Need to update the current category being viewed
+  //WARNING: currently does not support pagination
+  searchSubmitHandler = () => {
+    //this.fetchNews(value);
+    this.keyword = this.state.searchText;
+    this.offset = 0;
+    this.setState({
+        search: [],
+        refreshing: true,
+        searchSubmitted: true,
+        lastSearchText: this.state.searchText,
+    }, () => this.fetchSpeciesSearch(this.offset,this.state.searchText));  //Need to update the current category being viewed
   }
 
   handleSearchRefresh() {
@@ -103,7 +109,7 @@ export default class FishPage extends React.Component {
     this.setState({refreshing: true}, () => this.fetchSpecies(this.offset,this.faoCode));
   }
 
-  handleSearchFetchMore() {
+  handleSearchFetchMore = () => {
     this.searchOffset = this.searchOffset + 10; 
     this.setState({refreshing: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
   }
@@ -168,8 +174,11 @@ leftComponentJSX = () => {
             placeholder={"search all categories"}
             enablesReturnKeyAutomatically={true}
             //onSubmitEditing={(value) => {this.searchSubmitHandler(value);} }
-             onChangeText={ (value) => {this.searchSubmitHandler(value);}
-              }
+            // onChangeText={ (value) => {this.searchSubmitHandler(value);}
+            //  }
+            onSubmitEditing={() => {this.searchSubmitHandler();} }
+            onChangeText={ (text) => {
+              this.setState({searchText: text}, () => console.log(`searchText is: ${this.state.searchText}`));} }
           />
                 </View>
             );
@@ -188,9 +197,13 @@ leftComponentJSX = () => {
       />
       <DisplaySpecies 
         data={this.state.data} 
+        search={this.state.search}
         refreshing={this.state.refreshing} 
         handleRefresh={this.handleRefresh.bind(this)} 
         handleFetchMore={this.handleFetchMore.bind(this)}
+        handleSearchFetchMore={this.handleSearchFetchMore}
+        isSearchActive={this.state.isSearchActive}
+        searchSubmitted={this.state.searchSubmitted}
         key={this._keyExtractor}
       />
     </View>
@@ -212,7 +225,7 @@ function DisplaySpecies(props) {
             onEndThreshold={0}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
           />;
-    }else{
+    } else {
   return <FlatList
             keyExtractor={props.key}
             data={props.search}

@@ -27,14 +27,18 @@ export default class Details extends React.Component {
       PicPreferredName,
       Length,
       Weight,
-      Comments
+      Comments 
+
     } = this.props.details;
     const defaultImage = "https://previews.123rf.com/images/shock77/shock770906/shock77090600028/5010370-funny-cartoon-fish.jpg";
     return (
       <Animated.View style={{ opacity: this.state.scaleValue }}>
         <View style={styles.row}>
           <View>
-          <TouchableHighlight onPress={() => Linking.openURL("https://www.fishbase.ca/summary/" + SpecCode)}> 
+          <TouchableHighlight 
+          onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: "https://www.fishbase.ca/summary/" + SpecCode})}
+          underlayColor={'#fffad8'}
+          >           
           <Image
             style={styles.imageContainer}
             source={{uri: "https://www.fishbase.ca/images/species/"+ PicPreferredName || defaultImage}}

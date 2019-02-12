@@ -32,6 +32,7 @@ export default class FishPage extends React.Component {
                 this.searchOffset = 0;
                 this.faoCode = 67;
                 this.keyword ='';
+                this.wordDropDown = "Filter";
 
   }
 
@@ -70,12 +71,15 @@ export default class FishPage extends React.Component {
           console.log("Below is the state.search");
           console.log("LAST TEXT");
           console.log(this.state.lastSearchText);
+          // tempArray = this.state.search;
+          // this.state.search = Array.from(new Set(tempArray));
         }); console.log("SUCCESS")})
         .catch(() => this.setState({search: [], refreshingSearch: false }));
   }
 
   dropdownHandler = (value) => {
     //this.fetchNews(value);
+    this.wordDropDown = dropdownOptionsLocation[value];
     this.faoCode = dropdownOptions[value];
     this.offset = 0;
     this.setState({
@@ -93,7 +97,7 @@ export default class FishPage extends React.Component {
         search: [],
         refreshingSearch: true,
         searchSubmitted: true,
-        //lastSearchText: this.state.searchText,
+        lastSearchText: this.state.searchText,
     }, () => this.fetchSpeciesSearch(this.searchOffset,this.state.searchText));  //Need to update the current category being viewed
   }
 
@@ -160,7 +164,7 @@ leftComponentJSX = () => {
         </TouchableHighlight>
             <ModalDropdown
               style={styles.dropdown}
-              defaultValue='Filter'
+              defaultValue={this.wordDropDown}
               options={dropdownOptionsLocation}
               //WARNING: context is lost within onSelect
               //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}

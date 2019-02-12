@@ -17,8 +17,9 @@ export async function getSpeciesDetails(SpecCode) {
 }
 
 export async function getSpeciesSearch(offset,keyword) {
-  let result = await fetch(url3+keyword+"&offset"+offset).then(response => response.json());
+  let result = await fetch(url3+keyword+"&offset="+offset).then(response => response.json());
   console.log(result);
   console.log(keyword);
+  console.log(url3+keyword+"&offset="+offset);
   return result.List;
 }

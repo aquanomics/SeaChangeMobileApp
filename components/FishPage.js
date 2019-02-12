@@ -46,7 +46,7 @@ export default class FishPage extends React.Component {
         search: [],
         searchListRefreshing: false,
         searchSubmitted: false,
-        lastSearchText: this.state.searchText,
+        //lastSearchText: this.state.searchText,
       });
   } else {
       this.setState({ isSearchActive: true});
@@ -64,11 +64,12 @@ export default class FishPage extends React.Component {
         .catch(() => this.setState({data: [], refreshing: false }));
   }
 
-  fetchSpeciesSearch = (offset, searchText) => {
-    getSpeciesSearch(offset, searchText)
-        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshingSearch: false}, () => {
+  fetchSpeciesSearch = () => {
+    getSpeciesSearch(this.searchOffset, this.keyword)
+        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshingSearch: false, lastSearchText: this.keyword}, () => {
           console.log("Below is the state.search");
-          console.log(this.state.search);
+          console.log("LAST TEXT");
+          console.log(this.state.lastSearchText);
         }); console.log("SUCCESS")})
         .catch(() => this.setState({search: [], refreshingSearch: false }));
   }
@@ -92,8 +93,8 @@ export default class FishPage extends React.Component {
         search: [],
         refreshingSearch: true,
         searchSubmitted: true,
-        lastSearchText: this.state.searchText,
-    }, () => this.fetchSpeciesSearch(this.offset,this.state.searchText));  //Need to update the current category being viewed
+        //lastSearchText: this.state.searchText,
+    }, () => this.fetchSpeciesSearch(this.searchOffset,this.state.searchText));  //Need to update the current category being viewed
   }
 
   handleSearchRefresh = () => {
@@ -113,6 +114,7 @@ export default class FishPage extends React.Component {
 
   handleSearchFetchMore = () => {
     this.searchOffset = this.searchOffset + 10; 
+    console.log(this.searchOffset);
     this.setState({refreshingSearch: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
   }
 
@@ -178,7 +180,7 @@ leftComponentJSX = () => {
             //onSubmitEditing={(value) => {this.searchSubmitHandler(value);} }
             // onChangeText={ (value) => {this.searchSubmitHandler(value);}
             //  }
-            onSubmitEditing={() => {this.searchSubmitHandler();} }
+            onSubmitEditing={() => {this.searchSubmitHandler();  this.searchOffset = 0;} }
             onChangeText={ (text) => {
               this.setState({searchText: text}, () => console.log(`searchText is: ${this.state.searchText}`));} }
           />

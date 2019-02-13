@@ -7,15 +7,22 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-import { createStackNavigator, StackActions, NavigationActions,createAppContainer } from 'react-navigation';
+import {Platform, StyleSheet} from 'react-native';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
 import SettingsPage from "./components/SettingsPage";
 import EventsPage from "./components/EventsPage";
+import PostPage from "./components/PostPage";
+import ImagePost from "./components/PostPageComponent/ImagePost";
+import ArticlePost from "./components/PostPageComponent/ArticlePost";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
+import ArticleWebViewPage from "./components/ArticlePageComponent/ArticleWebView";
+import ArticleAbstractionPage from "./components/ArticlePageComponent/ArticleAbstraction";
+import FishPage from "./components/FishPage";
+import FishDetailPage from "./components/FishDetailPage";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -47,22 +54,43 @@ const styles = StyleSheet.create({
 
 const MainNavigator = createStackNavigator({
     Login: {
-	screen: LoginPage
+        screen: LoginPage
+    },
+    Fishes: {
+        screen: FishPage
     },
     Signup: {
-	screen: SignupPage
+        screen: SignupPage
     },
     Home: {
-	screen: UserMap,
+        screen: UserMap,
     },
     Articles: {
-	screen: ArticlesPage,
+        screen: ArticlesPage,
     },
     Events: {
-	screen: EventsPage,
+        screen: EventsPage,
+    },
+    FishDetails: {
+        screen: FishDetailPage,
+    },
+    Posts: {
+        screen: PostPage,
+    },
+    ImagePost: {
+        screen: ImagePost,
+    },
+    ArticlePost: {
+        screen: ArticlePost,
     },
     Settings: {
-	screen: SettingsPage,
+        screen: SettingsPage,
+    },
+    ArticleWebView: {
+        screen: ArticleWebViewPage,
+    },
+    ArticleAbstraction: {
+        screen: ArticleAbstractionPage,
     },
 }, {
     initialRouteName: 'Home',

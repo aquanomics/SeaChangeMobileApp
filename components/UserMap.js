@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated,Image, Linking} from "react-native";
+import {Platform, View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated,Image, Linking} from "react-native";
 import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -283,10 +283,25 @@ export default class UserMap extends Component{
     }).catch((error) => console.log(error));
     
   }
+
  
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
 
+  renderImage(marker){
+    console.log("callout");
+    if (Platform.OS === 'ios') {
+     console.log("ios");
+      return (<Image
+        source={{ uri: ((marker.urlToImage) ? marker.urlToImage : "") }} resizeMode={"cover"}
+        style={{
+        width: 145, //static for now...
+        height: 110 
+      }}/>);
+    }
+    else return;
+  }
+    
   render(){
     /*
     if(this.state.region){
@@ -380,13 +395,7 @@ export default class UserMap extends Component{
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
-                  <Image
-                    source={{ uri: ((marker.urlToImage) ? marker.urlToImage : "") }} resizeMode={"cover"}
-                    style={{
-                      width: 145, //static for now...
-                      height: 110 
-                    }}
-                  />
+                  {this.renderImage(marker)}
                   <Text style={{fontSize:16}} numberOfLines={2}>{marker.title}</Text>
 
                 </View>

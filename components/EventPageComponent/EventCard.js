@@ -23,9 +23,7 @@ export default class Event extends React.Component {
         <Card
           featuredTitle={name}
           featuredTitleStyle={featuredTitleStyle}
-          image={{
-            uri: urlToImage || defaultImg
-          }}
+          image={ defaultImg}
         >
           <Text style={{ marginBottom: 10 }}>
             {description || 'Read More..'}

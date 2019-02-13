@@ -34,7 +34,6 @@ export default class App extends React.Component {
     // Called after a component is mounted
     componentDidMount() {
 	this.fetchEvent();
-	this.props.navigation.setParams({ fetchEvent: this.fetchEvent });
     }
 
 //    fetchNews = (category) => {
@@ -42,10 +41,11 @@ export default class App extends React.Component {
 //	    .then(NewsArticle => this.setState({ NewsArticle, refreshing: false }))
 //	    .catch(() => this.setState({NewsArticle: [], refreshing: false }));
 //    }
-	fetchEvent = () =>
+	fetchEvent() {
 		getEvent()
 			.then(EventCard => this.setState({EventCard, refreshing:false}))
 			.catch(()=> this.setState({EventCard: [], refreshing:false}));
+	}
 //    
     handleRefresh() {
 	this.setState(
@@ -67,7 +67,6 @@ function DisplayEvents(props) {
   return <FlatList
     data={props.EventCard}
     renderItem={({ item }) => <Event e={item} />}
-    keyExtractor={item => item.url}
     refreshing={props.refreshing}
     onRefresh={props.handleRefresh}
     ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
@@ -76,7 +75,7 @@ function DisplayEvents(props) {
 
 function DisplayNoInternet(props) {
   return <View style={styles.container}>
-    <Text style={styles.welcome}>Cannot Load Articles</Text>
+    <Text style={styles.welcome}>Cannot Load Events</Text>
     <Text style={styles.instructions}>Might want to check your internet</Text>
     </View>;
 }

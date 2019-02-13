@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated} from "react-native";
+import {Platform, View, Button, StyleSheet,Text ,TouchableOpacity,TouchableHighlight,Dimensions,Animated,Image, Linking} from "react-native";
 import MapView,{ Marker } from "react-native-maps";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -12,14 +12,15 @@ const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 
-import SlidingUpPanel from 'rn-sliding-up-panel'
-
+import SlidingUpPanel from 'rn-sliding-up-panel';
+//import Communications from 'react-native-communications';
 const {height} = Dimensions.get('window')
 const actionButtonOffsetY = 65
 
 const NO_INTERNET_POPUP = 1
 const NO_ARTICLES_POPUP = 2
 const NO_RESTAURANTS_POP = 3
+const LOCATION_NOT_SET_POP = 4
 
 export default class UserMap extends Component{
 
@@ -33,10 +34,11 @@ export default class UserMap extends Component{
 
   _draggedValue = new Animated.Value(-120)
 
-  state = {}
+  //state = {}
   
   constructor(props){
     super(props);
+    console.log("why")
     this.state = {     
       region: {
         latitude: 37.68825,
@@ -51,9 +53,13 @@ export default class UserMap extends Component{
       result: null,
       isModalVisible: null,
     };
+    
+    
+  }
 
+  componentDidMount(){
     this.getNewUserLocation(); 
-
+    
     //TEMP SEARCH PARAMS
     //when we add a settings page these can be configurable
     var params = {
@@ -63,6 +69,8 @@ export default class UserMap extends Component{
       limit: 40
     };
     this.setSearchParameters(params);
+   
+    
   }
   
   getMinMaxLat = () =>{
@@ -115,12 +123,29 @@ export default class UserMap extends Component{
   }
 
   goToUserLocation = () => {
-    this.setRegion({
-      latitude: this.state.userLocation.latitude,
-      longitude: this.state.userLocation.longitude,
-      latitudeDelta: this.state.region.latitudeDelta,
-      longitudeDelta: this.state.region.longitudeDelta
-    });
+    console.log("GO TO USER LOCATION")
+    if(!this.state.userLocation){
+      this.setState({
+        isModalVisible: LOCATION_NOT_SET_POP         
+      });
+    }
+    else if(this.state.region){
+      this.setRegion({
+        latitude: this.state.userLocation.latitude,
+        longitude: this.state.userLocation.longitude,
+        latitudeDelta: this.state.region.latitudeDelta,
+        longitudeDelta: this.state.region.longitudeDelta
+      });
+    }
+    else{
+      this.setRegion({
+        latitude: this.state.userLocation.latitude,
+        longitude: this.state.userLocation.longitude,
+        latitudeDelta: .09,
+        longitudeDelta: .04
+      });
+    }
+      
   }
 
   setRegion = (position) =>{
@@ -135,10 +160,15 @@ export default class UserMap extends Component{
   }
 
   onRegionChange = (region) => {
+    console.log("region change");
+    console.log(region);
     this.setState({ region });
+    console.log("region change");
+    console.log("region.state");
   }
 
   getNewUserLocation = () => {
+
     navigator.geolocation.getCurrentPosition(position => {
       console.log(position.coords.latitude);
    
@@ -146,12 +176,6 @@ export default class UserMap extends Component{
         userLocation: {         
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
-        },
-        region:{
-          latitude: 49.190077,
-          longitude: -123.103008,
-          latitudeDelta: this.state.region.latitudeDelta,
-          longitudeDelta: this.state.region.longitudeDelta
         }
       });
 
@@ -259,12 +283,37 @@ export default class UserMap extends Component{
     }).catch((error) => console.log(error));
     
   }
+
  
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
 
+  renderImage(marker){
+    console.log("callout");
+    if (Platform.OS === 'ios') {
+     console.log("ios");
+      return (<Image
+        source={{ uri: ((marker.urlToImage) ? marker.urlToImage : "") }} resizeMode={"cover"}
+        style={{
+        width: 145, //static for now...
+        height: 110 
+      }}/>);
+    }
+    else return;
+  }
+    
   render(){
-    //console.log(this.state.userLocation);
+    /*
+    if(this.state.region){
+      console.log("region")
+      console.log(this.state.region)
+
+    }
+    else{
+      console.log("region not initialized yet")
+    }*/
+
+
     return (
     
     <View style={{ flex: 1 }}>
@@ -313,14 +362,23 @@ export default class UserMap extends Component{
         </Modal>
       </View>
 
+      <View>
+        <Modal isVisible={this.state.isModalVisible === LOCATION_NOT_SET_POP}>       
+          <View style={styles.modalContent}>
+            <Text>Turn on your location settings!</Text>
+            <TouchableOpacity 
+              onPress={() => this.setState({ isModalVisible: null })}>          
+              <View style={styles.button}>
+                <Text>Close</Text>
+              </View>
+            </TouchableOpacity>           
+          </View>
+        </Modal>
+      </View>
+
 
       <MapView style={{ flex: 1 }} 
-        initialRegion={{
-          latitude: 37.68825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}   
+
         region={this.state.region} 
         onRegionChangeComplete={this.onRegionChange}
         showsUserLocation={true} 
@@ -337,7 +395,9 @@ export default class UserMap extends Component{
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
-                  <Text numberOfLines={2}>{marker.title}{"\n"}{marker.description}</Text>
+                  {this.renderImage(marker)}
+                  <Text style={{fontSize:16}} numberOfLines={2}>{marker.title}</Text>
+
                 </View>
               </MapView.Callout>
           </MapView.Marker>
@@ -350,9 +410,12 @@ export default class UserMap extends Component{
               description={marker.address_1}
               image={require('../img/map_icons/marker.png')}
               >
-              <MapView.Callout style={styles.plainView} onPress= {() => {}}>            
+              <MapView.Callout style={styles.plainView} onPress={()=>{(marker.phone_number == "") ? console.log("no num"):Linking.openURL("tel:18008675309")}}>            
                 <View>
-                  <Text numberOfLines={2}>{marker.partner_name}{"\n"}{marker.address_1}</Text>
+                  <Text numberOfLines={2} style={{fontSize:18}}>{marker.partner_name}{"\n"}</Text>
+                  <Text >{"Address: "}{marker.address_1}</Text>
+                  <Text >{"#: "}{marker.phone_number}</Text>
+                
                 </View>
               </MapView.Callout>
           </MapView.Marker>
@@ -360,6 +423,9 @@ export default class UserMap extends Component{
       </MapView>
 
       <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.goToUserLocation}>
+              <Icon name="md-locate" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
               <Icon name="md-pizza" style={styles.actionButtonIcon} />
           </ActionButton.Item>
@@ -373,9 +439,12 @@ export default class UserMap extends Component{
         visible
         startCollapsed
         showBackdrop={false}
+        minimumDistanceThreshold={10}
         ref={c => this._panel = c}
         draggableRange={this.props.draggableRange}
-        onDrag={v => this._draggedValue.setValue(v)}>
+        onDrag={v => this._draggedValue.setValue(v)}
+        
+        >
         <View style={styles.panel}>
           <Icon style={styles.dropup} size={30} name='ios-arrow-dropup' />
 
@@ -442,7 +511,7 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     plainView: {
-      width: 100
+      width: 150
     }
 });
 

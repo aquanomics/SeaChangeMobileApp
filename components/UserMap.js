@@ -20,6 +20,7 @@ const actionButtonOffsetY = 65
 const NO_INTERNET_POPUP = 1
 const NO_ARTICLES_POPUP = 2
 const NO_RESTAURANTS_POP = 3
+const LOCATION_NOT_SET_POP = 4
 
 export default class UserMap extends Component{
 
@@ -123,7 +124,12 @@ export default class UserMap extends Component{
 
   goToUserLocation = () => {
     console.log("GO TO USER LOCATION")
-    if(this.state.region){
+    if(!this.state.userLocation){
+      this.setState({
+        isModalVisible: LOCATION_NOT_SET_POP         
+      });
+    }
+    else if(this.state.region){
       this.setRegion({
         latitude: this.state.userLocation.latitude,
         longitude: this.state.userLocation.longitude,
@@ -282,7 +288,7 @@ export default class UserMap extends Component{
     this.setState({ isModalVisible: !this.state.isModalVisible });
 
   render(){
-    //console.log(this.state.userLocation);
+    /*
     if(this.state.region){
       console.log("region")
       console.log(this.state.region)
@@ -290,7 +296,9 @@ export default class UserMap extends Component{
     }
     else{
       console.log("region not initialized yet")
-    }
+    }*/
+
+
     return (
     
     <View style={{ flex: 1 }}>
@@ -339,6 +347,20 @@ export default class UserMap extends Component{
         </Modal>
       </View>
 
+      <View>
+        <Modal isVisible={this.state.isModalVisible === LOCATION_NOT_SET_POP}>       
+          <View style={styles.modalContent}>
+            <Text>Turn on your location settings!</Text>
+            <TouchableOpacity 
+              onPress={() => this.setState({ isModalVisible: null })}>          
+              <View style={styles.button}>
+                <Text>Close</Text>
+              </View>
+            </TouchableOpacity>           
+          </View>
+        </Modal>
+      </View>
+
 
       <MapView style={{ flex: 1 }} 
 
@@ -361,14 +383,12 @@ export default class UserMap extends Component{
                   <Image
                     source={{ uri: ((marker.urlToImage) ? marker.urlToImage : "") }} resizeMode={"cover"}
                     style={{
-                      width: 120, //static for now...
-                      height: 80 
+                      width: 145, //static for now...
+                      height: 110 
                     }}
                   />
                   <Text style={{fontSize:16}} numberOfLines={2}>{marker.title}</Text>
-                  <Text numberOfLines={2}>{marker.description}</Text>
 
-                  
                 </View>
               </MapView.Callout>
           </MapView.Marker>
@@ -479,7 +499,7 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     plainView: {
-      width: 120
+      width: 150
     }
 });
 

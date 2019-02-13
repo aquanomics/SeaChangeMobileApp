@@ -441,7 +441,9 @@ export default class UserMap extends Component{
         showBackdrop={false}
         ref={c => this._panel = c}
         draggableRange={this.props.draggableRange}
-        onDrag={v => this._draggedValue.setValue(v)}>
+        onDrag={v => this._draggedValue.setValue(v)}
+        minimunDistanceThreshold={0.5}
+        >
         <View style={styles.panel}>
           <Icon style={styles.dropup} size={30} name='ios-arrow-dropup' />
 

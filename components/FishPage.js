@@ -6,8 +6,8 @@ import { getSpeciesSearch } from './FishPageComponent/Fish';
 import Species from './FishPageComponent/Species'
 import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/Ionicons';
-const dropdownOptions = [21,67];
-const dropdownOptionsLocation =["Northwest Atlantic","Pacific, Northeast"]
+const dropdownOptions = [21, 67, 18];
+const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
 export default class FishPage extends React.Component {
     constructor(props) {
 	super(props);

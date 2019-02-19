@@ -101,24 +101,24 @@ export default class ArticlesPage extends React.Component {
     }
     
     dropdownHandler = (value) => {
-	//this.fetchNews(value);
-	this.setState({
-	    NewsArticle: [],
-	    refreshing: true,
-	    category: value,
-	    offset: 0,
-	}, () => this.fetchNews(value));	//Need to update the current category being viewed
+
+		this.setState({
+		    NewsArticle: [],
+		    refreshing: true,
+		    category: value,
+		    offset: 0,
+		}, () => this.fetchNews(value));	//Need to update the current category being viewed
     }
 
-    handleRefresh() {
-	this.setState(
-	    {
-		refreshing: true,
-		offset: 0,
-		NewsArticle: [],
-	    },
-	    () => this.fetchNews(this.state.category)
-	);
+    handleRefresh = () => {
+		this.setState(
+		    {
+			refreshing: true,
+			offset: 0,
+			NewsArticle: [],
+		    },
+		    () => this.fetchNews(this.state.category)
+		);
     }
 
     searchSubmitHandler = (forPagination) => {
@@ -301,7 +301,7 @@ export default class ArticlesPage extends React.Component {
 	    		searchListRefreshing={this.state.searchListRefreshing}
 	    		NewsArticle={this.state.NewsArticle}
 	    		refreshing={this.state.refreshing}
-	    		handleRefresh={this.handleRefresh.bind(this)}
+	    		handleRefresh={this.handleRefresh}
 	    		isSearchActive={this.state.isSearchActive}
 	    		navigation={this.props.navigation}
 	    		emptySearchReturned={this.state.emptySearchReturned}
@@ -324,11 +324,12 @@ function DisplayArticles(props) {
 				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
 				keyExtractor={item => item.url}
 				refreshing={props.refreshing}
-				onRefresh={() => props.handleRefresh()}
-        			onEndReached={props.newsHandleFetchMore}
-        			onEndReachedThreshold={0.1}
+				onRefresh={props.handleRefresh}
+        		onEndReached={props.newsHandleFetchMore}
+        		onEndReachedThreshold={0.1}
 				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
-	onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
+				onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
+				onScrollBeginDrag={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
 			/>;
     } else {
 	//when search is active
@@ -337,10 +338,11 @@ function DisplayArticles(props) {
 				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
 				keyExtractor={item => item.url}
 				refreshing={props.searchListRefreshing}
-        			onEndReached={props.searchHandleFetchMore}
-        			onEndReachedThreshold={0.1}
+        		onEndReached={props.searchHandleFetchMore}
+        		onEndReachedThreshold={0.1}
 				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
-	onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
+				onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
+	            onScrollBeginDrag={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
 			/>;
     }
 

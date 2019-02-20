@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 import { NetInfo } from 'react-native';
 import Modal from "react-native-modal";
+import firebase from 'react-native-firebase';
 
 
 const haversine = require('haversine');
@@ -70,7 +71,8 @@ export default class UserMap extends Component{
     };
     this.setSearchParameters(params);
    
-    
+    console.log("Value of firebase.auth().currentUser is below");
+    console.log(firebase.auth().currentUser);
   }
   
   getMinMaxLat = () =>{

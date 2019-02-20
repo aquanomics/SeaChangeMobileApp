@@ -4,16 +4,16 @@ import firebase from 'react-native-firebase';
 
 export default class SignupPage extends Component{
     constructor(props) {
-	super(props);
-	//console.log("Inside constructor of SignupPage. Below is the props passed from the last page");
-	//console.log(this.props.navigation.state.params);
+		super(props);
+		//console.log("Inside constructor of SignupPage. Below is the props passed from the last page");
+		//console.log(this.props.navigation.state.params);
 
-	this.unsubscriber = null;	//this is the listener for authentication. Idk why this isn't in the state, but reference I used did it this way
-	this.state = {
-	    user: null,
-	    email: '',
-	    password: ''
-	};
+		this.unsubscriber = null;	//this is the listener for authentication. Idk why this isn't in the state, but reference I used did it this way
+		this.state = {
+		    user: null,
+		    email: '',
+		    password: ''
+		};
     }
 
     /**
@@ -23,23 +23,23 @@ export default class SignupPage extends Component{
      * (logged out) or an Object (logged in)
      */
     componentDidMount() {
-	this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-	    if(user) {
-		console.log("Inside componentDidMount()'s callback function. Below is the user");
-		console.log(user);
-		console.log("Below is the unsubscriber");
-		console.log(this.unsubscriber);
-		this.setState({'user':user});
-		user.getIdToken().then(function(idToken) {  // <------ Check this line
-		    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
+		this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
+		    if(user) {
+				console.log("Inside componentDidMount()'s callback function. Below is the user");
+				console.log(user);
+				console.log("Below is the unsubscriber");
+				console.log(this.unsubscriber);
+				this.setState({'user':user});
+				user.getIdToken().then(function(idToken) {  // <------ Check this line
+				    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
+				});
+				console.log("Executing navigation switch to new component (UserMap)");
+				this.props.navigation.navigate('Home', { user: user });
+		    } else {
+				console.log('not logged in');
+				this.setState({user: null});
+		    }
 		});
-		console.log("Executing navigation switch to new component (UserMap)");
-		this.props.navigation.navigate('Home', { user: user });
-	    } else {
-		console.log('not logged in');
-		this.setState({user: null});
-	    }
-	});
     }
 
     /**
@@ -47,30 +47,30 @@ export default class SignupPage extends Component{
      * when the component unmounts.
      */
     componentWillUnmount() {
-	console.log("Inside componentWillUnmount()");
-	if (this.unsubscriber) {
-	    this.unsubscriber();
-	}
+		console.log("Inside componentWillUnmount()");
+		if (this.unsubscriber) {
+		    this.unsubscriber();
+		}
     }
 
     onPressSignUp = () => {
-	console.log('Sign up pressed');
+		console.log('Sign up pressed');
 
-	//check strings are not empty. Firebase function will give an error saying string is empty, but it won't tell you which string (id or pw) is empty
-	//so check it ourselves and give the message
-	if(this.state.email === "") {
-	    Alert.alert("Error: Email field is empty");
-	}
-	else if(this.state.password === "") {
-	    Alert.alert("Error: Password field is empty");
-	}
+		//check strings are not empty. Firebase function will give an error saying string is empty, but it won't tell you which string (id or pw) is empty
+		//so check it ourselves and give the message
+		if(this.state.email === "") {
+		    Alert.alert("Error: Email field is empty");
+		}
+		else if(this.state.password === "") {
+		    Alert.alert("Error: Password field is empty");
+		}
         else {
-	    console.log("Got inside the last else statement inside onPressSignup()");
-	    firebase
-		.auth()
-		.createUserWithEmailAndPassword(this.state.email, this.state.password)
-		.then(() => console.log("successfully signed up"))
-		.catch(e => console.log(e.message));
+		    console.log("Got inside the last else statement inside onPressSignup()");
+		    firebase
+			.auth()
+			.createUserWithEmailAndPassword(this.state.email, this.state.password)
+			.then(() => console.log("successfully signed up"))
+			.catch(e => console.log(e.message));
         }
     }
     

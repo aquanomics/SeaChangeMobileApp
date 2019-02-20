@@ -4,6 +4,7 @@ import { Header } from 'react-native-elements';
 import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
+import firebase from 'react-native-firebase';
 
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
@@ -17,37 +18,38 @@ export default class ArticlesPage extends React.Component {
     _didFocusSubscription;
     _willBlurSubscription;
 
+	//gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
     static navigationOptions = ({ navigation }) => ({
-	header: null,	//gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+		header: null,
     });
 
     constructor(props) {
-	super(props);
+		super(props);
 
-	//https://stackoverflow.com/questions/47910127/flatlist-calls-onendreached-when-its-rendered
-	//we ONLY do this for search and not for news because the normal fetch and onEndReached fetch
-	//functions are one and the same.
-	this.searchOnEndReachedCalledDuringMomentum = true;	
-	this.newsOnEndReachedCalledDuringMomentum = true;	
+		//https://stackoverflow.com/questions/47910127/flatlist-calls-onendreached-when-its-rendered
+		//we ONLY do this for search and not for news because the normal fetch and onEndReached fetch
+		//functions are one and the same.
+		this.searchOnEndReachedCalledDuringMomentum = true;	
+		this.newsOnEndReachedCalledDuringMomentum = true;	
 
-	this.state = {
-	    NewsArticle: [],			//for news FlatList
-	    SearchArticle: [],			//for search FlatList
-	    refreshing: true,			//for news FlatList
-	    searchListRefreshing: false,	//for search FlatList
-	    category: "TopStories",		//assigned TopStories as default. Changed by using dropdown list in the header
-	    searchText: '',
-	    searchSubmitted: false,		//to keep track of whether search has been submitted at least once during the search session
-	    					//This is used in the logic so that when you first try to search something before submission,
-	    					//the empty list doesn't show up
-	    lastSearchText: '',			//This is used for searchList during pagination because if the list is at the end and if we were
-	    					//to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
-	    isSearchActive: false,        	//state for search transition
-	    emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
-						//This is used in the logic to differentiate whether to say No Internet or No Results
-	    offset: 0,				//used for offsetting for pagination FOR NewsArticle[]	
-	    searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]	
-	};		
+		this.state = {
+		    NewsArticle: [],			//for news FlatList
+		    SearchArticle: [],			//for search FlatList
+		    refreshing: true,			//for news FlatList
+		    searchListRefreshing: false,	//for search FlatList
+		    category: "TopStories",		//assigned TopStories as default. Changed by using dropdown list in the header
+		    searchText: '',
+		    searchSubmitted: false,		//to keep track of whether search has been submitted at least once during the search session
+		    					//This is used in the logic so that when you first try to search something before submission,
+		    					//the empty list doesn't show up
+		    lastSearchText: '',			//This is used for searchList during pagination because if the list is at the end and if we were
+		    					//to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
+		    isSearchActive: false,        	//state for search transition
+		    emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
+							//This is used in the logic to differentiate whether to say No Internet or No Results
+		    offset: 0,				//used for offsetting for pagination FOR NewsArticle[]	
+		    searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]	
+		};		
 
         this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
             BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
@@ -55,16 +57,17 @@ export default class ArticlesPage extends React.Component {
     }
 
     componentDidMount() {
-	this.fetchNews(this.state.category);	//fetch news for the first time
-        this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
-            BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
-        );
-
+		this.fetchNews(this.state.category);	//fetch news for the first time
+	    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+	        BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+	    );
+	    console.log("Value of firebase.auth().currentUser is below");
+	    console.log(firebase.auth().currentUser);
     }
     
     componentWillUnmount() {
-	this._didFocusSubscription && this._didFocusSubscription.remove();
-	this._willBlurSubscription && this._willBlurSubscription.remove();
+		this._didFocusSubscription && this._didFocusSubscription.remove();
+		this._willBlurSubscription && this._willBlurSubscription.remove();
     }
 
     onBackButtonPressAndroid = () => {
@@ -307,8 +310,8 @@ export default class ArticlesPage extends React.Component {
 	    		emptySearchReturned={this.state.emptySearchReturned}
 	    		newsHandleFetchMore={this.newsHandleFetchMore}		//no need to bind if use arrow functions
 	    		searchHandleFetchMore={this.searchHandleFetchMore}	//no need to bind if use arrow functions
-	    searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
-	    newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
+	    		searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
+	    		newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
 	    	/>
 	    </SafeAreaView>
 	);

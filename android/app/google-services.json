@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "336772073463",
-    "firebase_url": "https://seachange-b8e05.firebaseio.com",
-    "project_id": "seachange-b8e05",
-    "storage_bucket": "seachange-b8e05.appspot.com"
+    "project_number": "84227324308",
+    "firebase_url": "https://capstoneteam28project.firebaseio.com",
+    "project_id": "capstoneteam28project",
+    "storage_bucket": "capstoneteam28project.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:336772073463:android:c0fbe3e92cc8a3fc",
+        "mobilesdk_app_id": "1:84227324308:android:c0fbe3e92cc8a3fc",
         "android_client_info": {
           "package_name": "com.seachangemobileapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "336772073463-e4h87pruoofribia62ed2la318umco0p.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.seachangemobileapp",
-            "certificate_hash": "8f82a28885f06ee1ab33b9a46ce82afd3cd32112"
-          }
-        },
-        {
-          "client_id": "336772073463-rc9nbfo3211q2a7me1ihbvrq34vi5r9p.apps.googleusercontent.com",
+          "client_id": "84227324308-7c4atv9ih2i9665ehul78kcmhkbspj92.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBNR0W1TvyZ2ETRWntCXxd6WXj9fGaXzkQ"
+          "current_key": "AIzaSyCvdVoOCdG3aqVIsMgI1uXs1ujLkziPDWk"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "336772073463-rc9nbfo3211q2a7me1ihbvrq34vi5r9p.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

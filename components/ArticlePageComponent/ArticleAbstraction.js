@@ -26,94 +26,94 @@ export default class ArticleAbstraction extends React.Component {
     }
 
     render() {
-	//const time = moment(this.props.article.published_at || moment.now()).fromNow();
-	const defaultImg = 'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
-//	coordinate={{latitude: 37.78825,
-//		     longitude: -122.4324}}
-	const articleObject = this.props.navigation.getParam('articleObject', {});
+		//const time = moment(this.props.article.published_at || moment.now()).fromNow();
+		const defaultImg = 'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
+	//	coordinate={{latitude: 37.78825,
+	//		     longitude: -122.4324}}
+		const articleObject = this.props.navigation.getParam('articleObject', {});
 
-	if (!articleObject.lat || !articleObject["lng"]) {
-	return (
-	    <ScrollView style={styles.container}>
-			<View style={styles.imageContainer}>
-				<ResizedImage
-					source={{uri: articleObject.urlToImage || defaultImg}}
-					margin={14}
-				/>
-			</View>
+		if (!articleObject.lat || !articleObject["lng"]) {
+			return (
+			    <ScrollView style={styles.container}>
+					<View style={styles.imageContainer}>
+						<ResizedImage
+							source={{uri: articleObject.urlToImage || defaultImg}}
+							margin={14}
+						/>
+					</View>
 
-			<View style={styles.titleContainer}>
-				<Text style={styles.title}> {articleObject.title} </Text>
-			</View>
+					<View style={styles.titleContainer}>
+						<Text style={styles.title}> {articleObject.title} </Text>
+					</View>
 
-			<View style={styles.summaryContainer}>
-				<Text style={styles.summary}> {articleObject.description} </Text>
-			</View>
+					<View style={styles.summaryContainer}>
+						<Text style={styles.summary}> {articleObject.description} </Text>
+					</View>
 
-			<View style={styles.buttonContainer}>
-					<RoundButton
-                    style = {styles.button}
-						onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
-                    type="primary"
-                    shape="rectangle"
-                    backgroundColors={['#0099cc', '#0099cc']}
-                    gradientStart={{ x: 0.5, y: 1 }}
-                    gradientEnd={{ x: 1, y: 1 }}
-            					text="See Full Article"
-					/>
-			</View>
-        </ScrollView>
-	);
-	} else {
-	return (
-	    <ScrollView style={styles.container}>
-			<View style={styles.imageContainer}>
-				<ResizedImage
-						source={{uri: articleObject.urlToImage || defaultImg}}
-					margin={14}
-				/>
-			</View>
+					<View style={styles.buttonContainer}>
+						<RoundButton
+	                    style = {styles.button}
+							onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
+	                    type="primary"
+	                    shape="rectangle"
+	                    backgroundColors={['#0099cc', '#0099cc']}
+	                    gradientStart={{ x: 0.5, y: 1 }}
+	                    gradientEnd={{ x: 1, y: 1 }}
+	            					text="See Full Article"
+						/>
+					</View>
+		        </ScrollView>
+			);
+		} else {
+			return (
+			    <ScrollView style={styles.container}>
+					<View style={styles.imageContainer}>
+						<ResizedImage
+							source={{uri: articleObject.urlToImage || defaultImg}}
+							margin={14}
+						/>
+					</View>
 
-			<View style={styles.titleContainer}>
-				<Text style={styles.title}> {articleObject.title} </Text>
-			</View>
+					<View style={styles.titleContainer}>
+						<Text style={styles.title}> {articleObject.title} </Text>
+					</View>
 
-			<View style={styles.summaryContainer}>
-				<Text style={styles.summary}> {articleObject.description} </Text>
-			</View>
+					<View style={styles.summaryContainer}>
+						<Text style={styles.summary}> {articleObject.description} </Text>
+					</View>
 
-			<View style={styles.buttonContainer}>
-					<RoundButton
-                    style = {styles.button}
-						onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
-            					text="See Full Article"
-                    backgroundColors={['#0099cc', '#0099cc']}
-                    gradientStart={{ x: 0.5, y: 1 }}
-                    gradientEnd={{ x: 1, y: 1 }}
-					/>
-			</View>
+					<View style={styles.buttonContainer}>
+							<RoundButton
+		                    style = {styles.button}
+							onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
+        					text="See Full Article"
+		                    backgroundColors={['#0099cc', '#0099cc']}
+		                    gradientStart={{ x: 0.5, y: 1 }}
+		                    gradientEnd={{ x: 1, y: 1 }}
+							/>
+					</View>
 
-			<View style={styles.mapContainer}>
-				<MapView style={StyleSheet.absoluteFillObject} 
-					initialRegion={{
-						latitude: articleObject.lat,
-						longitude: articleObject["lng"],
-					latitudeDelta: 0.0922,
-					longitudeDelta: 0.0421,
-					}}
-				>
-					<MapView.Marker
-					coordinate={{latitude: articleObject.lat,
-					longitude: articleObject["lng"]}}
-					title={"Article Location"}
-					description={"..."}
-					/>
-				</MapView>
-		
-			</View>
-        </ScrollView>
-	);
-	}
+					<View style={styles.mapContainer}>
+						<MapView style={StyleSheet.absoluteFillObject} 
+							initialRegion={{
+								latitude: articleObject.lat,
+								longitude: articleObject["lng"],
+								latitudeDelta: 0.0922,
+								longitudeDelta: 0.0421,
+							}}
+						>
+							<MapView.Marker
+							coordinate={{latitude: articleObject.lat,
+							longitude: articleObject["lng"]}}
+							title={"Article Location"}
+							description={"..."}
+							/>
+						</MapView>
+				
+					</View>
+		        </ScrollView>
+			);
+		}
     }
 }
 

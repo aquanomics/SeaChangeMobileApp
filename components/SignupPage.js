@@ -1,8 +1,14 @@
 import React, {Component} from 'react';
-import {View,Text, TextInput, StyleSheet, Button } from "react-native";
+import {View,Text, TextInput, StyleSheet, Button, Alert} from "react-native";
+import { RoundButton } from 'react-native-button-component';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 import firebase from 'react-native-firebase';
 
 export default class SignupPage extends Component{
+	static navigationOptions = {
+        title: 'Sign Up',
+    };
+
     constructor(props) {
 		super(props);
 		//console.log("Inside constructor of SignupPage. Below is the props passed from the last page");
@@ -25,7 +31,7 @@ export default class SignupPage extends Component{
     componentDidMount() {
 		this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
 		    if(user) {
-				console.log("Inside componentDidMount()'s callback function. Below is the user");
+				console.log("Inside componentDidMount()'s callback function of SignUpPage. Below is the user");
 				console.log(user);
 				console.log("Below is the unsubscriber");
 				console.log(this.unsubscriber);
@@ -33,8 +39,8 @@ export default class SignupPage extends Component{
 				user.getIdToken().then(function(idToken) {  // <------ Check this line
 				    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
 				});
-				console.log("Executing navigation switch to new component (UserMap)");
-				this.props.navigation.navigate('Home', { user: user });
+				console.log("Going back to the Settings page");
+				this.props.navigation.goBack();
 		    } else {
 				console.log('not logged in');
 				this.setState({user: null});
@@ -47,7 +53,7 @@ export default class SignupPage extends Component{
      * when the component unmounts.
      */
     componentWillUnmount() {
-		console.log("Inside componentWillUnmount()");
+		console.log("Inside componentWillUnmount() of SignUpPage");
 		if (this.unsubscriber) {
 		    this.unsubscriber();
 		}
@@ -70,30 +76,39 @@ export default class SignupPage extends Component{
 			.auth()
 			.createUserWithEmailAndPassword(this.state.email, this.state.password)
 			.then(() => console.log("successfully signed up"))
-			.catch(e => console.log(e.message));
+			.catch(e => {
+				console.log(e.message);
+				Alert.alert(e.message);
+			});
         }
     }
     
     render(){
         return (
-	    <View style={styles.container}>
-		<Text>Testing</Text>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"email":text})}
-		    placeholder={'email'}
-		/>
-		<TextInput
-		    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-		    onChangeText={text => this.setState({"password":text})}
-		    placeholder={'password'}
-		/>
-		<Button
-		    onPress={this.onPressSignUp}
-		    title="SignUp"
-		    color="#841584"
-		/>
-	    </View>
+		    <View style={styles.container}>
+				<Text style={styles.text}>Please enter the necessary information in order to sign up.</Text>
+				<TextInput
+				    style={styles.textInput}
+				    onChangeText={text => this.setState({"email": text})}
+				    placeholder={'email'}
+				    keyboardType="email-address"
+				/>
+				<TextInput
+				    style={styles.textInput}
+				    onChangeText={text => this.setState({"password": text})}
+				    placeholder={'password'}
+				    secureTextEntry={true}
+				/>
+				<RoundButton 
+                    style = {styles.button}
+                    type="primary"
+                    text="Sign Up"
+                    textStyle= {styles.buttonTextFont}
+                    backgroundColors={['#2193b0', '#6dd5ed']}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+                    onPress={this.onPressSignUp} />
+		    </View>
         );
     }
 }
@@ -103,7 +118,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    //	backgroundColor: '#F5FCFF',
   },
   welcome: {
     fontSize: 20,
@@ -115,4 +130,22 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  textInput: {
+	height: 40,
+	width: 200, 
+	borderColor: 'gray', 
+	borderWidth: 1,
+	marginTop: 4,
+  },
+  button: {
+	//margin: 10,
+	height: 50,
+	width: 150,
+	marginTop: 8,
+	marginLeft: 6,
+	marginRight: 6,
+  },
+  text: {
+  	textAlign: 'center',
+  }
 });

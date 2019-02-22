@@ -370,75 +370,75 @@ function DisplayEmptyList(props) {
 
 const styles = StyleSheet.create({
     container: {
-	flex: 1,
-	justifyContent: 'center',
-	alignItems: 'center',
-	backgroundColor: '#F5FCFF',
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#F5FCFF',
     },
     welcome: {
-	fontSize: 20,
-	textAlign: 'center',
-	margin: 10,
+		fontSize: 20,
+		textAlign: 'center',
+		margin: 10,
     },
     instructions: {
-	textAlign: 'center',
-	color: '#333333',
-	marginBottom: 5,
+		textAlign: 'center',
+		color: '#333333',
+		marginBottom: 5,
     },
     myContainer: {
-	flex: 1,
-	//paddingTop: Constants.statusBarHeight,
+		flex: 1,
+		//paddingTop: Constants.statusBarHeight,
     },
     headerTitleContainer: {
-	flex: 1,
-	//flexDirection: 'row',
-	justifyContent: 'center',
-	alignItems: 'center',
-	//backgroundColor: 'blue',	//debugging use
+		flex: 1,
+		//flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		//backgroundColor: 'blue',	//debugging use
     },		//For some reason, flex 1 was required for title to be centered
     dropdown: {
-	//flex direction is column orientation by default
-	//marginHorizontal: 20,		//I don't remember what this did
-	width: 75,
-	height: 30,
-	alignItems: 'center',
-	justifyContent: 'center',	//to make the 
-	//backgroundColor: 'cornflowerblue',
+		//flex direction is column orientation by default
+		//marginHorizontal: 20,		//I don't remember what this did
+		width: 75,
+		height: 30,
+		alignItems: 'center',
+		justifyContent: 'center',	//to make the 
+		//backgroundColor: 'cornflowerblue',
     },
     //this below is for the search bar container
     headerRight: {
-	flex: 1,
-	flexDirection: 'row',
-	alignItems: 'center',
-	margin: 0,
-	//backgroundColor: 'red',	//debugging use
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		margin: 0,
+		//backgroundColor: 'red',	//debugging use
     },
     headerLeft: {
-	flex: 1,
-	flexDirection: 'row',
-	alignItems: 'center',
-	margin: 0,
-	//backgroundColor: 'red',	//debugging use
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		margin: 0,
+		//backgroundColor: 'red',	//debugging use
     },
     headerLeftIcon: {
-	marginLeft: 8,		//need this to position the back icon on left header like the other react-native-navigation headers
-				//because we're not using react-native-navigation headers. We're using react-native-elements header
-	paddingTop: 9,
-	paddingBottom: 9,
-	paddingLeft: 13,
-	paddingRight: 13,
-	borderRadius:100, 	//makes the TouchableHighlight circular
-	//backgroundColor: 'red',	//debugging use
+		marginLeft: 8,		//need this to position the back icon on left header like the other react-native-navigation headers
+					//because we're not using react-native-navigation headers. We're using react-native-elements header
+		paddingTop: 9,
+		paddingBottom: 9,
+		paddingLeft: 13,
+		paddingRight: 13,
+		borderRadius:100, 	//makes the TouchableHighlight circular
+		//backgroundColor: 'red',	//debugging use
     },
     headerSearchIcon: {
-	//flex: 1,
-	//marginLeft: 8,	//WARNING: The padding cannot be all same like headerLeft. The boundary gets messed up
-	paddingTop: 9,
-	paddingBottom: 9,
-	paddingLeft: 13,
-	paddingRight: 13,
-	borderRadius:100, 	//makes the TouchableHighlight circular
-	alignItems: 'center',
-	//backgroundColor: 'red',	//debugging use
+		//flex: 1,
+		//marginLeft: 8,	//WARNING: The padding cannot be all same like headerLeft. The boundary gets messed up
+		paddingTop: 9,
+		paddingBottom: 9,
+		paddingLeft: 13,
+		paddingRight: 13,
+		borderRadius:100, 	//makes the TouchableHighlight circular
+		alignItems: 'center',
+		//backgroundColor: 'red',	//debugging use
     }
 });

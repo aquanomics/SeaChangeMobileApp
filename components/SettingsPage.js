@@ -1,12 +1,16 @@
 import React, {Component} from "react";
 import {Platform, StyleSheet, Text, View, TextInput, Button, Alert} from 'react-native';
+import { RoundButton } from 'react-native-button-component';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 import firebase from 'react-native-firebase';
 
 export default class SettingsPage extends Component{
+    static navigationOptions = {
+        title: 'Settings',
+    };
+
     constructor(props) {
     	super(props);
-    	console.log("Inside constructor of SettingsPage. Below is the props passed from the last page");
-    	console.log(this.props.navigation.state.params);
 
         this.state = {
             user: null,
@@ -85,6 +89,10 @@ export default class SettingsPage extends Component{
     	firebase.auth().signOut();
     }
 
+    onPressSignUp = () => {
+        this.props.navigation.navigate('Signup', {});
+    }
+
     emailTextHandler = (text) => {
         this.setState({"email":text});
     }
@@ -95,10 +103,11 @@ export default class SettingsPage extends Component{
     
     render(){
         return (
-            <View style={styles.placeholder}>
+            <View style={styles.myContainer}>
                 <DisplayAccountInfo
                     user={this.state.user}
                     onPressLogIn={this.onPressLogIn}
+                    onPressSignUp={this.onPressSignUp}
                     onPressSignOut={this.onPressSignOut}
                     emailTextHandler={this.emailTextHandler}
                     passwordTextHandler={this.passwordTextHandler}
@@ -120,35 +129,58 @@ function DisplayAccountInfo(props) {
     //if user is not signed in yet
     if(!props.user) {
         return (
-            <View>
-                <Text>Settings Screen</Text>
+            <View style={styles.accountInfoContainer}>
+                <Text>You don't seem to be logged in.</Text>
                 <TextInput
-                    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+                    style={styles.textInput}
                     onChangeText={props.emailTextHandler}
                     placeholder={'email'}
+                    keyboardType="email-address"
                 />
                 <TextInput
-                    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+                    style={styles.textInput}
                     onChangeText={props.passwordTextHandler}
                     placeholder={'password'}
+                    secureTextEntry={true}
                 />
-                <Button
-                    onPress={props.onPressLogIn}
-                    title="Login"
-                    color="#841584"
-                />
+                <View style={styles.buttonsContainer}>
+                    <RoundButton 
+                        style = {styles.button}
+                        type="primary"
+                        text="Login"
+                        textStyle= {styles.buttonTextFont}
+                        backgroundColors={['#2193b0', '#6dd5ed']}
+                        gradientStart={{ x: 0.5, y: 1 }}
+                        gradientEnd={{ x: 1, y: 1 }}
+                        onPress={props.onPressLogIn} />
+                    <RoundButton 
+                        style = {styles.button}
+                        type="primary"
+                        text="Sign Up"
+                        textStyle= {styles.buttonTextFont}
+                        backgroundColors={['#2193b0', '#6dd5ed']}
+                        gradientStart={{ x: 0.5, y: 1 }}
+                        gradientEnd={{ x: 1, y: 1 }}
+                        onPress={props.onPressSignUp} />
+                </View>
             </View>
         );
 
     } else {    //else, user must be signed in
         return (
-            <View>
-                <Text>User signed in!</Text>
-                <Button
-                    onPress={props.onPressSignOut}
-                    title="SignOut"
-                    color="#841584"
-                />
+            <View style={styles.accountInfoContainer}>
+                <Text>User is signed in!</Text>
+                <View style={styles.buttonsContainer}>
+                    <RoundButton 
+                            style = {styles.signOutButton}
+                            type="primary"
+                            text="Sign Out"
+                            textStyle= {styles.buttonTextFont}
+                            backgroundColors={['#2193b0', '#6dd5ed']}
+                            gradientStart={{ x: 0.5, y: 1 }}
+                            gradientEnd={{ x: 1, y: 1 }}
+                            onPress={props.onPressSignOut} />
+                </View>
             </View>
         );
     }
@@ -160,4 +192,43 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         margin: 10,
     },
+    myContainer: {
+        flex: 1,
+    },
+    accountInfoContainer: {
+        flex: 1,
+        //flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        //backgroundColor: 'blue',  //debugging use
+    },
+    textInput: {
+        height: 40,
+        width: 200, 
+        borderColor: 'gray', 
+        borderWidth: 1,
+        marginTop: 4,
+    },
+    button: {
+        //margin: 10,
+        height: 50,
+        width: 150,
+        marginLeft: 6,
+        marginRight: 6,
+    },
+    signOutButton: {
+        height: 50,
+        width: 300,
+    },
+    buttonTextFont: {
+        ...material.button,
+        ...systemWeights.light,
+        color: materialColors.whitePrimary,
+        fontSize: 17,
+        textAlign: 'center',
+    },
+    buttonsContainer: {
+        marginTop: 8,
+        flexDirection: 'row',
+    }
 });

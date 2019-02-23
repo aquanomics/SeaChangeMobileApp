@@ -30,6 +30,8 @@ export default class SettingsPage extends Component{
             if(user) {
                 console.log("Inside componentDidMount()'s AuthStateChanged callback function. Below is the user");
                 console.log(user);
+                console.log("Testing firebase.auth().currentUser.uid");
+                console.log(firebase.auth().currentUser.uid);
                 console.log("Below is the unsubscriber");
                 console.log(this.unsubscriber);
 

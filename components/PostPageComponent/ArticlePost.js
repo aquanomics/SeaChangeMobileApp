@@ -86,9 +86,13 @@ export default class ArticlePost extends Component{
         else {
             console.log(JSON.stringify(this.state.param));
             this.setState({noUrlError: false, invalidUrl: false});
-            fetch(URL+`?idToken=${this.state.authToken}`, {
+            fetch(URL, {
                 method: "POST",
-                body: JSON.stringify(this.state.param),
+                body: JSON.stringify({
+                    url: this.state.param.url,
+                    description: this.state.param.description,
+                    idToken: this.state.authToken,
+                }),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -185,29 +189,29 @@ export default class ArticlePost extends Component{
                 onChangeText = {this.handleDescriptionInput}
             />
             <RoundButton  
-                    style = {styles.button}        
-                    buttonState={this.state.buttonUploadState}
-                    gradientStart={{ x: 0.5, y: 1 }}
-                    gradientEnd={{ x: 1, y: 1 }}
-                    textStyle= {styles.buttonTextFont}
-                    states={{
-                        upload: {
-                        text: 'Upload Article',
-                        backgroundColors: ['#2193b0', '#6dd5ed'],
-                        onPress: () => {
-                            this.setState({ buttonUploadState: 'uploading' });
-                            this.handleArticleUpload();
-                        },
-                        },
-                        uploading: {
-                        text: 'Uploading Article...',
-                        gradientStart: { x: 0.8, y: 1 },
-                        gradientEnd: { x: 1, y: 1 },
-                        backgroundColors: ['#FF416C', '#FF4B2B'],
-                        spinner: true,
-                        onPress: () => {},
-                        },
-                    }}/>
+                style = {styles.button}        
+                buttonState={this.state.buttonUploadState}
+                gradientStart={{ x: 0.5, y: 1 }}
+                gradientEnd={{ x: 1, y: 1 }}
+                textStyle= {styles.buttonTextFont}
+                states={{
+                    upload: {
+                    text: 'Upload Article',
+                    backgroundColors: ['#2193b0', '#6dd5ed'],
+                    onPress: () => {
+                        this.setState({ buttonUploadState: 'uploading' });
+                        this.handleArticleUpload();
+                    },
+                    },
+                    uploading: {
+                    text: 'Uploading Article...',
+                    gradientStart: { x: 0.8, y: 1 },
+                    gradientEnd: { x: 1, y: 1 },
+                    backgroundColors: ['#FF416C', '#FF4B2B'],
+                    spinner: true,
+                    onPress: () => {},
+                    },
+                }}/>
         </View>
         );
     }

@@ -25,9 +25,9 @@ export async function getArticleSearch(search, offset, limit) {
 
     //Warning: It says NewsArticle because I didn't change backend to pass back the array as SearchArticle
     if (result.NewsArticle === undefined || (result.NewsArticle.length == 0 && offset == 0) )
-	return {SearchArticle: result.NewsArticle, emptySearchReturned: true};
+	   return {SearchArticle: result.NewsArticle, emptySearchReturned: true};
     else
-	return {SearchArticle: result.NewsArticle, emptySearchReturned: false};
+	   return {SearchArticle: result.NewsArticle, emptySearchReturned: false};
 }
 
 //when doing the above, check (length is 0 AND offset != 0), if so then return empty list

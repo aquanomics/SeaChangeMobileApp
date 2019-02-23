@@ -66,7 +66,7 @@ export default class PostPage extends Component{
                 dialogAnimation={new ScaleAnimation()}
                 dialogTitle={
                     <DialogTitle
-                        title="Not Logged In D: You must be logged in in order to use this functionality"
+                        title={`Not Logged In D:\nYou must be logged in in order to use this functionality`}
                         hasTitleBar={false}
                     />}
                 footer={

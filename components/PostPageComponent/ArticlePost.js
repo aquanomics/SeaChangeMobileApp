@@ -5,6 +5,8 @@ import { Fumi } from 'react-native-textinput-effects';
 import { RoundButton } from 'react-native-button-component';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import { material, materialColors, systemWeights } from 'react-native-typography';
+import firebase from 'react-native-firebase';
+
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-article/article-upload";
 
@@ -12,6 +14,40 @@ export default class ArticlePost extends Component{
     constructor(props) {
         super(props);
     };
+
+    /**
+     * When the App component mounts, we listen for any authentication
+     * state changes in Firebase.
+     * Once subscribed, the 'user' parameter will either be null 
+     * (logged out) or an Object (logged in)
+     */
+    componentDidMount() {
+        console.log("Inside componentDidMount of ArticlePostPage");
+        var that = this;
+        this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
+            if(user) {
+                this.setState({'user':user});
+                user.getIdToken().then(function(idToken) {  // <------ Check this line
+                    console.log("Inside ArticlePost.js and the authToken is: " + idToken); // It shows the Firebase token now
+                    that.setState({'authToken': idToken}, () => console.log(that.state));
+                });
+            } else {
+                console.log('not logged in');
+                this.setState({user: null});
+            }
+        });
+    }
+
+    /**
+     * Don't forget to stop listening for authentication state changes
+     * when the component unmounts.
+     */
+    componentWillUnmount() {
+        console.log("Inside componentWillUnmount() of ArticlePostPage");
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
+    }
 
     state = {
         param: {
@@ -50,7 +86,7 @@ export default class ArticlePost extends Component{
         else {
             console.log(JSON.stringify(this.state.param));
             this.setState({noUrlError: false, invalidUrl: false});
-            fetch(URL, {
+            fetch(URL+`?idToken=${this.state.authToken}`, {
                 method: "POST",
                 body: JSON.stringify(this.state.param),
                 headers: {
@@ -58,9 +94,15 @@ export default class ArticlePost extends Component{
                 }
               })
                 .then(response => {
-                  this.setState({ buttonUploadState: 'upload', successUploadDialog: true });
+                    if(response.status != 200) {
+                        console.log(`Internal server error! Error code ${response.status}`);
+                        //this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: error });
+                        this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: "internal server error" });
+                    } else {
+                        this.setState({ buttonUploadState: 'upload', successUploadDialog: true });
+                    }
                 })
-                .catch(error => {
+                .catch(error => {   //external server error
                   console.log(error);
                   this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: error });
                 });
@@ -90,7 +132,7 @@ export default class ArticlePost extends Component{
                         <DialogButton
                             text="Continue"
                             onPress={() => {this.setState({ successUploadDialog: false });}}
-                            />
+                        />
                     </DialogFooter>}     
             />
             <Dialog

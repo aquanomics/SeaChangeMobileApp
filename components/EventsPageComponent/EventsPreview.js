@@ -1,5 +1,6 @@
 import React from 'react';
 import { withNavigation } from 'react-navigation';
+import { Card, Divider } from 'react-native-elements';
 import { Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight} from 'react-native';
 class EventsPreview extends React.Component {
 
@@ -33,22 +34,26 @@ class EventsPreview extends React.Component {
       lat,
       lng
     } = this.props.eventspreview;
+    const { noteStyle, featuredTitleStyle } = styles;
     const defaultImg =
-      'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
+      'https://www.serebii.net/magikarpjump/events/3.jpg';
   
     return (
         <Card
           featuredTitle={name}
           featuredTitleStyle={featuredTitleStyle}
           image={{
-            uri: urlToImage || defaultImg
+            uri: defaultImg
           }}
         >
-            <Text style={{ marginBottom: 15 }}> {description} </Text>
+            <Text style={{ marginBottom: 20 }}> {description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 10 }}> {startDate + "-" + endDate} </Text>
-            <Text style={{ marginBottom: 5 }}> {location +"," + city} </Text>
+            <Text style={{ marginBottom: 15 }}> {"Time:\n"+startDate.substring(0, 10) + "   -   " + endDate.substring(0, 10)} </Text>
+            </View>
+            <Divider style={{ backgroundColor: '#dfe6e9' }} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ marginBottom: 10 }}> {"Location:\n"+ location +"," + city} </Text>
             </View>
 
         </Card>
@@ -56,69 +61,23 @@ class EventsPreview extends React.Component {
 }
 }
 
-const styles = StyleSheet.create({
-  row: {
+const styles = {
+  noteStyle: {
+    margin: 5,
+    fontStyle: 'italic',
+    color: '#b2bec3',
+    fontSize: 10
+  },
+  button: {
     alignItems: 'center',
-    backgroundColor: '#f9f5ed',
-    flexDirection: 'row',
-    borderStyle: 'solid',
-    borderBottomColor: '#dddddd',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderRadius: 15,
-    elevation: 2,
-    paddingTop: 15,
-    paddingBottom: 15,
-    paddingLeft: 18,
-    paddingRight: 16,
-    marginLeft: 14,
-    marginRight: 14,
-    marginTop: 0,
-    marginBottom: 6,
-
+    backgroundColor: '#DDDDDD',
+    padding: 10
   },
-  imageContainer: {
-    width: 150,
-    height: 100,
-    borderRadius: 35,
-    borderWidth: 1,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  noImage: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noImageText: {
-    color: '#aaaaaa',
-  },
-  petImage: {
-    width: 90,
-    height: 90,
-  },
-  fishName: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  petBreed: {
-    fontSize: 13,
-  },
-  petDescription: {
-    fontSize: 12,
-    marginTop: 5,
-    marginBottom: 5,
-  },
-  petLocation: {
-    fontSize: 12,
-    color: 'gray',
-  },
-   featuredTitleStyle: {
+  featuredTitleStyle: {
     marginHorizontal: 5,
     textShadowColor: '#00000f',
     textShadowOffset: { width: 3, height: 3 },
     textShadowRadius: 3
-  },
-});
+  }
+};
 export default withNavigation(EventsPreview);

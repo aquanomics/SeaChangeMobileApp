@@ -6,8 +6,8 @@ import EventsPreview from './EventsPageComponent/EventsPreview';   //Component u
 import Icon from 'react-native-vector-icons/Ionicons';
 import ModalDropdown from 'react-native-modal-dropdown';
 
-const dropdownOptions = [21, 67, 18];
-const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
+const dropdownOptions = [];
+//const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
 export default class EventsPage extends React.Component {
     constructor(props) {
   super(props);
@@ -36,11 +36,12 @@ export default class EventsPage extends React.Component {
                 this.keyword ='';
                 this.wordDropDown = "Filter";
                 this.searchOnEndReachedCalledDuringMomentum = true; 
+                this.filterCity = [];
 
   }
 
   static navigationOptions = {
-    title: 'Fishes',
+    title: 'Events',
   };
 
   toggleSearchState = () => {
@@ -61,6 +62,7 @@ export default class EventsPage extends React.Component {
   this.fetchCities(this.state.category);
   this.fetchEvents(this.state.category);
   this.props.navigation.setParams({ fetchEvents: this.Event });
+  //console.log(this.filterCity);
   }
 
   fetchEvents = () => {
@@ -70,7 +72,7 @@ export default class EventsPage extends React.Component {
   }
   fetchCities = () => {
     getCities()
-        .then(response => {this.setState({ CitiesList:[...this.state.CitiesList, ...response], refreshing: false});})
+        .then(response => {this.setState({ CitiesList:[...this.state.CitiesList, ...response], refreshing: false});for(var x in this.state.CitiesList){dropdownOptions.push(this.state.CitiesList[x]["city"])};console.log(dropdownOptions)})
         .catch(() => this.setState({CitiesList: [], refreshing: false }));
   }
 
@@ -88,13 +90,13 @@ export default class EventsPage extends React.Component {
 
   dropdownHandler = (value) => {
     //this.fetchNews(value);
-    this.wordDropDown = dropdownOptionsLocation[value];
+    this.wordDropDown = dropdownOptions[value];
     this.city = dropdownOptions[value];
     this.offset = 0;
     this.setState({
-        data: [],
+        EventsList: [],
         refreshing: true
-    }, () => this.fetchCities(this.offset,this.city));  //Need to update the current category being viewed
+    }, () => this.fetchEvents(this.city));  //Need to update the current category being viewed
   }
 
   //WARNING: currently does not support pagination
@@ -117,7 +119,7 @@ export default class EventsPage extends React.Component {
 
   handleRefresh() {
       this.offset = 0;
-      this.setState({refreshing: true, data : [], }, () => this.fetchEvents(this.offset,this.city));
+      this.setState({refreshing: true, EventsList : [], }, () => this.fetchEvents(this.offset,this.city));
   }
 
   handleFetchMore() {
@@ -186,7 +188,7 @@ leftComponentJSX = () => {
             <ModalDropdown
               style={styles.dropdown}
               defaultValue={this.wordDropDown}
-              options={this.state.CitiesList}
+              options={dropdownOptions}
               //WARNING: context is lost within onSelect
               //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
               onSelect={(idx, value) => this.dropdownHandler(idx)}//using getParam is the way to get around "this" context being lost
@@ -225,8 +227,7 @@ leftComponentJSX = () => {
           rightComponent={this.rightComponentJSX()}
       />
       <DisplayEvents 
-        data={this.state.EventsList} 
-        data={this.state.CitiesList} 
+        EventsList={this.state.EventsList} 
         search={this.state.search}
         refreshing={this.state.refreshing} 
         handleRefresh={this.handleRefresh.bind(this)} 
@@ -256,8 +257,9 @@ function DisplayEvents(props) {
             //keyExtractor={item => item.SpecCode.toString()}
             refreshing={props.refreshing}
             onRefresh={props.handleRefresh}
-            onEndReached={props.handleFetchMore}
+           // onEndReached={props.handleFetchMore}
             onEndThreshold={0.0}
+            enableEmptySections={true}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
           />;
     } else {
@@ -270,6 +272,7 @@ function DisplayEvents(props) {
             onRefresh={props.handleSearchRefresh}
             onEndReached={props.handleSearchFetchMore}
             onEndThreshold={0.01}
+            enableEmptySections={true}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
             onMomentumScrollBegin={() => props.onScrollMotionBeginHandler()}
             onScrollBeginDrag={() => props.onScrollMotionBeginHandler()}

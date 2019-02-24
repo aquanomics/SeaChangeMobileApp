@@ -1,39 +1,25 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, TextInput, Button, Alert} from 'react-native';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Sae } from 'react-native-textinput-effects';
 import firebase from 'react-native-firebase';
 
-const instructions = Platform.select({
-    ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-    android:
-	'Double tap R on your keyboard to reload,\n' +
-	'Shake or press menu button for dev menu',
-});
-
-type Props = {};
-export default class LoginPage extends Component<Props> {
+export default class LoginPage extends Component {
     static navigationOptions = {
 		header: null
     };
 
     constructor(props) {
-		super(props);
-		console.log("Inside constructor of Login. Below is the props passed to it");
-		console.log(props);
+			super(props);
+			console.log("Inside constructor of Login. Below is the props passed to it");
+			console.log(props);
 
-		this.unsubscriber = null;	//this is the listener for authentication. Idk why this isn't in the state, but reference I used did it this way
-		this.state = {
-		    user: null,
-		    email: '',
-		    password: ''
-		};
+			this.unsubscriber = null;	//this is the listener for authentication. Idk why this isn't in the state, but reference I used did it this way
+			this.state = {
+					user: null,
+					email: '',
+					password: ''
+			};
     }
 
     /**
@@ -42,12 +28,13 @@ export default class LoginPage extends Component<Props> {
      * Once subscribed, the 'user' parameter will either be null 
      * (logged out) or an Object (logged in)
      */
+		//TODO: NEED TO REMOVE console logs.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     componentDidMount() {
 		this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
 		    if(user) {
 				console.log("AuthStateChanged Iiside componentDidMount()'s callback function. Below is the user");
 				console.log(user);
-				console.log("Below is the unsubscriber");
+				console.log("Below is the unsubscribe");
 				console.log(this.unsubscriber);
 				this.setState({'user':user});
 				user.getIdToken().then(function(idToken) {  // <------ Check this line
@@ -67,40 +54,37 @@ export default class LoginPage extends Component<Props> {
      * when the component unmounts.
      */
     componentWillUnmount() {
-		console.log("Inside componentWillUnmount()");
-		if (this.unsubscriber) {
-		    this.unsubscriber();
-		}
+			console.log("Inside componentWillUnmount()");
+			if (this.unsubscriber) {
+					this.unsubscriber();
+			}
     }
 
     onPressLogIn = () => {
-		console.log('Login pressed');
-		console.log("this.state.email is: " + this.state.email);
+			console.log('Login pressed');
+			console.log("this.state.email is: " + this.state.email);
 
-		//check strings are not empty. Firebase function will give an error saying string is empty, but it won't tell you which string (id or pw) is empty
-		//so check it ourselves and give the message
-		if(this.state.email === "") {
-		    Alert.alert("Error: Email field is empty");
-		}
-		else if(this.state.password === "") {
-		    Alert.alert("Error: Password field is empty");
-		}
-		else {
-			console.log("Got inside the last else statement inside onPressLogIn()");
-			firebase
-				.auth()
-				.signInWithEmailAndPassword(this.state.email, this.state.password)
-				.then(() => console.log("successfully logged on"))
-				.catch((e) => {
-					console.log(e.message);
-		       		Alert.alert(e.message);
-		       	});
-	    }
+			//check strings are not empty. Firebase function will give an error saying string is empty, but it won't tell you which string (id or pw) is empty
+			//so check it ourselves and give the message
+			if(this.state.email === "") {
+					Alert.alert("Error: Email field is empty");
+			}
+			else if(this.state.password === "") {
+					Alert.alert("Error: Password field is empty");
+			}
+			else {
+				console.log("Got inside the last else statement inside onPressLogIn()");
+				firebase
+					.auth()
+					.signInWithEmailAndPassword(this.state.email, this.state.password)
+					.then(() => console.log("Successfully logged in"))
+					.catch((e) => { Alert.alert(e.message); });
+				}
     }
 
     onPressSignUp = () => {
-		console.log("SignUp pressed");
-		this.props.navigation.navigate('Signup');
+			console.log("SignUp pressed");
+			this.props.navigation.navigate('Signup');
     }
 
     render() {
@@ -108,27 +92,39 @@ export default class LoginPage extends Component<Props> {
 		console.log(this.state);
 		return (
 		    <View style={styles.container}>
-				<Text>Testing</Text>
-				<TextInput
-				    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-				    onChangeText={text => this.setState({"email":text})}
-				    placeholder={'email'}
-				/>
-				<TextInput
-				    style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
-				    onChangeText={text => this.setState({"password":text})}
-				    placeholder={'password'}
-				/>
-				<Button
-				    onPress={this.onPressLogIn}
-				    title="Login"
-				    color="#841584"
-				/>
-				<Button
-				    onPress={this.onPressSignUp}
-				    title="SignUp"
-				    color="#841584"
-				/>
+					<Text>Testing</Text>
+					<Sae
+						label={'Email Address'}
+						iconClass={FontAwesomeIcon}
+						iconName={'pencil'}
+						iconColor={'white'}
+						inputPadding={16}
+						labelHeight={24}
+						borderHeight={2}
+						autoCapitalize={'none'}
+						autoCorrect={false}
+						onChangeText = {text => this.setState({"email":text})}
+  				/>
+					<TextInput
+							style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+							onChangeText={text => this.setState({"email":text})}
+							placeholder={'email'}
+					/>
+					<TextInput
+							style={{height: 40, width: 100, borderColor: 'gray', borderWidth: 1}}
+							onChangeText={text => this.setState({"password":text})}
+							placeholder={'password'}
+					/>
+					<Button
+							onPress={this.onPressLogIn}
+							title="Login"
+							color="#841584"
+					/>
+					<Button
+							onPress={this.onPressSignUp}
+							title="SignUp"
+							color="#841584"
+					/>
 		    </View>
 		);
     }

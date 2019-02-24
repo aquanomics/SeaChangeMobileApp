@@ -1,7 +1,9 @@
 import React, {Component} from "react";
-import {Platform, StyleSheet, Text, View, TextInput, Button, Alert} from 'react-native';
+import {Platform, StyleSheet, Image, Text, View, TextInput, ImageBackground, Alert} from 'react-native';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Sae } from 'react-native-textinput-effects';
 import firebase from 'react-native-firebase';
 
 export default class SettingsPage extends Component{
@@ -25,6 +27,7 @@ export default class SettingsPage extends Component{
      * Once subscribed, the 'user' parameter will either be null 
      * (logged out) or an Object (logged in)
      */
+    //TODO: NEED TO REMOVE console logs.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     componentDidMount() {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             if(user) {
@@ -131,27 +134,50 @@ function DisplayAccountInfo(props) {
     //if user is not signed in yet
     if(!props.user) {
         return (
-            <View style={styles.accountInfoContainer}>
-                <Text>You don't seem to be logged in.</Text>
-                <TextInput
-                    style={styles.textInput}
-                    onChangeText={props.emailTextHandler}
-                    placeholder={'email'}
-                    keyboardType="email-address"
-                />
-                <TextInput
-                    style={styles.textInput}
-                    onChangeText={props.passwordTextHandler}
-                    placeholder={'password'}
-                    secureTextEntry={true}
-                />
-                <View style={styles.buttonsContainer}>
+            <ImageBackground source={require('../img/backgrounds/sea-background.png')} style={styles.backgroundImage} >
+                <View style={styles.loginContainer}>
+                    <Image
+                    source={require('../img/icons/login.png')}
+                    style={{ width: 100, height: 100, borderRadius: 15 }}
+                    />
+                    <Text style={styles.boldTitleText}>Login to Unlock More Features!!</Text> 
+                    <Sae
+                        style={styles.textInput}
+                        label={'Email Address'}
+                        iconClass={FontAwesomeIcon}
+                        iconName={'pencil'}
+                        iconColor={'#D5DBDB'}
+                        labelStyle={{ color: '#D5DBDB' }}
+                        inputStyle={{ color: '#F4F6F6' }}
+                        inputPadding={16}
+                        labelHeight={24}
+                        borderHeight={2}
+                        autoCapitalize={'none'}
+                        autoCorrect={false}
+                        onChangeText = {props.emailTextHandler}
+                    />
+                    <Sae
+                        style={styles.textInput}
+                        label={'Password'}
+                        iconClass={FontAwesomeIcon}
+                        iconName={'pencil'}
+                        iconColor={'#D5DBDB'}
+                        labelStyle={{ color: '#D5DBDB' }}
+                        inputStyle={{ color: '#F4F6F6' }}
+                        inputPadding={16}
+                        labelHeight={24}
+                        borderHeight={2}
+                        autoCapitalize={'none'}
+                        autoCorrect={false}
+                        secureTextEntry={true}
+                        onChangeText={props.passwordTextHandler}
+                    />
                     <RoundButton 
                         style = {styles.button}
                         type="primary"
                         text="Login"
                         textStyle= {styles.buttonTextFont}
-                        backgroundColors={['#2193b0', '#6dd5ed']}
+                        backgroundColors={['#2193b0', '#2193b0']}
                         gradientStart={{ x: 0.5, y: 1 }}
                         gradientEnd={{ x: 1, y: 1 }}
                         onPress={props.onPressLogIn} />
@@ -160,12 +186,12 @@ function DisplayAccountInfo(props) {
                         type="primary"
                         text="Sign Up"
                         textStyle= {styles.buttonTextFont}
-                        backgroundColors={['#2193b0', '#6dd5ed']}
+                        backgroundColors={['#58D68D', '#58D68D']}
                         gradientStart={{ x: 0.5, y: 1 }}
                         gradientEnd={{ x: 1, y: 1 }}
                         onPress={props.onPressSignUp} />
-                </View>
-            </View>
+                </View>    
+            </ImageBackground>
         );
 
     } else {    //else, user must be signed in
@@ -197,6 +223,13 @@ const styles = StyleSheet.create({
     myContainer: {
         flex: 1,
     },
+    loginContainer: {
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        flex: 1,
+        alignItems: 'center',
+        resizeMode: 'cover',
+        justifyContent: 'center',
+    },
     accountInfoContainer: {
         flex: 1,
         //flexDirection: 'row',
@@ -204,19 +237,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         //backgroundColor: 'blue',  //debugging use
     },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     textInput: {
-        height: 40,
-        width: 200, 
-        borderColor: 'gray', 
-        borderWidth: 1,
-        marginTop: 4,
+        margin: 10,
+        height: 60,
+        width: 350,
     },
     button: {
-        //margin: 10,
+        margin: 18,
         height: 50,
-        width: 150,
-        marginLeft: 6,
-        marginRight: 6,
+        width: 300,
     },
     signOutButton: {
         height: 50,
@@ -228,6 +261,13 @@ const styles = StyleSheet.create({
         color: materialColors.whitePrimary,
         fontSize: 17,
         textAlign: 'center',
+    },
+    boldTitleText: {
+        ...material.titleObject,
+        ...systemWeights.bold,
+        fontSize: 20,
+        marginTop: 15,
+        color: materialColors.whitePrimary,
     },
     buttonsContainer: {
         marginTop: 8,

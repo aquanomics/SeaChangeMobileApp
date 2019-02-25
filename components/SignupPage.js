@@ -25,7 +25,8 @@ export default class SignupPage extends Component{
 		    user: null,
 		    email: '',
 		    password: '',
-		    username: '',
+				username: '',
+				buttonSignUpState: 'signUp',
 		};
   }
 
@@ -116,11 +117,12 @@ export default class SignupPage extends Component{
 							console.log("Inside fourth then chain");
 							//check for invalid
 							if(response.status != 200) {
+									this.setState({ buttonSignUpState: 'signUp' });
 									throw({'message': `Internal server error! Error code ${response.status}`});
-									// this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: "internal server error" });
 							}
 							//if it's 200, then user creation is successful
 							console.log("Going back to the Settings page");
+							this.setState({ buttonSignUpState: 'signUp' });
 							this.props.navigation.goBack();
 							this.registeredOnFirebase = false;	//reset the flag
 						})
@@ -131,12 +133,12 @@ export default class SignupPage extends Component{
 										console.log("User deletion successful!");
 									})
 									.catch(() => {	//THIS IS A VERY RARE OCCASION
-										console.log("User deletion FAILED");
 										Alert.alert("User deletion FAILED");
 									})
+									this.setState({ buttonSignUpState: 'signUp' });
 								}
 								this.registeredOnFirebase = false;	//reset the flag
-								console.log(error.message);
+								this.setState({ buttonSignUpState: 'signUp' });
 								Alert.alert(error.message);
 						});
 			}
@@ -160,7 +162,7 @@ export default class SignupPage extends Component{
 								borderHeight={2}
 								autoCapitalize={'none'}
 								autoCorrect={false}
-								onChangeText={text => this.setState({"username": text})}
+								onChangeText={text => this.setState({username: text})}
 						/>
 						<Sae
 								style={styles.textInput}
@@ -175,7 +177,7 @@ export default class SignupPage extends Component{
 								borderHeight={2}
 								autoCapitalize={'none'}
 								autoCorrect={false}
-								onChangeText={text => this.setState({"email": text})}
+								onChangeText={text => this.setState({email: text})}
 						/>
 						<Sae
 								style={styles.textInput}
@@ -191,17 +193,32 @@ export default class SignupPage extends Component{
 								autoCapitalize={'none'}
 								autoCorrect={false}
 								secureTextEntry={true}
-								onChangeText={text => this.setState({"password": text})}
+								onChangeText={text => this.setState({password: text})}
 						/>
 						<RoundButton 
 								style = {styles.button}
-								type="primary"
-								text="Sign Up"
+								buttonState={this.state.buttonSignUpState}
 								textStyle= {styles.buttonTextFont}
-								backgroundColors={['#58D68D', '#58D68D']}
 								gradientStart={{ x: 0.5, y: 1 }}
 								gradientEnd={{ x: 1, y: 1 }}
-								onPress={this.onPressSignUp} 
+								states={{
+									signUp: {
+										text: 'Sign Up',
+										backgroundColors: ['#58D68D', '#58D68D'],
+										onPress: () => {
+												this.setState({ buttonSignUpState: 'signingUp' });
+												this.onPressSignUp();
+										},
+									},
+									signingUp: {
+										text: 'Signing up...',
+										gradientStart: { x: 0.8, y: 1 },
+										gradientEnd: { x: 1, y: 1 },
+										backgroundColors: ['#FF416C', '#FF4B2B'],
+										spinner: true,
+										onPress: () => {},
+									},
+							}} 
 						/>
 					</View>
 		    </ImageBackground>

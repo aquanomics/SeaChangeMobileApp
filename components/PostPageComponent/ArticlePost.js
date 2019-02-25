@@ -25,7 +25,7 @@ export default class ArticlePost extends Component{
         console.log("Inside componentDidMount of ArticlePostPage");
         var that = this;
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            if(user) {
+            if (user) {
                 this.setState({'user':user});
                 user.getIdToken().then(function(idToken) {  // <------ Check this line
                     console.log("Inside ArticlePost.js and the authToken is: " + idToken); // It shows the Firebase token now
@@ -52,7 +52,7 @@ export default class ArticlePost extends Component{
     state = {
         param: {
             url: null,
-            description: null,
+            description: 'empty',
         },
         noUrlError: false,
         invalidUrl: false,
@@ -78,13 +78,11 @@ export default class ArticlePost extends Component{
     };
 
     handleArticleUpload = () => {
-        if(this.state.param.url == '' || this.state.param.url == null) {
+        if (this.state.param.url == '' || this.state.param.url == null) {
             this.setState({noUrlError: true, invalidUrl: false, buttonUploadState: 'upload'});
         } else if (!validURL(this.state.param.url)) {
             this.setState({noUrlError: false, invalidUrl: true, buttonUploadState: 'upload'});
-        } 
-        else {
-            console.log(JSON.stringify(this.state.param));
+        } else {
             this.setState({noUrlError: false, invalidUrl: false});
             fetch(URL, {
                 method: "POST",

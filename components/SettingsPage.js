@@ -97,6 +97,14 @@ export default class SettingsPage extends Component{
     onPressSignUp = () => {
         this.props.navigation.navigate('Signup', {});
     }
+
+    emailTextHandler = (text) => {
+        this.setState({"email":text});
+    }
+
+    passwordTextHandler = (text) => {
+        this.setState({"password":text});
+    }
  
     render(){
         return (
@@ -146,7 +154,7 @@ function DisplayAccountInfo(props) {
                         borderHeight={2}
                         autoCapitalize={'none'}
                         autoCorrect={false}
-                        onChangeText = {text => this.setState({"email":text})}
+                        onChangeText = {props.emailTextHandler}
                     />
                     <Sae
                         style={styles.textInput}
@@ -162,7 +170,7 @@ function DisplayAccountInfo(props) {
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         secureTextEntry={true}
-                        onChangeText={text => this.setState({"password":text})}
+                        onChangeText = {props.passwordTextHandler}
                     />
                     <RoundButton 
                         style = {styles.button}
@@ -172,7 +180,8 @@ function DisplayAccountInfo(props) {
                         backgroundColors={['#2193b0', '#2193b0']}
                         gradientStart={{ x: 0.5, y: 1 }}
                         gradientEnd={{ x: 1, y: 1 }}
-                        onPress={props.onPressLogIn} />
+                        onPress={props.onPressLogIn} 
+                    />
                     <RoundButton 
                         style = {styles.button}
                         type="primary"
@@ -181,7 +190,8 @@ function DisplayAccountInfo(props) {
                         backgroundColors={['#58D68D', '#58D68D']}
                         gradientStart={{ x: 0.5, y: 1 }}
                         gradientEnd={{ x: 1, y: 1 }}
-                        onPress={props.onPressSignUp} />
+                        onPress={props.onPressSignUp} 
+                    />
                 </View>    
             </ImageBackground>
         );

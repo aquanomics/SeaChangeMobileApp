@@ -9,7 +9,7 @@ import { material, materialColors, systemWeights } from 'react-native-typography
 
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-upload";
-const URL_TEST = "http://192.168.1.84:8080/post-img/image-upload";
+const URL_TEST = "http://192.168.1.67:8080/post-img/image-upload";
 
 export default class ImagePost extends Component{
     state = {
@@ -69,15 +69,13 @@ export default class ImagePost extends Component{
             this.setState({ buttonUploadState: 'upload', successUploadDialog: true  });
           })
           .catch(error => {
-            console.log(error);
             this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: error });
+            console.log(error);
           });
     };
 
     handleGetUserLocation = () => {
         navigator.geolocation.getCurrentPosition(position => {
-          console.log(position.coords);
-       
           var currState = this.state
           if (position.coords.latitude == null || position.coords.longitude == null) {
             currState = setUserLocation(currState, null, null, 'init', true);  
@@ -225,20 +223,20 @@ export default class ImagePost extends Component{
                     textStyle= {styles.buttonTextFont}
                     states={{
                         upload: {
-                        text: 'Upload Photo',
-                        backgroundColors: ['#4DC7A4', '#66D37A'],
-                        onPress: () => {
-                            this.setState({ buttonUploadState: 'uploading' });
-                            this.handleUploadPhoto();
-                        },
+                            text: 'Upload Photo',
+                            backgroundColors: ['#4DC7A4', '#66D37A'],
+                            onPress: () => {
+                                this.setState({ buttonUploadState: 'uploading' });
+                                this.handleUploadPhoto();
+                            },
                         },
                         uploading: {
-                        text: 'Uploading Photo...',
-                        gradientStart: { x: 0.8, y: 1 },
-                        gradientEnd: { x: 1, y: 1 },
-                        backgroundColors: ['#FF416C', '#FF4B2B'],
-                        spinner: true,
-                        onPress: () => {},
+                            text: 'Uploading Photo...',
+                            gradientStart: { x: 0.8, y: 1 },
+                            gradientEnd: { x: 1, y: 1 },
+                            backgroundColors: ['#FF416C', '#FF4B2B'],
+                            spinner: true,
+                            onPress: () => {},
                         },
                     }}/>
                 <RoundButton 

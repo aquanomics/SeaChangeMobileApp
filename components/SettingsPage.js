@@ -1,5 +1,5 @@
-import React, {Component} from "react";
-import {Platform, StyleSheet, Image, Text, View, TextInput, ImageBackground, Alert} from 'react-native';
+import React, { Component } from "react";
+import { StyleSheet, Image, Text, View, ImageBackground, Alert } from 'react-native';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -97,15 +97,7 @@ export default class SettingsPage extends Component{
     onPressSignUp = () => {
         this.props.navigation.navigate('Signup', {});
     }
-
-    emailTextHandler = (text) => {
-        this.setState({"email":text});
-    }
-
-    passwordTextHandler = (text) => {
-        this.setState({"password":text});
-    }
-    
+ 
     render(){
         return (
             <View style={styles.myContainer}>
@@ -154,7 +146,7 @@ function DisplayAccountInfo(props) {
                         borderHeight={2}
                         autoCapitalize={'none'}
                         autoCorrect={false}
-                        onChangeText = {props.emailTextHandler}
+                        onChangeText = {text => this.setState({"email":text})}
                     />
                     <Sae
                         style={styles.textInput}
@@ -170,7 +162,7 @@ function DisplayAccountInfo(props) {
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         secureTextEntry={true}
-                        onChangeText={props.passwordTextHandler}
+                        onChangeText={text => this.setState({"password":text})}
                     />
                     <RoundButton 
                         style = {styles.button}

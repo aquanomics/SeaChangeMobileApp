@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "84227324308",
+    "firebase_url": "https://capstoneteam28project.firebaseio.com",
+    "project_id": "capstoneteam28project",
+    "storage_bucket": "capstoneteam28project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84227324308:android:c0fbe3e92cc8a3fc",
+        "android_client_info": {
+          "package_name": "com.seachangemobileapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "84227324308-7c4atv9ih2i9665ehul78kcmhkbspj92.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvdVoOCdG3aqVIsMgI1uXs1ujLkziPDWk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

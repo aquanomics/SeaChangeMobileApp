@@ -457,8 +457,8 @@ export default class UserMap extends Component{
               <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
             </View>
             <View style={styles.menuRow}>
-              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
-              <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => console.log("Doesn't do anything")}></MenuButton>
+              <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Profile')}></MenuButton>
               <MenuButton iconName="ios-boat" buttonTitle="Fishes" onClick={() => this.props.navigation.navigate('Fishes')}></MenuButton>
             </View>
           </View>

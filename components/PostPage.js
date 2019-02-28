@@ -80,7 +80,7 @@ export default class PostPage extends Component{
                             onPress={() => {
                                 this.setState({ userLoggedOut: false }, () => {
                                     this.props.navigation.goBack();
-                                    this.props.navigation.navigate('Settings', {});
+                                    this.props.navigation.navigate('Profile', {});
                                 });
                             }}
                         />

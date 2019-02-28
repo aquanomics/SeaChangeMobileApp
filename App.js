@@ -12,12 +12,12 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
-import SettingsPage from "./components/SettingsPage";
+import ProfilePage from "./components/ProfilePage";
+import ForgotPasswordPage from "./components/ForgotPasswordPage";
 import EventsPage from "./components/EventsPage";
 import PostPage from "./components/PostPage";
 import ImagePost from "./components/PostPageComponent/ImagePost";
 import ArticlePost from "./components/PostPageComponent/ArticlePost";
-import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import ArticleWebViewPage from "./components/ArticlePageComponent/ArticleWebView";
 import ArticleAbstractionPage from "./components/ArticlePageComponent/ArticleAbstraction";
@@ -53,14 +53,14 @@ const styles = StyleSheet.create({
 });
 
 const MainNavigator = createStackNavigator({
-    Login: {
-        screen: LoginPage
-    },
     Fishes: {
         screen: FishPage
     },
     Signup: {
         screen: SignupPage
+    },
+    ForgotPassword: {
+        screen: ForgotPasswordPage
     },
     Home: {
         screen: UserMap,
@@ -83,8 +83,8 @@ const MainNavigator = createStackNavigator({
     ArticlePost: {
         screen: ArticlePost,
     },
-    Settings: {
-        screen: SettingsPage,
+    Profile: {
+        screen: ProfilePage,
     },
     ArticleWebView: {
         screen: ArticleWebViewPage,

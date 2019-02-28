@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import { StyleSheet, Image, Text, View, ImageBackground, Alert } from 'react-native';
+import { StyleSheet, Image, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Sae } from 'react-native-textinput-effects';
+import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import firebase from 'react-native-firebase';
 
-export default class SettingsPage extends Component{
+export default class ProfilePage extends Component{
     static navigationOptions = {
-        title: 'Settings',
+        title: 'Profile',
     };
 
     constructor(props) {
@@ -17,7 +18,9 @@ export default class SettingsPage extends Component{
         this.state = {
             user: null,
             email: '',
-            password: ''
+            password: '',
+            displayDialog: false,
+            dialogText: '',
         };
     }
 
@@ -71,13 +74,17 @@ export default class SettingsPage extends Component{
 
         //check strings are not empty. Firebase function will give an error saying string is empty, 
         //but it won't tell you which string (id or pw) is empty so check it ourselves and give the message
-        if(this.state.email === "") {
-            Alert.alert("Error: Email field is empty");
-        }
-        else if(this.state.password === "") {
-            Alert.alert("Error: Password field is empty");
-        }
-        else {
+
+        //add missing fields to the temporary array
+        var missingArr = [];
+        this.state.email.length == 0 ? missingArr.push('email') : null;
+        this.state.password.length == 0 ? missingArr.push('password') : null;
+
+        if(missingArr.length > 0) { //if there are any missing fields, notify them to the user
+            var missingStr = missingArr.join(' and ');
+            var errorStr = `Error: ${missingStr} ${missingArr.length == 1 ? "field is" : "fields are"} empty`;
+            this.setState({displayDialog: true, dialogText: errorStr});
+        } else {
             console.log("Got inside the last else statement inside onPressLogIn()");
             firebase
                 .auth()
@@ -85,7 +92,7 @@ export default class SettingsPage extends Component{
                 .then(() => console.log("successfully logged on"))
                 .catch((e) => {
                     console.log(e.message);
-                    Alert.alert(e.message);
+                    this.setState({displayDialog: true, dialogText: e.message});
                 });
         }
     }
@@ -96,6 +103,10 @@ export default class SettingsPage extends Component{
 
     onPressSignUp = () => {
         this.props.navigation.navigate('Signup', {});
+    }
+
+    onPressForgotPassword = () => {
+        this.props.navigation.navigate('ForgotPassword', {});   
     }
 
     emailTextHandler = (text) => {
@@ -114,8 +125,28 @@ export default class SettingsPage extends Component{
                     onPressLogIn={this.onPressLogIn}
                     onPressSignUp={this.onPressSignUp}
                     onPressSignOut={this.onPressSignOut}
+                    onPressForgotPassword={this.onPressForgotPassword}
                     emailTextHandler={this.emailTextHandler}
                     passwordTextHandler={this.passwordTextHandler}
+                />
+                <Dialog
+                    onTouchOutside={() => this.setState({ displayDialog: false })}
+                    width={0.9}
+                    visible={this.state.displayDialog}
+                    dialogAnimation={new ScaleAnimation()}
+                    dialogTitle={
+                        <DialogTitle
+                            title={this.state.dialogText}
+                            hasTitleBar={false}
+                        />}
+                    footer={
+                        <DialogFooter>
+                            <DialogButton
+                                text="Ok"
+                                onPress={() => this.setState({ displayDialog: false })}
+                            />
+                        </DialogFooter>
+                    }     
                 />
             </View>
         );
@@ -172,6 +203,12 @@ function DisplayAccountInfo(props) {
                         secureTextEntry={true}
                         onChangeText = {props.passwordTextHandler}
                     />
+                    <TouchableOpacity 
+                        style={styles.forgotTouchableOpacity}
+                        onPress={props.onPressForgotPassword}
+                    >
+                        <Text style={styles.forgotText}>Forgot password?</Text>
+                    </TouchableOpacity>
                     <RoundButton 
                         style = {styles.button}
                         type="primary"
@@ -246,10 +283,12 @@ const styles = StyleSheet.create({
     textInput: {
         margin: 10,
         height: 60,
-        width: 350,
+        width: 325,
     },
     button: {
-        margin: 18,
+        marginRight: 18,
+        marginLeft: 18,
+        marginTop: 25,
         height: 50,
         width: 300,
     },
@@ -274,5 +313,15 @@ const styles = StyleSheet.create({
     buttonsContainer: {
         marginTop: 8,
         flexDirection: 'row',
-    }
+    },
+    forgotText: {
+        ...material.titleObject,
+        ...systemWeights.bold,
+        fontSize: 16,
+        color: materialColors.whitePrimary,
+    },
+    forgotTouchableOpacity: {
+        alignSelf: 'flex-end', 
+        marginRight: 15,
+    },
 });

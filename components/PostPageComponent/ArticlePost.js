@@ -23,17 +23,21 @@ export default class ArticlePost extends Component{
      */
     componentDidMount() {
         console.log("Inside componentDidMount of ArticlePostPage");
-        var that = this;
-        this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
+        this.unsubscriber = firebase.auth().onAuthStateChanged(user => {
             if (user) {
-                this.setState({'user':user});
-                user.getIdToken().then(function(idToken) {  // <------ Check this line
-                    console.log("Inside ArticlePost.js and the authToken is: " + idToken); // It shows the Firebase token now
-                    that.setState({'authToken': idToken}, () => console.log(that.state));
-                });
+                this.setState({'user': user});
             } else {
+                //Note: Since this page is only accessible while signed in, when signed out,
+                //redirect the user to the log in page
                 console.log('not logged in');
-                this.setState({user: null});
+                this.setState({user: null}, () => {
+                    this.props.navigation.goBack();     //go back to universal post page
+                    this.props.navigation.goBack();     //go back to map page
+                    this.props.navigation.navigate('Profile', {
+                        externalDisplayDialog: true, 
+                        externalDialogText: "You have been signed out due to inactivity. Please sign in again"
+                    });  //go to profile screen and pass in prop to display the dialog
+                });
             }
         });
     }
@@ -57,8 +61,9 @@ export default class ArticlePost extends Component{
         noUrlError: false,
         invalidUrl: false,
         buttonUploadState: 'upload',
-        successUploadDialog: false,
-        failUploadDialog: false,
+        displayDialog: false,
+        dialogText: '',
+        user: null,
     };
 
     static navigationOptions = {
@@ -77,6 +82,12 @@ export default class ArticlePost extends Component{
         this.setState({currState});
     };
 
+    //This function is for testing purposes only.
+    //You can use this callback function in a button to simulate being signed out due to inactivity.
+    onPressSignOut = () => {
+        firebase.auth().signOut();
+    }
+
     handleArticleUpload = () => {
         if (this.state.param.url == '' || this.state.param.url == null) {
             this.setState({noUrlError: true, invalidUrl: false, buttonUploadState: 'upload'});
@@ -84,29 +95,33 @@ export default class ArticlePost extends Component{
             this.setState({noUrlError: false, invalidUrl: true, buttonUploadState: 'upload'});
         } else {
             this.setState({noUrlError: false, invalidUrl: false});
-            fetch(URL, {
-                method: "POST",
-                body: JSON.stringify({
-                    url: this.state.param.url,
-                    description: this.state.param.description,
-                    idToken: this.state.authToken,
-                }),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-              })
+            this.state.user.getIdToken()
+                .then(idToken => {
+                    console.log("idToken retrieved!");
+                    return fetch(URL, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            url: this.state.param.url,
+                            description: this.state.param.description,
+                            idToken: idToken,
+                            uid: this.state.user.uid,
+                        }),
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
+                })
                 .then(response => {
                     if(response.status != 200) {
                         console.log(`Internal server error! Error code ${response.status}`);
-                        //this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: error });
-                        this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: "internal server error" });
+                        this.setState({ buttonUploadState: 'upload', displayDialog: true,  dialogText: "Failed to Upload Article :("});
                     } else {
-                        this.setState({ buttonUploadState: 'upload', successUploadDialog: true });
+                        this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: "Article Successfully Uploaded :)" });
                     }
                 })
                 .catch(error => {   //external server error
-                  console.log(error);
-                  this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: error });
+                    console.log(error);
+                    this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: "Failed to Upload Article :(" });
                 });
         }
     };
@@ -120,41 +135,23 @@ export default class ArticlePost extends Component{
             />
             <Text style={styles.boldTitleText}>Upload an Article !!</Text>
             <Dialog
-                onTouchOutside={() => {this.setState({ successUploadDialog: false });}}
+                onTouchOutside={() => {this.setState({ displayDialog: false });}}
                 width={0.9}
-                visible={this.state.successUploadDialog}
+                visible={this.state.displayDialog}
                 dialogAnimation={new ScaleAnimation()}
                 dialogTitle={
                     <DialogTitle
-                        title="Article Successfully Uploaded :)"
+                        title={this.state.dialogText}
                         hasTitleBar={false}
                     />}
                 footer={
                     <DialogFooter>
                         <DialogButton
                             text="Continue"
-                            onPress={() => {this.setState({ successUploadDialog: false });}}
+                            onPress={() => {this.setState({ displayDialog: false });}}
                         />
                     </DialogFooter>}     
             />
-            <Dialog
-                onTouchOutside={() => {this.setState({ failUploadDialog: false });}}
-                width={0.9}
-                visible={this.state.failUploadDialog}
-                dialogAnimation={new ScaleAnimation()}
-                dialogTitle={
-                    <DialogTitle
-                        title="Failed to Upload Article :("
-                        hasTitleBar={false}
-                    />}
-                footer={
-                    <DialogFooter>
-                        <DialogButton
-                            text="Continue"
-                            onPress={() => {this.setState({ failUploadDialog: false });}}
-                            />
-                        </DialogFooter>}
-            /> 
             <Fumi
                 style = {styles.input}
                 label={'Link to Article'}
@@ -194,20 +191,23 @@ export default class ArticlePost extends Component{
                 textStyle= {styles.buttonTextFont}
                 states={{
                     upload: {
-                    text: 'Upload Article',
-                    backgroundColors: ['#2193b0', '#6dd5ed'],
-                    onPress: () => {
-                        this.setState({ buttonUploadState: 'uploading' });
-                        this.handleArticleUpload();
-                    },
+                        text: 'Upload Article',
+                        backgroundColors: ['#2193b0', '#6dd5ed'],
+                        onPress: () => {
+                            //Testing purposes only. Simulates being logged out due to inactivity
+                            // this.onPressSignOut();
+                            // return;
+                            this.setState({ buttonUploadState: 'uploading' });
+                            this.handleArticleUpload();
+                        },
                     },
                     uploading: {
-                    text: 'Uploading Article...',
-                    gradientStart: { x: 0.8, y: 1 },
-                    gradientEnd: { x: 1, y: 1 },
-                    backgroundColors: ['#FF416C', '#FF4B2B'],
-                    spinner: true,
-                    onPress: () => {},
+                        text: 'Uploading Article...',
+                        gradientStart: { x: 0.8, y: 1 },
+                        gradientEnd: { x: 1, y: 1 },
+                        backgroundColors: ['#FF416C', '#FF4B2B'],
+                        spinner: true,
+                        onPress: () => {},
                     },
                 }}/>
         </View>

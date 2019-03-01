@@ -88,7 +88,6 @@ export default class PostPage extends Component{
                 />
             </View>
         </ImageBackground>
-      
         );
     }
 }

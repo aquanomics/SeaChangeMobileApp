@@ -15,12 +15,23 @@ export default class ProfilePage extends Component{
     constructor(props) {
     	super(props);
 
+
+        //Purpose of logic below: if you want pop up Dialog from the start by providing props a message and a boolean.
+        //Application: ArticlePost.js uses this functionality in case the user is signed out due to inactivity
+        //I use if and else because you can do if(object) to evaluate true, but can't do object ? true : false.
+        //Note: This logic below has been manually tested
+        var externalDisplayDialog = this.props.navigation.getParam('externalDisplayDialog', undefined);
+        if(externalDisplayDialog)
+            externalDisplayDialog = true;
+        else
+            externalDisplayDialog = false;
+
         this.state = {
             user: null,
             email: '',
             password: '',
-            displayDialog: false,
-            dialogText: '',
+            displayDialog: externalDisplayDialog,   //if props is not given, this will be false by default
+            dialogText: externalDisplayDialog ? this.props.navigation.getParam('externalDialogText') : '',
         };
     }
 
@@ -36,18 +47,12 @@ export default class ProfilePage extends Component{
             if(user) {
                 console.log("Inside componentDidMount()'s AuthStateChanged callback function. Below is the user");
                 console.log(user);
-                console.log("Testing firebase.auth().currentUser.uid");
-                console.log(firebase.auth().currentUser.uid);
-                console.log("Below is the unsubscriber");
-                console.log(this.unsubscriber);
+                console.log("Retrieving uid of user");
+                console.log(user.uid);
 
                 //Setting the state for user object may seem unnecessary because we can use firebase.auth().currentUser;
                 //however, in render() comment section, it explains why we need this
-                this.setState({'user': user});    
-
-                user.getIdToken().then( (idToken) => {  // <------ Check this line
-                    console.log("Authentication token is: " + idToken); // It shows the Firebase token now
-                });
+                this.setState({'user': user});
                 // console.log("Executing navigation switch to new component (UserMap)");
                 // this.props.navigation.navigate('Home', { user: user });
             } else {
@@ -130,7 +135,7 @@ export default class ProfilePage extends Component{
                     passwordTextHandler={this.passwordTextHandler}
                 />
                 <Dialog
-                    onTouchOutside={() => this.setState({ displayDialog: false })}
+                    onTouchOutside={() => this.setState({ displayDialog: false, dialogText: '' })}
                     width={0.9}
                     visible={this.state.displayDialog}
                     dialogAnimation={new ScaleAnimation()}
@@ -143,7 +148,7 @@ export default class ProfilePage extends Component{
                         <DialogFooter>
                             <DialogButton
                                 text="Ok"
-                                onPress={() => this.setState({ displayDialog: false })}
+                                onPress={() => this.setState({ displayDialog: false, dialogText: '' })}
                             />
                         </DialogFooter>
                     }     
@@ -154,6 +159,8 @@ export default class ProfilePage extends Component{
 }
 
 function DisplayAccountInfo(props) {
+    //if props is given from an external page to display dialog, display it
+    //For now, this option can be set by the ArticlePost.js page
     //WARNING: I already tried using if(!firebase.auth().currentUser), but even after successfully logging in
     //and after auth().currentUser changes, render() doesn't recognize the change in auth().currentUser.
     //Therefore, we need the state to dynamically render this page.

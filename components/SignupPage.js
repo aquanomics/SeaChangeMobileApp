@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { Sae } from 'react-native-textinput-effects';
+import {RkTextInput} from 'react-native-ui-kitten';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import firebase from 'react-native-firebase';
 
@@ -156,52 +156,39 @@ export default class SignupPage extends Component{
 			<ImageBackground source={require('../img/backgrounds/sea-background.png')} style={styles.backgroundImage} >
 				<View style={styles.container}>
 					<Text style={styles.boldTitleText}>Please enter the necessary information to sign up</Text>
-					<Sae
-						style={styles.textInput}
-						label={'Username'}
-						iconClass={FontAwesomeIcon}
-						iconName={'pencil'}
-						iconColor={'#D5DBDB'}
-						labelStyle={{ color: '#D5DBDB' }}
-						inputStyle={{ color: '#F4F6F6' }}
-						inputPadding={16}
-						labelHeight={24}
-						borderHeight={2}
-						autoCapitalize={'none'}
-						autoCorrect={false}
-						onChangeText={text => this.setState({username: text})}
-					/>
-					<Sae
-						style={styles.textInput}
-						label={'Email Address'}
-						iconClass={FontAwesomeIcon}
-						iconName={'pencil'}
-						iconColor={'#D5DBDB'}
-						labelStyle={{ color: '#D5DBDB' }}
-						inputStyle={{ color: '#F4F6F6' }}
-						inputPadding={16}
-						labelHeight={24}
-						borderHeight={2}
-						autoCapitalize={'none'}
-						autoCorrect={false}
-						onChangeText={text => this.setState({email: text})}
-					/>
-					<Sae
-						style={styles.textInput}
-						label={'Password'}
-						iconClass={FontAwesomeIcon}
-						iconName={'pencil'}
-						iconColor={'#D5DBDB'}
-						labelStyle={{ color: '#D5DBDB' }}
-						inputStyle={{ color: '#F4F6F6' }}
-						inputPadding={16}
-						labelHeight={24}
-						borderHeight={2}
-						autoCapitalize={'none'}
-						autoCorrect={false}
-						secureTextEntry={true}
-						onChangeText={text => this.setState({password: text})}
-					/>
+					<View style={styles.textInputContainer}>
+						<RkTextInput 
+	                        rkType="topLabel" 
+	                        label="Username"
+	                        style={styles.textInput}
+	                        labelStyle={{color: '#D5DBDB'}}
+	                        inputStyle={{color: '#F4F6F6'}}
+	                        autoCapitalize={'none'}
+	                        autoCorrect={false}
+							onChangeText={text => this.setState({username: text})}
+	                    />
+	                    <RkTextInput 
+	                        rkType="topLabel" 
+	                        label="Email Address"
+	                        style={styles.textInput}
+	                        labelStyle={{color: '#D5DBDB'}}
+	                        inputStyle={{color: '#F4F6F6'}}
+	                        autoCapitalize={'none'}
+							autoCorrect={false}
+							onChangeText={text => this.setState({email: text})}
+	                    />
+	                    <RkTextInput 
+	                        rkType="topLabel" 
+	                        label="Password"
+	                        style={styles.textInput}
+	                        labelStyle={{color: '#D5DBDB'}}
+	                        inputStyle={{color: '#F4F6F6'}}
+	                        autoCapitalize={'none'}
+							autoCorrect={false}
+							secureTextEntry={true}
+							onChangeText={text => this.setState({password: text})}
+	                    />
+                    </View>
 					<RoundButton 
 						style = {styles.button}
 						buttonState={this.state.buttonSignUpState}
@@ -264,11 +251,15 @@ const styles = StyleSheet.create({
 		flex: 1,
 		resizeMode: 'cover',
 	},
-	textInput: {
-		margin: 10,
-	    height: 60,
-	    width: 325,
+	textInputContainer: {
+		marginVertical: 25,
 	},
+	textInput: {
+        height: 60,
+        width: 325,
+        borderBottomColor: 'white',
+        borderBottomWidth: 1,
+    },
 	button: {
 		margin: 18,
 		height: 50,

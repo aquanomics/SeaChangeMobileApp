@@ -3,7 +3,7 @@ import { StyleSheet, Image, Text, View, ImageBackground, TouchableOpacity } from
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { Sae } from 'react-native-textinput-effects';
+import {RkTextInput} from 'react-native-ui-kitten';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import firebase from 'react-native-firebase';
 
@@ -59,17 +59,12 @@ export default class ForgotPasswordPage extends Component{
                     />
                     <Text style={styles.boldTitleText}>Need help logging in?</Text> 
                     <Text style={styles.forgotText}>Tell us your email and we'll send you a link to log in.</Text>
-                    <Sae
+                    <RkTextInput 
+                        rkType="topLabel" 
+                        label="email"
                         style={styles.textInput}
-                        label={'Email Address'}
-                        iconClass={FontAwesomeIcon}
-                        iconName={'pencil'}
-                        iconColor={'#D5DBDB'}
-                        labelStyle={{ color: '#D5DBDB' }}
-                        inputStyle={{ color: '#F4F6F6' }}
-                        inputPadding={16}
-                        labelHeight={24}
-                        borderHeight={2}
+                        labelStyle={{color: '#D5DBDB'}}
+                        inputStyle={{color: '#F4F6F6'}}
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         onChangeText = {this.emailTextHandler}
@@ -143,11 +138,11 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
     },
     textInput: {
-        marginLeft: 10,
-        marginRight: 10,
-        marginTop: 30,
+        marginTop: 20,
         height: 60,
         width: 325,
+        borderBottomColor: 'white',
+        borderBottomWidth: 1,
     },
     button: {
         marginRight: 18,

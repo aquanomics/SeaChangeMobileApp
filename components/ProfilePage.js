@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { StyleSheet, Image, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, Text, View, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { Sae } from 'react-native-textinput-effects';
+import {RkTextInput} from 'react-native-ui-kitten';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import firebase from 'react-native-firebase';
 
@@ -159,6 +159,7 @@ export default class ProfilePage extends Component{
 }
 
 function DisplayAccountInfo(props) {
+
     //if props is given from an external page to display dialog, display it
     //For now, this option can be set by the ArticlePost.js page
     //WARNING: I already tried using if(!firebase.auth().currentUser), but even after successfully logging in
@@ -175,41 +176,33 @@ function DisplayAccountInfo(props) {
             <ImageBackground source={require('../img/backgrounds/sea-background.png')} style={styles.backgroundImage} >
                 <View style={styles.loginContainer}>
                     <Image
-                    source={require('../img/icons/login.png')}
-                    style={{ width: 100, height: 100, borderRadius: 15 }}
+                        source={require('../img/icons/login.png')}
+                        style={{ width: 100, height: 100, borderRadius: 15 }}
                     />
-                    <Text style={styles.boldTitleText}>Login to Unlock More Features!!</Text> 
-                    <Sae
-                        style={styles.textInput}
-                        label={'Email Address'}
-                        iconClass={FontAwesomeIcon}
-                        iconName={'pencil'}
-                        iconColor={'#D5DBDB'}
-                        labelStyle={{ color: '#D5DBDB' }}
-                        inputStyle={{ color: '#F4F6F6' }}
-                        inputPadding={16}
-                        labelHeight={24}
-                        borderHeight={2}
-                        autoCapitalize={'none'}
-                        autoCorrect={false}
-                        onChangeText = {props.emailTextHandler}
-                    />
-                    <Sae
-                        style={styles.textInput}
-                        label={'Password'}
-                        iconClass={FontAwesomeIcon}
-                        iconName={'pencil'}
-                        iconColor={'#D5DBDB'}
-                        labelStyle={{ color: '#D5DBDB' }}
-                        inputStyle={{ color: '#F4F6F6' }}
-                        inputPadding={16}
-                        labelHeight={24}
-                        borderHeight={2}
-                        autoCapitalize={'none'}
-                        autoCorrect={false}
-                        secureTextEntry={true}
-                        onChangeText = {props.passwordTextHandler}
-                    />
+                    <Text style={styles.boldTitleText}>Login to Unlock More Features!!</Text>
+                    <View style={styles.textInputContainer}>
+                        <RkTextInput 
+                            rkType="topLabel" 
+                            label="Email Address"
+                            style={styles.textInput}
+                            labelStyle={{color: '#D5DBDB'}}
+                            inputStyle={{color: '#F4F6F6'}}
+                            autoCapitalize={'none'}
+                            autoCorrect={false}
+                            onChangeText = {props.emailTextHandler}
+                        />
+                        <RkTextInput 
+                            rkType="topLabel" 
+                            label="password"
+                            style={styles.textInput}
+                            labelStyle={{color: '#D5DBDB'}}
+                            inputStyle={{color: '#F4F6F6'}}
+                            autoCapitalize={'none'}
+                            autoCorrect={false}
+                            secureTextEntry={true}
+                            onChangeText = {props.passwordTextHandler}
+                        />
+                    </View>
                     <TouchableOpacity 
                         style={styles.forgotTouchableOpacity}
                         onPress={props.onPressForgotPassword}
@@ -287,10 +280,14 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: 'cover',
     },
+    textInputContainer: {
+        marginTop: 15,
+    },
     textInput: {
-        margin: 10,
         height: 60,
         width: 325,
+        borderBottomColor: 'white',
+        borderBottomWidth: 1,
     },
     button: {
         marginRight: 18,

@@ -38,7 +38,6 @@ export default class UserMap extends Component{
   
   constructor(props){
     super(props);
-    console.log("why")
     this.state = {     
       region: {
         latitude: 37.68825,
@@ -53,12 +52,10 @@ export default class UserMap extends Component{
       result: null,
       isModalVisible: null,
     };
-    
-    
   }
 
   componentDidMount(){
-    this.getNewUserLocation(); 
+    this.getInitialUserLocation(); 
     
     //TEMP SEARCH PARAMS
     //when we add a settings page these can be configurable
@@ -69,8 +66,6 @@ export default class UserMap extends Component{
       limit: 40
     };
     this.setSearchParameters(params);
-   
-    
   }
   
   getMinMaxLat = () =>{
@@ -160,29 +155,60 @@ export default class UserMap extends Component{
   }
 
   onRegionChange = (region) => {
-    console.log("region change");
-    console.log(region);
+    //console.log("region change");
+    //console.log(region);
     this.setState({ region });
-    console.log("region change");
-    console.log("region.state");
+    //console.log("region change");
+    //console.log("region.state");
   }
+  getInitialUserLocation = () => {
 
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log(position.coords.latitude);
+    
+        this.setState({
+          userLocation: {         
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }
+        });
+        console.log("setting user location");
+        this.goToUserLocation();
+
+      }, 
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
   getNewUserLocation = () => {
 
-    navigator.geolocation.getCurrentPosition(position => {
-      console.log(position.coords.latitude);
-   
-      this.setState({
-        userLocation: {         
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        }
-      });
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log(position.coords.latitude);
+    
+        this.setState({
+          userLocation: {         
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }
+        });
+        console.log("setting user location");
+        this.goToUserLocation();
 
-      this.goToUserLocation();
+      }, 
+      (error) => {
+        console.log(error);
+        this.setState({
+          isModalVisible: LOCATION_NOT_SET_POP         
+        });
 
-    }, error => console.log("Error fetching location"))
+      }
+    );
   }
+
+
 
   setSearchParameters = (params) => {
     if("lat" in params) {
@@ -237,7 +263,7 @@ export default class UserMap extends Component{
             });
           }
           console.log("Articles:");
-          console.log(this.state.articles);
+          console.log(this.state.articles); 
         });  
       }
       else{

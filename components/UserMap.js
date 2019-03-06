@@ -325,6 +325,22 @@ export default class UserMap extends Component{
     )
   }
 
+  renderActionButton(){
+    return(
+      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.goToUserLocation}>
+              <Icon name="md-locate" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
+              <Icon name="md-pizza" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
+              <Icon name="md-paper" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+
+      </ActionButton>
+    )
+  }
   renderPanel(){
     return(
       <SlidingUpPanel
@@ -357,19 +373,8 @@ export default class UserMap extends Component{
   }
 
   render(){
-    /*
-    if(this.state.region){
-      console.log("region")
-      console.log(this.state.region)
 
-    }
-    else{
-      console.log("region not initialized yet")
-    }*/
-
-
-    return (
-    
+    return (  
     <View style={{ flex: 1 }}>
 
       {this.renderModal(NO_INTERNET_POPUP,NO_INTERNET_POPUP_MESSAGE)}
@@ -421,18 +426,7 @@ export default class UserMap extends Component{
         ))}
       </MapView>
 
-      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
-          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.goToUserLocation}>
-              <Icon name="md-locate" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
-              <Icon name="md-pizza" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
-              <Icon name="md-paper" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-
-      </ActionButton>
+      {this.renderActionButton()}
       {this.renderPanel()}
       
     </View>
@@ -452,8 +446,7 @@ const styles = StyleSheet.create({
     dropup: {
       //alignItems:"center",
       //justifyContent: "center",
-      marginTop: 10,
-      
+      marginTop: 10,     
     },
     panel: {
       flex: 1,
@@ -464,7 +457,6 @@ const styles = StyleSheet.create({
       marginRight: 20,
       borderRadius: 10
     },
-
     actionButtonIcon: {
       fontSize: 20,
       height: 26,
@@ -482,4 +474,3 @@ const styles = StyleSheet.create({
       width: 150
     }
 });
-

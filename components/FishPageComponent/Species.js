@@ -29,7 +29,7 @@ class Species extends React.Component {
     	Species,
     	PicPreferredName
     } = this.props.species;
-    const defaultImage = "https://previews.123rf.com/images/shock77/shock770906/shock77090600028/5010370-funny-cartoon-fish.jpg";
+  
     return (
     <TouchableHighlight 
     onPress={() => this.props.navigation.navigate('FishDetails',{code:SpecCode})}
@@ -39,7 +39,9 @@ class Species extends React.Component {
         <View style={styles.row}>
           <Image
             style={styles.imageContainer}
-            source={{uri: "https://www.fishbase.ca/images/species/"+ PicPreferredName || defaultImage}}
+            source={(PicPreferredName != null)
+              ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}                      
+              : require('../../img/place_holders/no-image-available.png')}
             resizeMode="stretch"
           />
           <View style={styles.textContainer}>

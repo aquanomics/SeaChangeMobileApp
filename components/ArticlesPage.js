@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text } from 'react-native';
+import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
@@ -101,24 +101,24 @@ export default class ArticlesPage extends React.Component {
     }
     
     dropdownHandler = (value) => {
-	//this.fetchNews(value);
-	this.setState({
-	    NewsArticle: [],
-	    refreshing: true,
-	    category: value,
-	    offset: 0,
-	}, () => this.fetchNews(value));	//Need to update the current category being viewed
+
+		this.setState({
+		    NewsArticle: [],
+		    refreshing: true,
+		    category: value,
+		    offset: 0,
+		}, () => this.fetchNews(value));	//Need to update the current category being viewed
     }
 
-    handleRefresh() {
-	this.setState(
-	    {
-		refreshing: true,
-		offset: 0,
-		NewsArticle: [],
-	    },
-	    () => this.fetchNews(this.state.category)
-	);
+    handleRefresh = () => {
+		this.setState(
+		    {
+			refreshing: true,
+			offset: 0,
+			NewsArticle: [],
+		    },
+		    () => this.fetchNews(this.state.category)
+		);
     }
 
     searchSubmitHandler = (forPagination) => {
@@ -287,9 +287,9 @@ export default class ArticlesPage extends React.Component {
 	//Why didn't we just pass in this.state as a parameter rather than individually identifying what is needed in the component being rendered
 	//Answer: Because that is not good for optimization
 	return (
-		<View style={styles.myContainer}>
+		<SafeAreaView style={styles.myContainer}>
 	    	<Header
-	    		outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
+	    		outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 25 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
 	    		backgroundColor={'white'}
 	    		leftComponent={this.leftComponentJSX()}
 	    		centerComponent={this.centerComponentJSX()}
@@ -301,7 +301,7 @@ export default class ArticlesPage extends React.Component {
 	    		searchListRefreshing={this.state.searchListRefreshing}
 	    		NewsArticle={this.state.NewsArticle}
 	    		refreshing={this.state.refreshing}
-	    		handleRefresh={this.handleRefresh.bind(this)}
+	    		handleRefresh={this.handleRefresh}
 	    		isSearchActive={this.state.isSearchActive}
 	    		navigation={this.props.navigation}
 	    		emptySearchReturned={this.state.emptySearchReturned}
@@ -310,7 +310,7 @@ export default class ArticlesPage extends React.Component {
 	    searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
 	    newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
 	    	/>
-	    </View>
+	    </SafeAreaView>
 	);
     }
 }
@@ -324,11 +324,12 @@ function DisplayArticles(props) {
 				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
 				keyExtractor={item => item.url}
 				refreshing={props.refreshing}
-				onRefresh={() => props.handleRefresh()}
-        			onEndReached={props.newsHandleFetchMore}
-        			onEndReachedThreshold={0.1}
+				onRefresh={props.handleRefresh}
+        		onEndReached={props.newsHandleFetchMore}
+        		onEndReachedThreshold={0.1}
 				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
-	onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
+				onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
+				onScrollBeginDrag={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
 			/>;
     } else {
 	//when search is active
@@ -337,10 +338,11 @@ function DisplayArticles(props) {
 				renderItem={({ item }) => <Article article={item} navigation={props.navigation} />}
 				keyExtractor={item => item.url}
 				refreshing={props.searchListRefreshing}
-        			onEndReached={props.searchHandleFetchMore}
-        			onEndReachedThreshold={0.1}
+        		onEndReached={props.searchHandleFetchMore}
+        		onEndReachedThreshold={0.1}
 				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
-	onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
+				onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
+	            onScrollBeginDrag={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
 			/>;
     }
 

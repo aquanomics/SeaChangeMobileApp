@@ -6,8 +6,8 @@ import { getSpeciesSearch } from './FishPageComponent/Fish';
 import Species from './FishPageComponent/Species'
 import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/Ionicons';
-const dropdownOptions = [21,67];
-const dropdownOptionsLocation =["Northwest Atlantic","Pacific, Northeast"]
+const dropdownOptions = [21, 67, 18];
+const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
 export default class FishPage extends React.Component {
     constructor(props) {
 	super(props);
@@ -33,6 +33,7 @@ export default class FishPage extends React.Component {
                 this.faoCode = 67;
                 this.keyword ='';
                 this.wordDropDown = "Filter";
+                this.searchOnEndReachedCalledDuringMomentum = true; 
 
   }
 
@@ -117,11 +118,23 @@ export default class FishPage extends React.Component {
   }
 
   handleSearchFetchMore = () => {
-    this.searchOffset = this.searchOffset + 10; 
-    console.log(this.searchOffset);
-    this.setState({refreshingSearch: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
+    if(!this.searchOnEndReachedCalledDuringMomentum) {
+      this.searchOffset = this.searchOffset + 10; 
+      console.log(this.searchOffset);
+      this.setState({refreshingSearch: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
+     this.searchOnEndReachedCalledDuringMomentum = true;
+    } else {
+       console.log("Inside searchHandleFetchMore. fetch NOT executed");
+    }
   }
 
+  onScrollMotionBeginHandler = () => {
+    this.searchOnEndReachedCalledDuringMomentum = false;
+  }
+
+  onScrollMotionEndHandler = () => {
+    this.searchOnEndReachedCalledDuringMomentum = true;
+  }
 
 
 leftComponentJSX = () => {
@@ -196,7 +209,7 @@ leftComponentJSX = () => {
 
   render() {
 	  return (
-    <View style={styles.myContainer}>
+    <View style={styles.myContainer} contentContainerStyle={{flex: 1}}>
       <Header
           outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}  //need padding because by default Header has padding on the sides
           backgroundColor={'white'}
@@ -215,6 +228,8 @@ leftComponentJSX = () => {
         handleSearchFetchMore={this.handleSearchFetchMore}
         handleSearchRefresh={this.handleSearchRefresh}
         refreshingSearch={this.state.refreshingSearch}
+        onScrollMotionBeginHandler={this.onScrollMotionBeginHandler}  
+        onScrollMotionEndHandler={this.onScrollMotionEndHandler}
         key={this._keyExtractor}
       />
     </View>
@@ -233,7 +248,7 @@ function DisplaySpecies(props) {
             refreshing={props.refreshing}
             onRefresh={props.handleRefresh}
             onEndReached={props.handleFetchMore}
-            onEndThreshold={0}
+            onEndThreshold={0.0}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
           />;
     } else {
@@ -245,10 +260,13 @@ function DisplaySpecies(props) {
             refreshing={props.refreshingSearch}
             onRefresh={props.handleSearchRefresh}
             onEndReached={props.handleSearchFetchMore}
-            onEndThreshold={0}
+            onEndThreshold={0.01}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
+            onMomentumScrollBegin={() => props.onScrollMotionBeginHandler()}
+            onScrollBeginDrag={() => props.onScrollMotionBeginHandler()}
           />;
     }
+
 }
 
 function DisplayNoInternet(props) {

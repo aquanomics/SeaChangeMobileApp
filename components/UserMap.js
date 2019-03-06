@@ -19,8 +19,13 @@ const actionButtonOffsetY = 65
 
 const NO_INTERNET_POPUP = 1
 const NO_ARTICLES_POPUP = 2
-const NO_RESTAURANTS_POP = 3
-const LOCATION_NOT_SET_POP = 4
+const NO_RESTAURANTS_POPUP = 3
+const LOCATION_NOT_SET_POPUP = 4
+
+const NO_INTERNET_POPUP_MESSAGE = "Please Connect to the Internet"
+const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area \n"
+const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this Area \n Try Somewhere Else?"
+const LOCATION_NOT_SET_POPUP_MESSAGE = "Turn on your location settings"
 
 export default class UserMap extends Component{
 
@@ -121,7 +126,7 @@ export default class UserMap extends Component{
     console.log("GO TO USER LOCATION")
     if(!this.state.userLocation){
       this.setState({
-        isModalVisible: LOCATION_NOT_SET_POP         
+        isModalVisible: LOCATION_NOT_SET_POPUP         
       });
     }
     else if(this.state.region){
@@ -293,7 +298,7 @@ export default class UserMap extends Component{
           this.setState({ restaurants:result, refreshing: false });
           if(result.length == 0){
             this.setState({
-              isModalVisible: NO_RESTAURANTS_POP          
+              isModalVisible: NO_RESTAURANTS_POPUP          
             });
           }
           console.log("Restaurants:");
@@ -328,83 +333,82 @@ export default class UserMap extends Component{
     else return;
   }
     
+  renderModal(type, message){
+    return(
+    <View>
+      <Modal isVisible={this.state.isModalVisible === type}>      
+        <View style={styles.modalContent}>
+          <Text>{message}</Text>
+          <TouchableOpacity 
+            onPress={() => this.setState({ isModalVisible: null })}>
+            <View style={styles.button}>
+              <Text>Close</Text>
+            </View>
+          </TouchableOpacity>            
+        </View>
+      </Modal>
+    </View>
+    )
+  }
+
+  renderActionButton(){
+    return(
+      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.goToUserLocation}>
+              <Icon name="md-locate" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
+              <Icon name="md-pizza" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
+              <Icon name="md-paper" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+
+      </ActionButton>
+    )
+  }
+  renderPanel(){
+    return(
+      <SlidingUpPanel
+        visible
+        startCollapsed
+        showBackdrop={false}
+        minimumDistanceThreshold={10}
+        ref={c => this._panel = c}
+        draggableRange={this.props.draggableRange}
+        onDrag={v => this._draggedValue.setValue(v)}     
+        >
+        <View style={styles.panel}>
+          <Icon style={styles.dropup} size={30} name='ios-arrow-dropup' />
+
+          <View style={styles.menu}>
+            <View style={styles.menuRow}>
+              <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
+              <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
+              <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+            </View>
+            <View style={styles.menuRow}>
+              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
+              <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+              <MenuButton iconName="ios-boat" buttonTitle="Fishes" onClick={() => this.props.navigation.navigate('Fishes')}></MenuButton>
+            </View>
+          </View>
+        </View>
+      </SlidingUpPanel>
+    )
+  }
+
   render(){
-    /*
-    if(this.state.region){
-      console.log("region")
-      console.log(this.state.region)
 
-    }
-    else{
-      console.log("region not initialized yet")
-    }*/
-
-
-    return (
-    
+    return (  
     <View style={{ flex: 1 }}>
 
-      <View>
-        <Modal isVisible={this.state.isModalVisible === NO_INTERNET_POPUP}>      
-          <View style={styles.modalContent}>
-            <Text>Please Connect to the Internet</Text>
-            <TouchableOpacity 
-              onPress={() => this.setState({ isModalVisible: null })}>
-              <View style={styles.button}>
-                <Text>Close</Text>
-              </View>
-            </TouchableOpacity>            
-          </View>
-        </Modal>
-      </View>
-
-      <View>
-        <Modal isVisible={this.state.isModalVisible === NO_ARTICLES_POPUP}>       
-          <View style={styles.modalContent}>
-            <Text>No articles in this Area</Text>
-            <Text>Try somewhere else?</Text>
-            <TouchableOpacity 
-              onPress={() => this.setState({ isModalVisible: null })}>          
-              <View style={styles.button}>
-                <Text>Close</Text>
-              </View>
-            </TouchableOpacity>           
-          </View>
-        </Modal>
-      </View>
-
-      <View>
-        <Modal isVisible={this.state.isModalVisible === NO_RESTAURANTS_POP}>       
-          <View style={styles.modalContent}>
-            <Text>No restaurants in this Area</Text>
-            <Text>Try somewhere else?</Text>
-            <TouchableOpacity 
-              onPress={() => this.setState({ isModalVisible: null })}>          
-              <View style={styles.button}>
-                <Text>Close</Text>
-              </View>
-            </TouchableOpacity>           
-          </View>
-        </Modal>
-      </View>
-
-      <View>
-        <Modal isVisible={this.state.isModalVisible === LOCATION_NOT_SET_POP}>       
-          <View style={styles.modalContent}>
-            <Text>Turn on your location settings!</Text>
-            <TouchableOpacity 
-              onPress={() => this.setState({ isModalVisible: null })}>          
-              <View style={styles.button}>
-                <Text>Close</Text>
-              </View>
-            </TouchableOpacity>           
-          </View>
-        </Modal>
-      </View>
-
+      {this.renderModal(NO_INTERNET_POPUP,NO_INTERNET_POPUP_MESSAGE)}
+      {this.renderModal(NO_ARTICLES_POPUP,NO_ARTICLES_POPUP_MESSAGE)}
+      {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE)}
+      {this.renderModal(LOCATION_NOT_SET_POPUP,LOCATION_NOT_SET_POPUP_MESSAGE)}
 
       <MapView style={{ flex: 1 }} 
-
         region={this.state.region} 
         onRegionChangeComplete={this.onRegionChange}
         showsUserLocation={true} 
@@ -448,46 +452,9 @@ export default class UserMap extends Component{
         ))}
       </MapView>
 
-      <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
-          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.getNewUserLocation}>
-              <Icon name="md-locate" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
-              <Icon name="md-pizza" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
-              <Icon name="md-paper" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-
-      </ActionButton>
-
-      <SlidingUpPanel
-        visible
-        startCollapsed
-        showBackdrop={false}
-        minimumDistanceThreshold={10}
-        ref={c => this._panel = c}
-        draggableRange={this.props.draggableRange}
-        onDrag={v => this._draggedValue.setValue(v)}
-        
-        >
-        <View style={styles.panel}>
-          <Icon style={styles.dropup} size={30} name='ios-arrow-dropup' />
-
-          <View style={styles.menu}>
-            <View style={styles.menuRow}>
-              <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
-              <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
-              <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
-            </View>
-            <View style={styles.menuRow}>
-              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
-              <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
-              <MenuButton iconName="ios-boat" buttonTitle="Fishes" onClick={() => this.props.navigation.navigate('Fishes')}></MenuButton>
-            </View>
-          </View>
-        </View>
-      </SlidingUpPanel>
+      {this.renderActionButton()}
+      {this.renderPanel()}
+      
     </View>
     );
   }
@@ -505,8 +472,7 @@ const styles = StyleSheet.create({
     dropup: {
       //alignItems:"center",
       //justifyContent: "center",
-      marginTop: 10,
-      
+      marginTop: 10,     
     },
     panel: {
       flex: 1,
@@ -516,12 +482,6 @@ const styles = StyleSheet.create({
       marginLeft: 20,
       marginRight: 20,
       borderRadius: 10
-    },
-    panelHeader: {
-      height: 120,
-      backgroundColor: '#b197fc',
-      alignItems: 'center',
-      justifyContent: 'center'
     },
     actionButtonIcon: {
       fontSize: 20,
@@ -540,4 +500,3 @@ const styles = StyleSheet.create({
       width: 150
     }
 });
-

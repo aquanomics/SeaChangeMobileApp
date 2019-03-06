@@ -11,6 +11,8 @@ import Modal from "react-native-modal";
 const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
+import { getPosts } from './ServerRequests/nearbyPosts';
+
 
 import SlidingUpPanel from 'rn-sliding-up-panel';
 //import Communications from 'react-native-communications';
@@ -19,11 +21,13 @@ const actionButtonOffsetY = 65
 
 const NO_INTERNET_POPUP = 1
 const NO_ARTICLES_POPUP = 2
-const NO_RESTAURANTS_POPUP = 3
-const LOCATION_NOT_SET_POPUP = 4
+const NO_POSTS_POPUP = 3
+const NO_RESTAURANTS_POPUP = 4
+const LOCATION_NOT_SET_POPUP = 5
 
 const NO_INTERNET_POPUP_MESSAGE = "Please Connect to the Internet"
-const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area \n"
+const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area \n Try Somewhere Else?"
+const NO_POSTS_POPUP_MESSAGE = "No articles in this Area \n, Try Somewhere Else?"
 const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this Area \n Try Somewhere Else?"
 const LOCATION_NOT_SET_POPUP_MESSAGE = "Turn on your location settings"
 
@@ -55,6 +59,7 @@ export default class UserMap extends Component{
       events: [],
       articles: [],
       restaurants: [],
+      posts:[],
       result: null,
       isModalVisible: null,
     };
@@ -224,7 +229,7 @@ export default class UserMap extends Component{
   }
   
   fetchArticles = () => {  
-    this.setState({restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({restaurants:[],articles:[]}); //clear articles from the marker state, so they don't show up on the map
 
     distance = this.getScreenDistance();
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -254,9 +259,10 @@ export default class UserMap extends Component{
     }).catch((error) => console.log(error));
     
   }
+  
   fetchRestaurants = () => {
     
-    this.setState({articles:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({articles:[], posts:[]}); //clear articles from the marker state, so they don't show up on the map
 
 
     distance = this.getScreenDistance();
@@ -287,6 +293,39 @@ export default class UserMap extends Component{
       }
     }).catch((error) => console.log(error));
     
+  }
+
+  fetchPosts = () => {
+    
+    this.setState({articles:[],restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
+
+    distance = this.getScreenDistance();
+    
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
+    console.log(params);
+    this.setSearchParameters(params);
+  
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected)
+      {
+        getPosts(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          this.setState({ posts:result, refreshing: false });
+          if(result.length == 0){
+            this.setState({
+              isModalVisible: NO_POSTS_POPUP          
+            });
+          }
+          console.log("Posts:");
+          console.log(this.state.posts);
+        });  
+      }
+      else{
+        console.log("Internet is not connected");
+        this.setState({
+          isModalVisible: NO_INTERNET_POPUP         
+        });
+      }
+    }).catch((error) => console.log(error)); 
   }
 
  
@@ -330,6 +369,9 @@ export default class UserMap extends Component{
       <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.goToUserLocation}>
               <Icon name="md-locate" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchPosts}>
+              <Icon name="md-paper" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
               <Icon name="md-pizza" style={styles.actionButtonIcon} />
@@ -380,6 +422,7 @@ export default class UserMap extends Component{
       {this.renderModal(NO_INTERNET_POPUP,NO_INTERNET_POPUP_MESSAGE)}
       {this.renderModal(NO_ARTICLES_POPUP,NO_ARTICLES_POPUP_MESSAGE)}
       {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE)}
+      {this.renderModal(NO_POSTS_POPUP,NO_POSTS_POPUP_MESSAGE)}
       {this.renderModal(LOCATION_NOT_SET_POPUP,LOCATION_NOT_SET_POPUP_MESSAGE)}
 
       <MapView style={{ flex: 1 }} 
@@ -419,6 +462,22 @@ export default class UserMap extends Component{
                   <Text numberOfLines={2} style={{fontSize:18}}>{marker.partner_name}{"\n"}</Text>
                   <Text >{"Address: "}{marker.address_1}</Text>
                   <Text >{"#: "}{marker.phone_number}</Text>
+                
+                </View>
+              </MapView.Callout>
+          </MapView.Marker>
+        ))}
+        {this.state.posts.map(marker => (
+          <MapView.Marker
+              coordinate={{latitude:marker.lat, //consistent naming is nessesary
+                longitude:marker.lng}}
+              title={marker.name}
+              description={marker.comment}
+              image={require('../img/map_icons/marker.png')}
+              >
+              <MapView.Callout style={styles.plainView}>            
+                <View>
+                  <Text numberOfLines={2} style={{fontSize:18}}>{marker.comment}{"\n"}</Text>
                 
                 </View>
               </MapView.Callout>

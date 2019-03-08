@@ -121,6 +121,10 @@ export default class ProfilePage extends Component{
     passwordTextHandler = (text) => {
         this.setState({"password":text});
     }
+
+    onPressObservation = () => {
+        this.props.navigation.navigate('ObservationsList', {});   
+    }
  
     render(){
         return (
@@ -133,6 +137,7 @@ export default class ProfilePage extends Component{
                     onPressForgotPassword={this.onPressForgotPassword}
                     emailTextHandler={this.emailTextHandler}
                     passwordTextHandler={this.passwordTextHandler}
+                    onPressObservation={this.onPressObservation}
                 />
                 <Dialog
                     onTouchOutside={() => this.setState({ displayDialog: false, dialogText: '' })}
@@ -239,14 +244,25 @@ function DisplayAccountInfo(props) {
                 <Text>User is signed in!</Text>
                 <View style={styles.buttonsContainer}>
                     <RoundButton 
-                            style = {styles.signOutButton}
-                            type="primary"
-                            text="Sign Out"
-                            textStyle= {styles.buttonTextFont}
-                            backgroundColors={['#2193b0', '#6dd5ed']}
-                            gradientStart={{ x: 0.5, y: 1 }}
-                            gradientEnd={{ x: 1, y: 1 }}
-                            onPress={props.onPressSignOut} />
+                        style = {styles.buttonsWhileSignedIn}
+                        type="primary"
+                        text="Sign Out"
+                        textStyle= {styles.buttonTextFont}
+                        backgroundColors={['#2193b0', '#6dd5ed']}
+                        gradientStart={{ x: 0.5, y: 1 }}
+                        gradientEnd={{ x: 1, y: 1 }}
+                        onPress={props.onPressSignOut} 
+                    />
+                    <RoundButton 
+                        style = {styles.buttonsWhileSignedIn}
+                        type="primary"
+                        text="Your Observation Posts"
+                        textStyle= {styles.buttonTextFont}
+                        backgroundColors={['#2193b0', '#6dd5ed']}
+                        gradientStart={{ x: 0.5, y: 1 }}
+                        gradientEnd={{ x: 1, y: 1 }}
+                        onPress={props.onPressObservation} 
+                    />
                 </View>
             </View>
         );
@@ -296,9 +312,10 @@ const styles = StyleSheet.create({
         height: 50,
         width: 300,
     },
-    signOutButton: {
+    buttonsWhileSignedIn: {
         height: 50,
         width: 300,
+        marginTop: 25,
     },
     buttonTextFont: {
         ...material.button,
@@ -316,7 +333,6 @@ const styles = StyleSheet.create({
     },
     buttonsContainer: {
         marginTop: 8,
-        flexDirection: 'row',
     },
     forgotText: {
         ...material.titleObject,

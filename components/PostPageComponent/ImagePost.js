@@ -108,6 +108,7 @@ export default class ImagePost extends Component{
                 console.log(tempParam);
 
                 var url = setUrlParam(URL, tempParam);
+                console.log(`This is the upload url: ${url}`);
                 return fetch(url, { method: "POST", body: createFormData(this.state.photo, {}) });
             })
             .then(response => {
@@ -191,7 +192,7 @@ export default class ImagePost extends Component{
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                     <Fumi
                         style = {styles.input}
-                        label={'Name'}
+                        label={'Title'}
                         labelStyle={{ color: '#a3a3a3' }}
                         inputStyle={{ color: '#f95a25' }}
                         iconClass={FontAwesomeIcon}
@@ -202,7 +203,7 @@ export default class ImagePost extends Component{
                     />
                     <Fumi
                         style = {styles.input}
-                        label={'Comment'}
+                        label={'Description'}
                         labelStyle={{ color: '#a3a3a3' }}
                         inputStyle={{ color: '#f95a25' }}
                         iconClass={FontAwesomeIcon}

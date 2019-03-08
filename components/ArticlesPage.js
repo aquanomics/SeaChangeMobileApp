@@ -71,40 +71,39 @@ export default class ArticlesPage extends React.Component {
     }
 
     onBackButtonPressAndroid = () => {
-	if (this.state.isSearchActive == true) {
-	    this.toggleSearchState();
-	    return true;
-	} else {
-	    return false;
-	}
+		if (this.state.isSearchActive == true) {
+		    this.toggleSearchState();
+		    return true;
+		} else {
+		    return false;
+		}
     };
 
     toggleSearchState = () => {
-	if(this.state.isSearchActive == true) {
-	    this.setState({
-		isSearchActive: false,
-		SearchArticle: [],
-		searchListRefreshing: false,
-		searchOffset: 0,
-		searchSubmitted: false,
-		lastSearchText: this.state.searchText,
-	    });
-	} else {
-	    this.setState({ isSearchActive: true});
-	}
+		if(this.state.isSearchActive == true) {
+		    this.setState({
+				isSearchActive: false,
+				SearchArticle: [],
+				searchListRefreshing: false,
+				searchOffset: 0,
+				searchSubmitted: false,
+				lastSearchText: this.state.searchText,
+		    });
+		} else {
+		    this.setState({ isSearchActive: true});
+		}
     }
 
     //WARNING: fetch does not replace the state.NewsArticle anymore. Therefore, before this function is called,
     //NewsArticle should be emptied unless you want the new fetched material to be concatenated with the old array
     //which you sometimes want it to happen aka pagination
     fetchNews = (category) => {
-	getNews(category, this.state.offset, LIMIT)
-	    .then(response => this.setState({ NewsArticle: [...this.state.NewsArticle, ...response], refreshing: false }))
-	    .catch(() => this.setState({NewsArticle: [], refreshing: false }));
+		getNews(category, this.state.offset, LIMIT)
+		    .then(response => this.setState({ NewsArticle: [...this.state.NewsArticle, ...response], refreshing: false }))
+		    .catch(() => this.setState({NewsArticle: [], refreshing: false }));
     }
     
     dropdownHandler = (value) => {
-
 		this.setState({
 		    NewsArticle: [],
 		    refreshing: true,
@@ -114,50 +113,49 @@ export default class ArticlesPage extends React.Component {
     }
 
     handleRefresh = () => {
-		this.setState(
-		    {
+		this.setState({
 			refreshing: true,
 			offset: 0,
 			NewsArticle: [],
-		    },
+		},
 		    () => this.fetchNews(this.state.category)
 		);
     }
 
     searchSubmitHandler = (forPagination) => {
-	console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
-	if(forPagination === undefined) {
-	    this.setState({
-		searchSubmitted: true,
-		lastSearchText: this.state.searchText,
-		SearchArticle: [],			//clear the browser
-		//searchListRefreshing: true,
-		searchOffset: 0,
-	    }, () => {
-		getArticleSearch(this.state.searchText, this.state.searchOffset, LIMIT)
-		    .then( returnedObject => {
-			this.setState({ SearchArticle: returnedObject.SearchArticle, emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
-		    })
-		    .catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
-	    });
-	} else {
-	    //this branch is for pagination
-	    getArticleSearch(this.state.lastSearchText, this.state.searchOffset, LIMIT)
-		.then( returnedObject => {
-		    this.setState({ SearchArticle: [...this.state.SearchArticle, ...returnedObject.SearchArticle], emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
-		})
-		.catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
-
-	}
+		console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
+		if(forPagination === undefined) {
+		    this.setState({
+				searchSubmitted: true,
+				lastSearchText: this.state.searchText,
+				SearchArticle: [],			//clear the browser
+				//searchListRefreshing: true,
+				searchOffset: 0,
+		    }, () => {
+				getArticleSearch(this.state.searchText, this.state.searchOffset, LIMIT)
+				    .then( returnedObject => {
+						this.setState({ SearchArticle: returnedObject.SearchArticle, emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
+				    })
+				    .catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
+		    });
+		} else {
+		    //this branch is for pagination
+		    getArticleSearch(this.state.lastSearchText, this.state.searchOffset, LIMIT)
+				.then( returnedObject => {
+				    this.setState({ SearchArticle: [...this.state.SearchArticle, ...returnedObject.SearchArticle], emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
+				})
+				.catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
+		}
     }
 
     newsHandleFetchMore = () => {
 		if(!this.newsOnEndReachedCalledDuringMomentum) {
 		    console.log("Inside newsHandleFetchMore. fetch executed");
 		    this.setState({
-			offset: this.state.offset + OFFSET_CONST,
-			//refreshing: true,
+				offset: this.state.offset + OFFSET_CONST,
+				//refreshing: true,
 		    }, () => this.fetchNews(this.state.category));
+
 		    this.newsOnEndReachedCalledDuringMomentum = true;
 		} else {
 		    console.log("Inside newsHandleFetchMore. fetch NOT executed");
@@ -168,9 +166,10 @@ export default class ArticlesPage extends React.Component {
 		if(!this.searchOnEndReachedCalledDuringMomentum) {
 		    console.log("Inside searchHandleFetchMore. fetch executed");
 		    this.setState({
-			searchOffset: this.state.searchOffset + OFFSET_CONST,
-			//searchListRefreshing: true,
+				searchOffset: this.state.searchOffset + OFFSET_CONST,
+				//searchListRefreshing: true,
 		    }, () => this.searchSubmitHandler(true));
+
 		    this.searchOnEndReachedCalledDuringMomentum = true;
 		} else {
 		    console.log("Inside searchHandleFetchMore. fetch NOT executed");
@@ -179,97 +178,97 @@ export default class ArticlesPage extends React.Component {
 
 
     searchOnEndReachedCalledDuringMomentumHandler = () => {
-	this.searchOnEndReachedCalledDuringMomentum = false;
+		this.searchOnEndReachedCalledDuringMomentum = false;
     }
 
     newsOnEndReachedCalledDuringMomentumHandler = () => {
-	this.newsOnEndReachedCalledDuringMomentum = false;
+		this.newsOnEndReachedCalledDuringMomentum = false;
     }
 
     //render functions that return JSX
 
     leftComponentJSX = () => {
-	//BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-	if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
-	    return (
-		<View style={styles.headerLeft}>
-		    <TouchableHighlight
-			style={styles.headerLeftIcon}
-			underlayColor={'#DCDCDC'}
-			onPress={() => this.props.navigation.goBack()}
-		    >
-		        <Icon
-		            name="md-arrow-back"
-		            size={25}
-		        />
-		    </TouchableHighlight>
-		</View>
-	    );
-	} else {
-	    return (
-		<View style={styles.headerLeft}>
-		    <TouchableHighlight
-			style={styles.headerLeftIcon}
-			underlayColor={'#DCDCDC'}
-			onPress={() => {
-			    this.toggleSearchState();
-			} }
-		    >
-		    	<Icon
-			    name="md-close"
-			    size={25}
-		    	/>
-		    </TouchableHighlight>
-		</View>
-	    );
-	}
+		//BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+		if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+		    return (
+				<View style={styles.headerLeft}>
+				    <TouchableHighlight
+						style={styles.headerLeftIcon}
+						underlayColor={'#DCDCDC'}
+						onPress={() => this.props.navigation.goBack()}
+				    >
+				        <Icon
+				            name="md-arrow-back"
+				            size={25}
+				        />
+				    </TouchableHighlight>
+				</View>
+		    );
+		} else {
+		    return (
+				<View style={styles.headerLeft}>
+				    <TouchableHighlight
+						style={styles.headerLeftIcon}
+						underlayColor={'#DCDCDC'}
+						onPress={() => {
+						    this.toggleSearchState();
+						}}
+				    >
+				    	<Icon
+						    name="md-close"
+						    size={25}
+				    	/>
+				    </TouchableHighlight>
+				</View>
+		    );
+		}
     }
 
     centerComponentJSX = () => {
-	if(this.state.isSearchActive == false) {
-	    return (
-		<View style={styles.headerTitleContainer}>
-		    <Text style={ {
-			fontWeight: 'bold',
-			textAlign: 'center',
-		    } }>
-		    	Articles
-		    </Text>
-		</View>
-	    );
-	}
-	return null;
+		if(this.state.isSearchActive == false) {
+		    return (
+				<View style={styles.headerTitleContainer}>
+				    <Text style={ {
+						fontWeight: 'bold',
+						textAlign: 'center',
+				    }}>
+				    	Articles
+				    </Text>
+				</View>
+		    );
+		}
+		return null;
     }
 
     rightComponentJSX = () => {
-	//we check for undefined because when using setState to change states,
-	//the state values can momentarily be undefined
-	if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
-	    //When search is not active
-            return (
-		<View style={styles.headerRight}>
-		    <TouchableHighlight
-	    		style={styles.headerSearchIcon}
-	    		underlayColor={'#DCDCDC'}
-	    		onPress = {this.toggleSearchState}
-		    >
-        	    	<Icon
-        		    	name="md-search"
-        		    	size={25}
-        	    	/>
-		    </TouchableHighlight>
-            <ModalDropdown
-        	    style={styles.dropdown}
-        	    defaultValue='Filter'
-        	    options={dropdownOptions}
-        	    //WARNING: context is lost within onSelect
-        	    //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
-            	onSelect={(idx, value) => this.dropdownHandler(value)}//using getParam is the way to get around "this" context being lost
-        	/>
-		</View>
-            );
-	} else {
-	    //When search is active
+		//we check for undefined because when using setState to change states,
+		//the state values can momentarily be undefined
+		if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+		    //When search is not active
+	            return (
+					<View style={styles.headerRight}>
+					    <TouchableHighlight
+				    		style={styles.headerSearchIcon}
+				    		underlayColor={'#DCDCDC'}
+				    		onPress = {this.toggleSearchState}
+					    >
+			        	    	<Icon
+			        		    	name="md-search"
+			        		    	size={25}
+			        	    	/>
+					    </TouchableHighlight>
+			            <ModalDropdown
+			        	    style={styles.dropdown}
+			        	    defaultValue='Filter'
+			        	    options={dropdownOptions}
+			        	    //WARNING: context is lost within onSelect
+			        	    //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
+			            	onSelect={(idx, value) => this.dropdownHandler(value)}//using getParam is the way to get around "this" context being lost
+			        	/>
+					</View>
+	            );
+		} else {
+		    //When search is active
             return (
            	    <View style={styles.headerRight}>
            	    	<TextInput
@@ -283,38 +282,38 @@ export default class ArticlesPage extends React.Component {
 					/>
            	    </View>
             );
-	}
+		}
     }
 
     render() {
-	//Why didn't we just pass in this.state as a parameter rather than individually identifying what is needed in the component being rendered
-	//Answer: Because that is not good for optimization
-	return (
-		<SafeAreaView style={styles.myContainer}>
-	    	<Header
-	    		outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 25 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
-	    		backgroundColor={'white'}
-	    		leftComponent={this.leftComponentJSX()}
-	    		centerComponent={this.centerComponentJSX()}
-	    		rightComponent={this.rightComponentJSX()}
-	    	/>
-	    	<DisplayArticles
-	    		searchSubmitted={this.state.searchSubmitted}
-	    		SearchArticle={this.state.SearchArticle}
-	    		searchListRefreshing={this.state.searchListRefreshing}
-	    		NewsArticle={this.state.NewsArticle}
-	    		refreshing={this.state.refreshing}
-	    		handleRefresh={this.handleRefresh}
-	    		isSearchActive={this.state.isSearchActive}
-	    		navigation={this.props.navigation}
-	    		emptySearchReturned={this.state.emptySearchReturned}
-	    		newsHandleFetchMore={this.newsHandleFetchMore}		//no need to bind if use arrow functions
-	    		searchHandleFetchMore={this.searchHandleFetchMore}	//no need to bind if use arrow functions
-	    		searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
-	    		newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
-	    	/>
-	    </SafeAreaView>
-	);
+		//Why didn't we just pass in this.state as a parameter rather than individually identifying what is needed in the component being rendered
+		//Answer: Because that is not good for optimization
+		return (
+			<SafeAreaView style={styles.myContainer}>
+		    	<Header
+		    		outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 25 :  70 - 13, padding: 0}}	//need padding because by default Header has padding on the sides
+		    		backgroundColor={'white'}
+		    		leftComponent={this.leftComponentJSX()}
+		    		centerComponent={this.centerComponentJSX()}
+		    		rightComponent={this.rightComponentJSX()}
+		    	/>
+		    	<DisplayArticles
+		    		searchSubmitted={this.state.searchSubmitted}
+		    		SearchArticle={this.state.SearchArticle}
+		    		searchListRefreshing={this.state.searchListRefreshing}
+		    		NewsArticle={this.state.NewsArticle}
+		    		refreshing={this.state.refreshing}
+		    		handleRefresh={this.handleRefresh}
+		    		isSearchActive={this.state.isSearchActive}
+		    		navigation={this.props.navigation}
+		    		emptySearchReturned={this.state.emptySearchReturned}
+		    		newsHandleFetchMore={this.newsHandleFetchMore}		//no need to bind if use arrow functions
+		    		searchHandleFetchMore={this.searchHandleFetchMore}	//no need to bind if use arrow functions
+		    		searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
+		    		newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
+		    	/>
+		    </SafeAreaView>
+		);
     }
 }
 

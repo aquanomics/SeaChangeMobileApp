@@ -12,17 +12,17 @@ export default class ArticleAbstraction extends React.Component {
     });
 
     constructor(props) {
-	super(props);
+		super(props);
     }
 
     componentDidMount() {
-	//debugging
-	console.log("inside ArticleAbstraction.js. Below is the props passed to it");
-	console.log(this.props.navigation.getParam('articleObject', {} ));
+		//debugging
+		console.log("inside ArticleAbstraction.js. Below is the props passed to it");
+		console.log(this.props.navigation.getParam('articleObject', {} ));
 
-	//This below is a method of passing data to the navigationOptions.
-	//I think navigation.state is different from the component's state
-	this.props.navigation.setParams({ myTitle: this.props.navigation.getParam('articleObject', {} ).title});
+		//This below is a method of passing data to the navigationOptions.
+		//I think navigation.state is different from the component's state
+		this.props.navigation.setParams({ myTitle: this.props.navigation.getParam('articleObject', {} ).title});
     }
 
     render() {

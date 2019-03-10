@@ -38,7 +38,7 @@ export default class FishPage extends React.Component {
   }
 
   static navigationOptions = {
-    title: 'Fishes',
+    title: 'Fish',
   };
 
   toggleSearchState = () => {

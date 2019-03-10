@@ -1,6 +1,7 @@
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import { Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight} from 'react-native';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 class Species extends React.Component {
 
 
@@ -42,10 +43,9 @@ class Species extends React.Component {
             source={(PicPreferredName != null)
               ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}                      
               : require('../../img/place_holders/no-image-available.png')}
-            resizeMode="stretch"
           />
           <View style={styles.textContainer}>
-            <Text style={styles.fishName} numberOfLines={1}> {FBname} </Text>
+            <Text style={styles.fishName} numberOfLines={2}> {FBname.toUpperCase()} </Text>
             <Text style={styles.petDescription} numberOfLines={2}> {Genus + " " + Species} </Text>
           </View>
         </View>
@@ -58,7 +58,7 @@ class Species extends React.Component {
 const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
-    backgroundColor: '#f9f5ed',
+    backgroundColor: '#8cdff2',
     flexDirection: 'row',
     borderStyle: 'solid',
     borderBottomColor: '#dddddd',
@@ -76,13 +76,14 @@ const styles = StyleSheet.create({
 
   },
   imageContainer: {
+    resizeMode:"contain",
     width: 150,
     height: 100,
-    borderRadius: 35,
-    borderWidth: 1,
+    paddingRight: 5,
   },
   textContainer: {
     flex: 1,
+    paddingLeft: 5,
   },
   noImage: {
     flex: 1,
@@ -97,9 +98,10 @@ const styles = StyleSheet.create({
     height: 90,
   },
   fishName: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
+    //fontSize: 16,
+    //fontWeight: '500',
+    ...material.subheadingObject,
+    ...systemWeights.semibold,
   },
   petBreed: {
     fontSize: 13,

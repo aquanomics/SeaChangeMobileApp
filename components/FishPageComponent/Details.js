@@ -1,5 +1,6 @@
 import React from 'react';
 import { Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight} from 'react-native';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 export default class Details extends React.Component {
 
 
@@ -34,23 +35,25 @@ export default class Details extends React.Component {
     return (
       <Animated.View style={{ opacity: this.state.scaleValue }}>
         <View style={styles.row}>
-          <View>
-          <TouchableHighlight 
-          onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: "https://www.fishbase.ca/summary/" + SpecCode})}
-          underlayColor={'#fffad8'}
-          >           
-          <Image
-            style={styles.imageContainer}
-            source={(PicPreferredName != null)
-              ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}                      
-              : require('../../img/place_holders/no-image-available.png')}
-            resizeMode="stretch"
-          />
-          </TouchableHighlight>
-            <Text style={styles.fishName} numberOfLines={1}> {FBname} </Text>
+	    <View>
+	    <View style={styles.imageContainer}>
+		    <TouchableHighlight 
+		      onPress={() => this.props.navigation.navigate('ArticleWebView',
+			      {uri: "https://www.fishbase.ca/summary/" + SpecCode})}
+		      underlayColor={'#fffad8'} >           
+		      <Image
+			source={(PicPreferredName != null)
+			  ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}
+			  : require('../../img/place_holders/no-image-available.png')}
+			resizeMode="stretch"
+	    		style={styles.fishImage}
+		      />
+		    </TouchableHighlight>
+	    </View>
+            <Text style={styles.fishName} numberOfLines={1}> {FBname.toUpperCase()}</Text>
             <Text style={styles.fishScienceName} numberOfLines={2}> {Genus + " " + Species} </Text>
-            <Text style={styles.fishBio} numberOfLines={2}> {"Weight:"+Weight/1000+"kg"+"||"+"Length:"+Length/100+"m"}</Text>
-            <Text style={styles.petDescription} numberOfLines={20}> {Comments} </Text>
+            <Text style={styles.fishBio} numberOfLines={2}> {"Weight: "+Weight/1000+" kg "+"  "+" Length: "+Length/100+" m"}</Text>
+            <Text style={styles.petDescription} numberOfLines={20}> {Comments.replace(/\//g,"").replace(/<i>/g, "").replace(/ *\([^)]*\) */g, "") } </Text>
           </View>
         </View>
       </Animated.View>
@@ -60,12 +63,12 @@ export default class Details extends React.Component {
 const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
-    backgroundColor: '#f9f5ed',
+    backgroundColor: '#8cdff2',
     flexDirection: 'row',
     borderStyle: 'solid',
-    borderBottomColor: '#dddddd',
+ //   borderBottomColor: '#dddddd',
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderRadius: 15,
+    borderRadius: 5,
     elevation: 2,
     paddingTop: 15,
     paddingBottom: 5,
@@ -73,17 +76,18 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     marginLeft: 14,
     marginRight: 14,
-    marginTop: 0,
+    marginTop: 10,
     marginBottom: 6,
 
   },
+ fishImage:{
+    resizeMode: 'contain',
+    height: 200,
+    width: 300,
+  },
   imageContainer: {
-    width: 290,
-    height: 225,
-    //justifyContent: 'center',
+    flex: 1,
     alignItems: 'center',
-    borderRadius: 35,
-    borderWidth: 1,
   },
   textContainer: {
     flex: 5,
@@ -104,8 +108,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flexDirection:'row',
     flex: 1,
-    fontSize: 18,
-    fontWeight: '500',
+    ...material.titleObject,
+    ...systemWeights.semibold,
   },
   petBreed: {
     fontSize: 13,
@@ -113,25 +117,29 @@ const styles = StyleSheet.create({
   fishBio: {
     textAlign: 'center',
     flexDirection:'row',
-    fontSize: 16,
     marginTop: 5,
+    paddingBottom: 10,
     flex:1,
-    fontWeight: '300',
+    borderBottomColor: '#044554',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    ...material.captionObject,
+    ...systemWeights.regular,
   },
   fishScienceName: {
+    ...material.subheadingObject,
+    ...systemWeights.light,
     textAlign: 'center',
     flexDirection:'row',
-    fontSize: 16,
     marginTop: 5,
     flex:1,
-    fontWeight: '500',
   },
   petDescription: {
-    textAlign: 'center',
     flexDirection:'row',
-    fontSize: 12,
+    paddingTop: 10,
     marginTop: 5,
     flex:1,
+    ...material.body2Object,
+    ...systemWeights.regular,
   },
   petLocation: {
     fontSize: 12,

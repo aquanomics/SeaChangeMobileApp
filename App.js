@@ -56,7 +56,7 @@ const MainNavigator = createStackNavigator({
     Login: {
         screen: LoginPage
     },
-    Fishes: {
+    Fish: {
         screen: FishPage
     },
     Signup: {

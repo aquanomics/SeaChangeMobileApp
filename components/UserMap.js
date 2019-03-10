@@ -451,7 +451,6 @@ export default class UserMap extends Component{
           </MapView.Marker>
         ))}
       </MapView>
-
       {this.renderActionButton()}
       {this.renderPanel()}
       

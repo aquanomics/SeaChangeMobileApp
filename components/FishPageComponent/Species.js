@@ -45,7 +45,7 @@ class Species extends React.Component {
               : require('../../img/place_holders/no-image-available.png')}
           />
           <View style={styles.textContainer}>
-            <Text style={styles.fishName} numberOfLines={2}> {FBname.toUpperCase()} </Text>
+            <Text style={styles.fishName} numberOfLines={2}> {FBname} </Text>
             <Text style={styles.petDescription} numberOfLines={2}> {Genus + " " + Species} </Text>
           </View>
         </View>

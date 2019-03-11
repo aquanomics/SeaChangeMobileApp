@@ -13,18 +13,19 @@ export default class ObservationCard extends React.Component {
     const { noteStyle, featuredTitleStyle } = styles;
     const MAXLENGTH = 150;
 
+    //Note: Regarding the "comment" part, need to check for 'null' not null for some reason
     return (
       <TouchableHighlight
 	      underlayColor={'#fffad8'}
         onPress={() => this.props.navigation.navigate('ObservationDetails', {postObject: this.props.item})}
       >
         <Card
-          featuredTitle={this.props.item.name}
+          featuredTitle={this.props.item.name == 'default-name' ? '' : this.props.item.name}
           featuredTitleStyle={featuredTitleStyle}
           image={{ uri: this.props.item.urlToImage }}
         >
           <Text style={{ marginBottom: 10 }}>
-            {this.props.item.comment.length <= MAXLENGTH ? this.props.item.comment : this.props.item.comment.substring(0, MAXLENGTH)+" ...Read More"}
+            {this.props.item.comment == 'null' ? '' : this.props.item.comment.length <= MAXLENGTH ? this.props.item.comment : this.props.item.comment.substring(0, MAXLENGTH)+" ...Read More"}
           </Text>
 
           <Divider style={{ backgroundColor: '#dfe6e9' }} />
@@ -62,7 +63,7 @@ function DisplayApproval(props) {
           size={15}
           color='#DC143C'
         />
-        <Text style={styles.noteStyle}>{'rejected'}</Text>
+        <Text style={styles.noteStyle}>{'awaiting approval'}</Text>
       </View>
     );
   } else {
@@ -73,11 +74,13 @@ function DisplayApproval(props) {
           size={15}
           color='#FFC30B'
         />
-        <Text style={styles.noteStyle}>{'awaiting'}</Text>
+        <Text style={styles.noteStyle}>{'error'}</Text>
       </View>
     );
   }
 }
+
+export { DisplayApproval };
 
 const styles = {
   noteStyle: {

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Dimensions, StyleSheet, View, ScrollView } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Text, Divider } from 'react-native-elements';
 import { Button } from 'react-native-elements';
 import { RoundButton } from 'react-native-button-component';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
+import moment from 'moment';
 
 export default class ArticleAbstraction extends React.Component {
     static navigationOptions = ({ navigation }) => ({
@@ -31,6 +32,7 @@ export default class ArticleAbstraction extends React.Component {
 	//	coordinate={{latitude: 37.78825,
 	//		     longitude: -122.4324}}
 		const articleObject = this.props.navigation.getParam('articleObject', {});
+		const time = moment(articleObject.published_at || moment.now()).fromNow();
 
 		if (!articleObject.lat || !articleObject["lng"]) {
 			return (
@@ -62,6 +64,11 @@ export default class ArticleAbstraction extends React.Component {
 	            					text="See Full Article"
 						/>
 					</View>
+					<Divider style={styles.divider} />
+		            <View style={styles.footer}>
+		                <Text style={styles.noteStyle}>{articleObject.source_name.toUpperCase()}</Text>
+		                <Text style={styles.noteStyle}>{time}</Text>
+		            </View>
 		        </ScrollView>
 			);
 		} else {
@@ -93,6 +100,12 @@ export default class ArticleAbstraction extends React.Component {
 							/>
 					</View>
 
+					<Divider style={styles.divider} />
+		            <View style={styles.footer}>
+		                <Text style={styles.noteStyle}>{articleObject.source_name.toUpperCase()}</Text>
+		                <Text style={styles.noteStyle}>{time}</Text>
+		            </View>
+
 					<View style={styles.mapContainer}>
 						<MapView style={StyleSheet.absoluteFillObject} 
 							initialRegion={{
@@ -123,45 +136,59 @@ const styles = {
         //justifyContent: 'center',
     },
     buttonContainer: {
-	justifyContent: 'center',
-	alignItems: 'center',
-	marginTop: 20,	//adds space at the top so that the buttons don't go underneath the header
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginTop: 20,	//adds space at the top so that the buttons don't go underneath the header
     },
     button: {
         height: 50,
         width: 250,
     },
     imageContainer:{
-	justifyContent: 'center',
-	alignItems: 'center',
-	paddingLeft: 8,		//BE CAREFUL: If the padding number is changed, remember to update the prop to ResizedImage.js
-	paddingRight: 8,
-	marginTop: 20,
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingLeft: 8,		//BE CAREFUL: If the padding number is changed, remember to update the prop to ResizedImage.js
+		paddingRight: 8,
+		marginTop: 20,
     },
     titleContainer: {
-	justifyContent: 'center',
-	marginTop: 12,
-	marginLeft: 14,
-	marginRight: 14,
+		justifyContent: 'center',
+		marginTop: 12,
+		marginLeft: 14,
+		marginRight: 14,
     },
     title: {
-	fontWeight: 'bold',
-	fontSize: 20,
+		fontWeight: 'bold',
+		fontSize: 20,
     },
     summaryContainer:{
-	justifyContent: 'center',
-	alignItems: 'center',
-	marginLeft: 14,
-	marginRight: 14,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginLeft: 14,
+		marginRight: 14,
     },
     summary: {
-	//textAlign: 'center',
+		//textAlign: 'center',
     },
     mapContainer: {
-	height: Dimensions.get("window").width - 14*2,	//WARNING: This is for MapView to be rendered
-	marginTop: 25,
-	marginLeft: 14,
-	marginRight: 14,
-	backgroundColor:'green',
+		height: Dimensions.get("window").width - 14*2,	//WARNING: This is for MapView to be rendered
+		marginTop: 25,
+		marginLeft: 14,
+		marginRight: 14,
+		backgroundColor:'green',
     },
+    divider: {
+		backgroundColor: '#dfe6e9',
+		marginTop: 10,
+    },
+    footer: {
+    	flexDirection: 'row', 
+    	justifyContent: 'space-between',
+    },
+    noteStyle: {
+	    margin: 5,
+	    fontStyle: 'italic',
+	    color: '#b2bec3',
+	    fontSize: 10
+  	},
 };

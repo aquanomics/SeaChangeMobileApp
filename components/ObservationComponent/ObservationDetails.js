@@ -1,7 +1,8 @@
 import React from 'react';
 import { Dimensions, StyleSheet, View, ScrollView } from 'react-native';
+import {DisplayApproval} from './ObservationCard';
 import { Text } from 'react-native-elements';
-import { Button } from 'react-native-elements';
+import { Button, Divider } from 'react-native-elements';
 import { RoundButton } from 'react-native-button-component';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
@@ -40,12 +41,17 @@ export default class ObservationDetails extends React.Component {
 					</View>
 
 					<View style={styles.titleContainer}>
-						<Text style={styles.title}> {postObject.name} </Text>
+						<Text style={styles.title}> {postObject.name == 'default-name' ? '' : postObject.name} </Text>
 					</View>
 
 					<View style={styles.summaryContainer}>
-						<Text style={styles.summary}> {postObject.comment} </Text>
+						<Text style={styles.summary}> {postObject.comment == 'null' ? '' : postObject.comment} </Text>
 					</View>
+			        <Divider style={styles.divider} />
+					<View style={styles.footer}>
+			            <DisplayApproval approved={postObject.approved}/>
+			            <Text style={styles.noteStyle}>{postObject.uploaded_at.slice(0, -4)}</Text>
+			        </View>
 		        </ScrollView>
 			);
 		} else {
@@ -59,12 +65,18 @@ export default class ObservationDetails extends React.Component {
 					</View>
 
 					<View style={styles.titleContainer}>
-						<Text style={styles.title}> {postObject.name} </Text>
+						<Text style={styles.title}> {postObject.name == 'default-name' ? '' : postObject.name} </Text>
 					</View>
 
 					<View style={styles.summaryContainer}>
-						<Text style={styles.summary}> {postObject.comment} </Text>
+						<Text style={styles.summary}> {postObject.comment == 'null' ? '' : postObject.comment} </Text>
 					</View>
+
+					<Divider style={styles.divider} />
+					<View style={styles.footer}>
+			            <DisplayApproval approved={postObject.approved}/>
+			            <Text style={styles.noteStyle}>{postObject.uploaded_at.slice(0, -4)}</Text>
+			        </View>
 
 					<View style={styles.mapContainer}>
 						<MapView style={StyleSheet.absoluteFillObject} 
@@ -82,7 +94,6 @@ export default class ObservationDetails extends React.Component {
 							description={"..."}
 							/>
 						</MapView>
-				
 					</View>
 		        </ScrollView>
 			);
@@ -95,6 +106,12 @@ const styles = {
         //alignItems: 'stretch',
         //justifyContent: 'center',
     },
+    noteStyle: {
+	    margin: 5,
+	    fontStyle: 'italic',
+	    color: '#b2bec3',
+	    fontSize: 10
+  	},
     buttonContainer: {
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -137,4 +154,12 @@ const styles = {
 		marginRight: 14,
 		backgroundColor:'green',
     },
+    divider: {
+		backgroundColor: '#dfe6e9',
+		marginTop: 10,
+    },
+    footer: {
+    	flexDirection: 'row', 
+    	justifyContent: 'space-between',
+    }
 };

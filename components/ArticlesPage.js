@@ -42,8 +42,7 @@ export default class ArticlesPage extends React.Component {
 		    searchSubmitted: false,		//to keep track of whether search has been submitted at least once during the search session
 		    					//This is used in the logic so that when you first try to search something before submission,
 		    					//the empty list doesn't show up
-		    lastSearchText: '',			//This is used for searchList during pagination because if the list is at the end and if we were
-		    					//to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
+		    lastSearchText: '',			//We need to "remember" this value for pagination to know what string to query
 		    isSearchActive: false,        	//state for search transition
 		    emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
 							//This is used in the logic to differentiate whether to say No Internet or No Results
@@ -350,20 +349,26 @@ function DisplayArticles(props) {
 
 }
 
-//TODO: Need to account for the case where no results are came back
 function DisplayEmptyList(props) {
-    if(props.emptySearchReturned == true) {
-	//empty case
-	return <View style={styles.container}>
-				<Text style={styles.welcome}>No results</Text>
-				<Text style={styles.instructions}>Try a different keyword</Text>
-	       </View>;
+	//Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
+	//all state variables undefined
+	if(props.refreshing || props.searchListRefreshing || 
+		props.refreshing === undefined || props.searchListRefreshing === undefined) {
+		return <View style={styles.container}>
+					<Text style={styles.welcome}>Loading</Text>
+		       </View>;
+    } else if(props.emptySearchReturned == true) {
+		//empty case
+		return <View style={styles.container}>
+					<Text style={styles.welcome}>No results</Text>
+					<Text style={styles.instructions}>Try a different keyword</Text>
+		       </View>;
     } else {
-	//not empty case --> means there is no internet
-	return <View style={styles.container}>
-				<Text style={styles.welcome}>Cannot Load Articles</Text>
-				<Text style={styles.instructions}>Might want to check your internet</Text>
-	       </View>;
+		//not empty case --> means there is no internet
+		return <View style={styles.container}>
+					<Text style={styles.welcome}>Cannot Load Articles</Text>
+					<Text style={styles.instructions}>Might want to check your internet</Text>
+		       </View>;
     }
 }
 

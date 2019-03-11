@@ -1,7 +1,6 @@
 import React from 'react';
 import { Dimensions, Image, Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
-import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
 import { RkCard, RkGalleryImage, RkGallery } from 'react-native-ui-kitten';
@@ -11,10 +10,11 @@ import ObservationCard from './ObservationComponent/ObservationCard';	//Componen
 
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
-const LIMIT = 5;	//this is used as a constant for BOTH SearchArticle[] and observationList[]
+const LIMIT = 5;	//this is used as a constant for BOTH searchList[] and observationList[]
 const DESC_MAXLENGTH = 150;	//description max length
-const OFFSET_CONST = 5;	//this is used as a constant for BOTH SearchArticle[] and observationList[]
+const OFFSET_CONST = 5;	//this is used as a constant for BOTH searchList[] and observationList[]
 const urlObservation = 'http://seachange.ca-central-1.elasticbeanstalk.com/api/posts?'
+const urlPostSearch = 'http://seachange.ca-central-1.elasticbeanstalk.com/api/postSearch?'
 
 //This default inmage is for testing purposes only
 const defaultImg = 'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
@@ -42,8 +42,8 @@ export default class ObservationsListPage extends React.Component {
 
 		this.state = {
 		    observationList: [],			//for news FlatList
-		    SearchArticle: [],			//for search FlatList
-		    refreshing: false,			//for news FlatList
+		    searchList: [],			//for search FlatList
+		    refreshing: true,			//for news FlatList
 		    searchListRefreshing: false,	//for search FlatList
 		    searchText: '',
 		    searchSubmitted: false,		//to keep track of whether search has been submitted at least once during the search session
@@ -55,7 +55,7 @@ export default class ObservationsListPage extends React.Component {
 		    emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
 							//This is used in the logic to differentiate whether to say No Internet or No Results
 		    offset: 0,				//used for offsetting for pagination FOR observationList[]	
-		    searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]	
+		    searchOffset: 0,			//used for offsetting for pagination FOR searchList[]	
 		    imageFullscreenOn: false,
 		    user: null,
 		};
@@ -75,7 +75,7 @@ export default class ObservationsListPage extends React.Component {
 	    this.unsubscriber = firebase.auth().onAuthStateChanged(user => {
             if (user) {
             	console.log("Got here");
-                this.setState({'user': user, refreshing: false}, () => {
+                this.setState({'user': user}, () => {
                 	//this callback function can be called multiple times when internet is unavailable
                 	//This ensures auto fetch is only executed once 
                 	if(this.initialFetchExecuted == false) {
@@ -121,7 +121,7 @@ export default class ObservationsListPage extends React.Component {
 		if(this.state.isSearchActive == true) {
 		    this.setState({
 				isSearchActive: false,
-				SearchArticle: [],
+				searchList: [],
 				searchListRefreshing: false,
 				searchOffset: 0,
 				searchSubmitted: false,
@@ -156,7 +156,7 @@ export default class ObservationsListPage extends React.Component {
             	console.log("Got in 2nd then");
             	if(response.status != 200) {
                     this.setState({ emptySearchReturned: false});
-                    throw {message: `Internal server error! Error code ${response.status}`}
+                    throw {message: `Internal server error! Error code ${response.status}`};
                 } else {
                     return response.json();
                 }
@@ -187,34 +187,67 @@ export default class ObservationsListPage extends React.Component {
 	    });
     }
 
+    //WARNING: Not sure if promise is rejected whether or not it will go to catch inside searchSubmitHandler
+    //Post Condition: Returns the relevant array containing the pertinent data
+    observationSearch = async (searchText) => {
+	    console.log(`search: ${searchText} offset: ${this.state.searchOffset} limit: ${LIMIT}`);
+	    var idToken = await this.state.user.getIdToken();
+	    var urlComplete = urlPostSearch + `search=${searchText}` + `&offset=${this.state.searchOffset}`
+	    	+ `&limit=${LIMIT}` + `&idToken=${idToken}` + `&uid=${this.state.user.uid}`;
+	    var result = await fetch(urlComplete);
+
+	    console.log("Below is the returned object before json parsing");
+	    console.log(result);
+	    console.log(`The status code is: ${result.status}`);
+        if(result.status != 200) {
+        	this.setState({ emptySearchReturned: false});
+            throw {message: `Internal server error! Error code ${response.status}`};
+        }
+
+        var resultJson = await result.json();
+        console.log("Below is the json parsed returned response");
+        console.log(resultJson);
+
+        //error check
+        //Note: empty search returned is not considered an error
+    	this.setState({emptySearchReturned: resultJson.List.length == 0});
+
+        return resultJson.List;
+	}
+
     searchSubmitHandler = (forPagination) => {
 		console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
-		// if(forPagination === undefined) {
-		//     this.setState({
-		// 		searchSubmitted: true,
-		// 		lastSearchText: this.state.searchText,
-		// 		SearchArticle: [],			//clear the browser
-		// 		//searchListRefreshing: true,
-		// 		searchOffset: 0,
-		//     }, () => {
-		// 		getArticleSearch(this.state.searchText, this.state.searchOffset, LIMIT)
-		// 		    .then( returnedObject => {
-		// 				this.setState({ 
-		// 					SearchArticle: returnedObject.SearchArticle,
-		// 					emptySearchReturned: returnedObject.emptySearchReturned, 
-		// 					searchListRefreshing: false 
-		// 				});
-		// 			})
-		// 		    .catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
-		//     });
-		// } else {
-		//     //this branch is for pagination
-		//     getArticleSearch(this.state.lastSearchText, this.state.searchOffset, LIMIT)
-		// 		.then( returnedObject => {
-		// 		    this.setState({ SearchArticle: [...this.state.SearchArticle, ...returnedObject.SearchArticle], emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
-		// 		})
-		// 		.catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
-		// }
+		if(forPagination === undefined) {
+		    this.setState({
+				searchSubmitted: true,
+				lastSearchText: this.state.searchText,
+				searchList: [],			//clear the list
+				searchListRefreshing: true,
+				searchOffset: 0,		//reset offset
+		    }, () => {
+				this.observationSearch(this.state.searchText)
+				    .then( dataList => {
+						this.setState({ 
+							searchList: dataList,
+							searchListRefreshing: false 
+						});
+					})
+				    .catch(error => {
+				    	console.log(error.message);
+				    	this.setState({searchList: [], searchListRefreshing: false })
+				    });
+		    });
+		} else {
+		    //this branch is for pagination
+		    this.observationSearch(this.state.lastSearchText)
+				.then( dataList => {
+				    this.setState({ searchList: [...this.state.searchList, ...dataList], searchListRefreshing: false });
+				})
+				.catch(error => {
+			    	console.log(error.message);
+			    	this.setState({searchList: [], searchListRefreshing: false })
+			    });
+		}
     }
 
     observationsFetchMore = () => {
@@ -235,7 +268,6 @@ export default class ObservationsListPage extends React.Component {
 		    console.log("Inside searchHandleFetchMore. fetch executed");
 		    this.setState({
 				searchOffset: this.state.searchOffset + OFFSET_CONST,
-				//searchListRefreshing: true,
 		    }, () => this.searchSubmitHandler(true));
 		    this.searchOnEndReachedCalledDuringMomentum = true;
 		} else {
@@ -370,7 +402,7 @@ export default class ObservationsListPage extends React.Component {
 		    	/>
 		    	<DisplayArticles
 		    		searchSubmitted={this.state.searchSubmitted}
-		    		SearchArticle={this.state.SearchArticle}
+		    		searchList={this.state.searchList}
 		    		searchListRefreshing={this.state.searchListRefreshing}
 		    		observationList={this.state.observationList}
 		    		refreshing={this.state.refreshing}
@@ -412,7 +444,14 @@ function DisplayArticles(props) {
 				onRefresh={props.handleRefresh}
         		onEndReached={props.observationsFetchMore}
         		onEndReachedThreshold={0.1}
-				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+				ListEmptyComponent={
+					<DisplayEmptyList 
+						styles={styles} 
+						emptySearchReturned={props.emptySearchReturned}
+						refreshing={props.refreshing}
+						searchListRefreshing={props.searchListRefreshing}
+					 />
+				}				
 				onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
 				onScrollBeginDrag={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
 			/>
@@ -421,23 +460,20 @@ function DisplayArticles(props) {
 		//when search is active
 		return (
 			<FlatList
-				data={props.observationList}
-				renderItem={({item}) => (
-					<RkCard>
-						<View>
-						    <Text>item.title</Text>
-						</View>
-						<Image source={{uri: item.imageUrl}} margin={0}/>
-						<View>
-						    <Text>item.description</Text>
-						</View>
-					</RkCard>
-				)}
-				keyExtractor={item => item.url}
+				data={props.searchList}
+				renderItem={({item}) => <ObservationCard item={item} navigation={props.navigation} />}
+				keyExtractor={item => item.imageKey}
 				refreshing={props.searchListRefreshing}
         		onEndReached={props.searchHandleFetchMore}
         		onEndReachedThreshold={0.1}
-				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+				ListEmptyComponent={
+					<DisplayEmptyList 
+						styles={styles} 
+						emptySearchReturned={props.emptySearchReturned}
+						refreshing={props.refreshing}
+						searchListRefreshing={props.searchListRefreshing}
+					 />
+				}
 				onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
 	            onScrollBeginDrag={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
 			/>
@@ -447,16 +483,23 @@ function DisplayArticles(props) {
 
 //TODO: Need to account for the case where no results are came back
 function DisplayEmptyList(props) {
-    if(props.emptySearchReturned == true) {
+	//Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
+	//all state variables undefined
+	if(props.refreshing || props.searchListRefreshing || 
+		props.refreshing === undefined || props.searchListRefreshing === undefined) {
+		return <View style={styles.container}>
+					<Text style={styles.welcome}>Loading</Text>
+		       </View>;
+	} else if(props.emptySearchReturned == true) {
 		//empty case
 		return <View style={styles.container}>
 					<Text style={styles.welcome}>No results</Text>
 					<Text style={styles.instructions}>Try a different keyword</Text>
-	       </View>;
+		       </View>;
     } else {
 		//not empty case --> means there is no internet
 		return <View style={styles.container}>
-					<Text style={styles.welcome}>Cannot Load Articles</Text>
+					<Text style={styles.welcome}>Cannot Load Observations</Text>
 					<Text style={styles.instructions}>Might want to check your internet</Text>
 		       </View>;
     }

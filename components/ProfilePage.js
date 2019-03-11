@@ -7,6 +7,8 @@ import {RkTextInput} from 'react-native-ui-kitten';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import firebase from 'react-native-firebase';
 
+const urlUserFetch = 'http://seachange.ca-central-1.elasticbeanstalk.com/api/user?';
+
 export default class ProfilePage extends Component{
     static navigationOptions = {
         title: 'Profile',
@@ -32,6 +34,10 @@ export default class ProfilePage extends Component{
             password: '',
             displayDialog: externalDisplayDialog,   //if props is not given, this will be false by default
             dialogText: externalDisplayDialog ? this.props.navigation.getParam('externalDialogText') : '',
+            userData: {
+                username: null,
+                created_at: null,
+            },
         };
     }
 
@@ -50,9 +56,40 @@ export default class ProfilePage extends Component{
                 console.log("Retrieving uid of user");
                 console.log(user.uid);
 
+                user.getIdToken()
+                    .then(idToken => {
+                        //for debugging below
+                        console.log('idToken is below.');
+                        console.log(idToken);
+
+                        //Retrieve the rest of user data from mysql db
+                        return fetch(urlUserFetch + `uid=${user.uid}` + `&idToken=${idToken}`);
+                    }).then(response => {
+                        console.log("Got in 2nd then");
+                        if(response.status != 200) {
+                            this.setState({ emptySearchReturned: false});
+                            throw {message: `Internal server error! Error code ${response.status}`};
+                        } else {
+                            return response.json();
+                        }
+                    }).then(response => {
+                        console.log("Got in the 3rd then. Below is the response");
+                        console.log(response);
+                        if(response.User.length == 0) {
+                            //TODO: sign out user here
+                            throw {message: "Error: No corresponding user data with this account. Please contact the admin."};
+                        }
+
+                        //Note: this.state.user is set here
+                        this.setState({user: user, userData: {username: response.User[0].username, created_at: response.User[0].created_at}});
+                    }).catch(error => {
+                        console.log("Inside componentDidMount idToken then chain");
+                        this.setState({displayDialog: true, dialogText: error.message});
+                    })
+
                 //Setting the state for user object may seem unnecessary because we can use firebase.auth().currentUser;
                 //however, in render() comment section, it explains why we need this
-                this.setState({'user': user});
+
                 // console.log("Executing navigation switch to new component (UserMap)");
                 // this.props.navigation.navigate('Home', { user: user });
             } else {
@@ -138,6 +175,7 @@ export default class ProfilePage extends Component{
                     emailTextHandler={this.emailTextHandler}
                     passwordTextHandler={this.passwordTextHandler}
                     onPressObservation={this.onPressObservation}
+                    userData={this.state.userData}
                 />
                 <Dialog
                     onTouchOutside={() => this.setState({ displayDialog: false, dialogText: '' })}
@@ -240,31 +278,33 @@ function DisplayAccountInfo(props) {
 
     } else {    //else, user must be signed in
         return (
-            <View style={styles.accountInfoContainer}>
-                <Text>User is signed in!</Text>
-                <View style={styles.buttonsContainer}>
-                    <RoundButton 
-                        style = {styles.buttonsWhileSignedIn}
-                        type="primary"
-                        text="Sign Out"
-                        textStyle= {styles.buttonTextFont}
-                        backgroundColors={['#2193b0', '#6dd5ed']}
-                        gradientStart={{ x: 0.5, y: 1 }}
-                        gradientEnd={{ x: 1, y: 1 }}
-                        onPress={props.onPressSignOut} 
-                    />
-                    <RoundButton 
-                        style = {styles.buttonsWhileSignedIn}
-                        type="primary"
-                        text="Your Observation Posts"
-                        textStyle= {styles.buttonTextFont}
-                        backgroundColors={['#2193b0', '#6dd5ed']}
-                        gradientStart={{ x: 0.5, y: 1 }}
-                        gradientEnd={{ x: 1, y: 1 }}
-                        onPress={props.onPressObservation} 
-                    />
-                </View>
-            </View>
+            <ImageBackground source={require('../img/backgrounds/sea-background.png')} style={styles.backgroundImage} >
+                <View style={styles.accountInfoContainer}>
+                    <Text style={styles.boldTitleText}>{`Hello ${props.userData.username}.`}</Text>
+                    <View style={styles.buttonsContainer}>
+                        <RoundButton 
+                            style = {styles.buttonsWhileSignedIn}
+                            type="primary"
+                            text="Sign Out"
+                            textStyle= {styles.buttonTextFont}
+                            backgroundColors={['#2193b0', '#6dd5ed']}
+                            gradientStart={{ x: 0.5, y: 1 }}
+                            gradientEnd={{ x: 1, y: 1 }}
+                            onPress={props.onPressSignOut} 
+                        />
+                        <RoundButton 
+                            style = {styles.buttonsWhileSignedIn}
+                            type="primary"
+                            text="Your Observation Posts"
+                            textStyle= {styles.buttonTextFont}
+                            backgroundColors={['#2193b0', '#6dd5ed']}
+                            gradientStart={{ x: 0.5, y: 1 }}
+                            gradientEnd={{ x: 1, y: 1 }}
+                            onPress={props.onPressObservation} 
+                        />
+                    </View>
+                </View>    
+            </ImageBackground>
         );
     }
 }

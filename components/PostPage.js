@@ -2,10 +2,15 @@ import React, {Component} from 'react';
 import { View, StyleSheet, Image, Text, ImageBackground } from 'react-native';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
+import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
+import firebase from 'react-native-firebase';
 
 export default class PostPage extends Component{
     constructor(props) {
         super(props);
+        this.state = {
+            userLoggedOut: false,
+        };
     };
 
     static navigationOptions = {
@@ -30,7 +35,13 @@ export default class PostPage extends Component{
                     backgroundColors={['#ff5f6d', '#ffC371']}
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
-                    onPress={() => this.props.navigation.navigate('ImagePost', {})}>
+                    onPress={() => {
+                        if(firebase.auth().currentUser === null) {
+                            this.setState({userLoggedOut: true});
+                        } else {
+                            this.props.navigation.navigate('ImagePost', {});
+                        }
+                    }}>
                     <Text>react-native-button-component</Text>
                     </RoundButton>
                 <RoundButton 
@@ -41,10 +52,42 @@ export default class PostPage extends Component{
                     backgroundColors={['#2193b0', '#6dd5ed']}
                     gradientStart={{ x: 0.5, y: 1 }}
                     gradientEnd={{ x: 1, y: 1 }}
-                    onPress={() => this.props.navigation.navigate('ArticlePost', {})} />
+                    onPress={() => {
+                        if(firebase.auth().currentUser === null) {
+                            this.setState({userLoggedOut: true});
+                        } else {
+                            this.props.navigation.navigate('ArticlePost', {});
+                        }
+                    }} />
+                <Dialog
+                onTouchOutside={() => this.setState({ userLoggedOut: false })}
+                width={0.9}
+                visible={this.state.userLoggedOut}
+                dialogAnimation={new ScaleAnimation()}
+                dialogTitle={
+                    <DialogTitle
+                        title={`Not Logged In D:\nYou must be logged in in order to use this functionality`}
+                        hasTitleBar={false}
+                    />}
+                footer={
+                    <DialogFooter>
+                        <DialogButton
+                            text="Cancel"
+                            onPress={() => this.setState({ userLoggedOut: false })}
+                        />
+                        <DialogButton
+                            text="Log In"
+                            onPress={() => {
+                                this.setState({ userLoggedOut: false }, () => {
+                                    this.props.navigation.goBack();
+                                    this.props.navigation.navigate('Profile', {});
+                                });
+                            }}
+                        />
+                    </DialogFooter>}     
+                />
             </View>
         </ImageBackground>
-      
         );
     }
 }

@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 import { NetInfo } from 'react-native';
 import Modal from "react-native-modal";
+import firebase from 'react-native-firebase';
 
 
 const haversine = require('haversine');
@@ -388,8 +389,8 @@ export default class UserMap extends Component{
               <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
             </View>
             <View style={styles.menuRow}>
-              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings')}></MenuButton>
-              <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => console.log('TODO: settings page tapped')}></MenuButton>
+              <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Profile')}></MenuButton>
               <MenuButton iconName="ios-boat" buttonTitle="Fish" onClick={() => this.props.navigation.navigate('Fish')}></MenuButton>
             </View>
           </View>
@@ -453,7 +454,6 @@ export default class UserMap extends Component{
       </MapView>
       {this.renderActionButton()}
       {this.renderPanel()}
-      
     </View>
     );
   }

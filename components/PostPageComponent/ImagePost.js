@@ -6,12 +6,16 @@ import ImagePicker from 'react-native-image-picker';
 import { RoundButton } from 'react-native-button-component';
 import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
 import { material, materialColors, systemWeights } from 'react-native-typography';
-
+import firebase from 'react-native-firebase';
 
 const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-upload";
-const URL_TEST = "http://192.168.1.84:8080/post-img/image-upload";
+const URL_TEST = "http://192.168.1.67:8080/post-img/image-upload";
 
 export default class ImagePost extends Component{
+    constructor(props) {    //This function is needed otherwise props cannot be accessed
+        super(props);  
+    };
+
     state = {
         photo: null,
         param: {
@@ -23,11 +27,47 @@ export default class ImagePost extends Component{
             }
         },
         buttonFetchLocationState: 'init',
-        failAddLocationDialog: false,
         buttonUploadState: 'upload',
-        successUploadDialog: false,
-        failUploadDialog: false,
+        displayDialog: false,
+        dialogText: '',
     };
+
+    /**
+     * When the App component mounts, we listen for any authentication
+     * state changes in Firebase.
+     * Once subscribed, the 'user' parameter will either be null 
+     * (logged out) or an Object (logged in)
+     */
+    componentDidMount() {
+        this.unsubscriber = firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                this.setState({'user': user});
+            } else {
+                //Note: Since this page is only accessible while signed in, when signed out,
+                //redirect the user to the log in page
+                console.log('not logged in');
+                this.setState({user: null}, () => {
+                    this.props.navigation.goBack();     //go back to universal post page
+                    this.props.navigation.goBack();     //go back to map page
+                    this.props.navigation.navigate('Profile', {
+                        externalDisplayDialog: true, 
+                        externalDialogText: "You have been signed out due to inactivity. Please sign in again"
+                    });  //go to profile screen and pass in prop to display the dialog
+                });
+            }
+        });
+    }
+
+    /**
+     * Don't forget to stop listening for authentication state changes
+     * when the component unmounts.
+     */
+    componentWillUnmount() {
+        console.log("Inside componentWillUnmount() of ArticlePostPage");
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
+    }
 
     static navigationOptions = {
         title: 'Image Post',
@@ -58,39 +98,49 @@ export default class ImagePost extends Component{
     };
 
     handleUploadPhoto = () => {
-        var url = setUrlParam(URL, this.state.param);
+        this.state.user.getIdToken()
+            .then(idToken => {
+                var tempParam = {};
+                Object.assign(tempParam, this.state.param);
+                tempParam.body.idToken = idToken;
+                tempParam.body.uid = this.state.user.uid;
+                console.log("Below is the tempParam");
+                console.log(tempParam);
 
-        fetch(url, {
-          method: "POST",
-          body: createFormData(this.state.photo, {}),
-        })
-          .then(response => response.json())
-          .then(response => {
-            this.setState({ buttonUploadState: 'upload', successUploadDialog: true  });
-          })
-          .catch(error => {
-            console.log(error);
-            this.setState({ buttonUploadState: 'upload', failUploadDialog: true, errorDialogMessage: error });
-          });
+                var url = setUrlParam(URL, tempParam);
+                console.log(`This is the upload url: ${url}`);
+                return fetch(url, { method: "POST", body: createFormData(this.state.photo, {}) });
+            })
+            .then(response => {
+                if(response.status != 200) {    //internal server error
+                    console.log(`Internal server error! Error code ${response.status}`);
+                    this.setState({ buttonUploadState: 'upload', displayDialog: true,  dialogText: "Failed to Upload Photo :("});
+                } else {
+                    this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: "Photo Successfully Uploaded :)" });
+                }
+            })
+            .catch(error => {   //external server error
+                console.log("External server error")
+                this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: error.message });
+                console.log(error.message);
+            });
     };
 
     handleGetUserLocation = () => {
         navigator.geolocation.getCurrentPosition(position => {
-          console.log(position.coords);
-       
-          var currState = this.state
-          if (position.coords.latitude == null || position.coords.longitude == null) {
-            currState = setUserLocation(currState, null, null, 'init', true);  
-          } else {
-            currState = setUserLocation(currState, position.coords.latitude, position.coords.longitude, 'done', false);  
-          }
+            var currState = this.state
+            if (position.coords.latitude == null || position.coords.longitude == null) {
+                currState = setUserLocation(currState, null, null, 'init', true, "Failed to Include User Location");  
+            } else {
+                currState = setUserLocation(currState, position.coords.latitude, position.coords.longitude, 'done', false, '');  
+            }
 
-          this.setState({currState});
+            this.setState({currState});
         }, error => {
             console.log(error)
-            var currState = setUserLocation(this.state, null, null, 'init', true); 
+            var currState = setUserLocation(this.state, null, null, 'init', true, "Failed to Include User Location"); 
             this.setState({currState});
-        })
+        });
     };
 
     handleNameInput = (text) => {
@@ -105,6 +155,12 @@ export default class ImagePost extends Component{
         this.setState({currState});
     };
 
+    //This function is for testing purposes only.
+    //You can use this callback function in a button to simulate being signed out due to inactivity.
+    onPressSignOut = () => {
+        firebase.auth().signOut();
+    }
+
     render() {
         const { photo } = this.state;
         return (
@@ -116,63 +172,27 @@ export default class ImagePost extends Component{
                   style={ styles.image }
                 />
                 <Dialog
-                    onTouchOutside={() => {this.setState({ successUploadDialog: false });}}
+                    onTouchOutside={() => {this.setState({ displayDialog: false });}}
                     width={0.9}
-                    visible={this.state.successUploadDialog}
+                    visible={this.state.displayDialog}
                     dialogAnimation={new ScaleAnimation()}
                     dialogTitle={
                         <DialogTitle
-                        title="Photo Successfully Uploaded :)"
+                        title={this.state.dialogText}
                         hasTitleBar={false}
                         />}
                     footer={
                         <DialogFooter>
                             <DialogButton
                             text="Continue"
-                            onPress={() => {this.setState({ successUploadDialog: false });}}
+                            onPress={() => {this.setState({ displayDialog: false });}}
                             />
                         </DialogFooter>}     
-                />
-                <Dialog
-                    onTouchOutside={() => {this.setState({ failUploadDialog: false });}}
-                    width={0.9}
-                    visible={this.state.failUploadDialog}
-                    dialogAnimation={new ScaleAnimation()}
-                    dialogTitle={
-                        <DialogTitle
-                        title="Failed to Upload Photo :("
-                        hasTitleBar={false}
-                        />}
-                    footer={
-                        <DialogFooter>
-                            <DialogButton
-                            text="Continue"
-                            onPress={() => {this.setState({ failUploadDialog: false });}}
-                            />
-                        </DialogFooter>}
-                />
-                <Dialog
-                    onTouchOutside={() => {this.setState({ failAddLocationDialog: false });}}
-                    width={0.9}
-                    visible={this.state.failAddLocationDialog}
-                    dialogAnimation={new ScaleAnimation()}
-                    dialogTitle={
-                        <DialogTitle
-                        title="Failed to Include User Location"
-                        hasTitleBar={false}
-                        />}
-                    footer={
-                        <DialogFooter>
-                            <DialogButton
-                            text="Continue"
-                            onPress={() => {this.setState({ failAddLocationDialog: false });}}
-                            />
-                        </DialogFooter>}
                 />
                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                     <Fumi
                         style = {styles.input}
-                        label={'Name'}
+                        label={'Title'}
                         labelStyle={{ color: '#a3a3a3' }}
                         inputStyle={{ color: '#f95a25' }}
                         iconClass={FontAwesomeIcon}
@@ -183,7 +203,7 @@ export default class ImagePost extends Component{
                     />
                     <Fumi
                         style = {styles.input}
-                        label={'Comment'}
+                        label={'Description'}
                         labelStyle={{ color: '#a3a3a3' }}
                         inputStyle={{ color: '#f95a25' }}
                         iconClass={FontAwesomeIcon}
@@ -225,20 +245,23 @@ export default class ImagePost extends Component{
                     textStyle= {styles.buttonTextFont}
                     states={{
                         upload: {
-                        text: 'Upload Photo',
-                        backgroundColors: ['#4DC7A4', '#66D37A'],
-                        onPress: () => {
-                            this.setState({ buttonUploadState: 'uploading' });
-                            this.handleUploadPhoto();
-                        },
+                            text: 'Upload Photo',
+                            backgroundColors: ['#4DC7A4', '#66D37A'],
+                            onPress: () => {
+                                //Testing purposes only. Simulates being logged out due to inactivity
+                                // this.onPressSignOut();
+                                // return;
+                                this.setState({ buttonUploadState: 'uploading' });
+                                this.handleUploadPhoto();
+                            },
                         },
                         uploading: {
-                        text: 'Uploading Photo...',
-                        gradientStart: { x: 0.8, y: 1 },
-                        gradientEnd: { x: 1, y: 1 },
-                        backgroundColors: ['#FF416C', '#FF4B2B'],
-                        spinner: true,
-                        onPress: () => {},
+                            text: 'Uploading Photo...',
+                            gradientStart: { x: 0.8, y: 1 },
+                            gradientEnd: { x: 1, y: 1 },
+                            backgroundColors: ['#FF416C', '#FF4B2B'],
+                            spinner: true,
+                            onPress: () => {},
                         },
                     }}/>
                 <RoundButton 
@@ -291,14 +314,14 @@ const createFormData = (photo, body) => {
     const data = new FormData();
   
     data.append("image", {
-      name: photo.fileName,
-      type: photo.type,
-      uri:
+        name: photo.fileName,
+        type: photo.type,
+        uri:
         Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
     });
   
     Object.keys(body).forEach(key => {
-      data.append(key, body[key]);
+        data.append(key, body[key]);
     });
   
     return data;
@@ -317,10 +340,11 @@ const setUrlParam = (url, param) => {
     return resultUrl;
 };
 
-const setUserLocation = (state, lat, lng, btnState, fail) => {
+const setUserLocation = (state, lat, lng, btnState, fail, dialogText) => {
     state.param.body.lat = lat;
     state.param.body.lng = lng;
-    state.failAddLocationDialog = fail;
+    state.displayDialog = fail;
+    state.dialogText = dialogText;
     state.buttonFetchLocationState = btnState;
     return state;
 };

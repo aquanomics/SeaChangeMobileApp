@@ -5,6 +5,7 @@ import { Button, Divider } from 'react-native-elements';
 import { RoundButton } from 'react-native-button-component';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
+import moment from 'moment';
 
 export default class EventsAbstraction extends React.Component {
     static navigationOptions = ({ navigation }) => ({
@@ -45,7 +46,7 @@ export default class EventsAbstraction extends React.Component {
             <Text style={{ marginBottom: 20 }}> {eventsObject.description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+eventsObject.startDate.substring(0, 10)+"  "+eventsObject.startDate.substring(11, 16) + "   -   " + eventsObject.endDate.substring(0, 10)+"  "+eventsObject.endDate.substring(11, 16)} </Text>
+            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+moment(eventsObject.startDate).format('LLLL') + "\nTo\n" + moment(eventsObject.endDate).format('LLLL')}</Text>
             </View>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -66,7 +67,7 @@ export default class EventsAbstraction extends React.Component {
             <Text style={{ marginBottom: 20 }}> {eventsObject.description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+eventsObject.startDate.substring(0, 10)+"  "+eventsObject.startDate.substring(11, 16) + "   -   " + eventsObject.endDate.substring(0, 10)+"  "+eventsObject.endDate.substring(11, 16)} </Text>
+            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+moment(eventsObject.startDate).format('LLLL') + "\nTo\n" + moment(eventsObject.endDate).format('LLLL')}</Text>
             </View>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

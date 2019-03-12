@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { withNavigation } from 'react-navigation';
 import { Card, Divider } from 'react-native-elements';
 import { Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight} from 'react-native';
@@ -53,7 +54,7 @@ class EventsPreview extends React.Component {
             <Text style={{ marginBottom: 20 }}> {description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 15 }}> {"Time:\n"+startDate.substring(0, 10) + "   -   " + endDate.substring(0, 10)} </Text>
+           <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+moment(startDate).format('LLLL') + "\nTo\n" + moment(endDate).format('LLLL')}</Text>
             </View>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

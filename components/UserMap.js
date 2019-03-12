@@ -394,7 +394,7 @@ export default class UserMap extends Component{
               <Icon name="md-locate" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchPosts}>
-              <Icon name="md-paper" style={styles.actionButtonIcon} />
+              <Icon name="md-cloud-upload" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
               <Icon name="md-pizza" style={styles.actionButtonIcon} />

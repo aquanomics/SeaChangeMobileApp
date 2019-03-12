@@ -39,6 +39,10 @@ class EventsPreview extends React.Component {
       'https://www.serebii.net/magikarpjump/events/3.jpg';
   
     return (
+        <TouchableHighlight 
+        onPress={() => this.props.navigation.navigate('FishDetails',{code:id})}
+        underlayColor={'#fffad8'}
+        > 
         <Card
           featuredTitle={name}
           featuredTitleStyle={featuredTitleStyle}
@@ -55,8 +59,8 @@ class EventsPreview extends React.Component {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ marginBottom: 10 }}> {"Location:\n"+ location +"," + city} </Text>
             </View>
-
         </Card>
+        </TouchableHighlight>
     );
 }
 }

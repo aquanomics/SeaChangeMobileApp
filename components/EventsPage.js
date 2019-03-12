@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
-import { getEvents, getCities } from './EventsPageComponent/Event';
+import { getEvents, getCities, searchEvents } from './EventsPageComponent/Event';
 import EventsPreview from './EventsPageComponent/EventsPreview';   //Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
 import ModalDropdown from 'react-native-modal-dropdown';
@@ -75,18 +75,15 @@ export default class EventsPage extends React.Component {
         .then(response => {this.setState({ CitiesList:[...this.state.CitiesList, ...response], refreshing: false});for(var x in this.state.CitiesList){dropdownOptions.push(this.state.CitiesList[x]["city"])};console.log(dropdownOptions)})
         .catch(() => this.setState({CitiesList: [], refreshing: false }));
   }
-
-  // fetchSpeciesSearch = () => {
-  //   getEventsSearch(this.searchOffset, this.keyword)
-  //       .then(response => {this.setState({ search:[...this.state.search, ...response], refreshingSearch: false, lastSearchText: this.keyword}, () => {
-  //         console.log("Below is the state.search");
-  //         console.log("LAST TEXT");
-  //         console.log(this.state.lastSearchText);
-  //         // tempArray = this.state.search;
-  //         // this.state.search = Array.from(new Set(tempArray));
-  //       }); console.log("SUCCESS")})
-  //       .catch(() => this.setState({search: [], refreshingSearch: false }));
-  // }
+  fetchSpeciesSearch = () => {
+    searchEvents(this.searchOffset, this.keyword)
+        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshingSearch: false, lastSearchText: this.keyword}, () => {
+          console.log("Below is the state.search");
+          console.log("LAST TEXT");
+          console.log(this.state.lastSearchText);
+        }); console.log("SUCCESS")})
+        .catch(() => this.setState({search: [], refreshingSearch: false }));
+  }
 
   dropdownHandler = (value) => {
     //this.fetchNews(value);

@@ -28,8 +28,9 @@ export default class ObservationDetails extends React.Component {
     }
 
     render() {
-		const postObject = this.props.navigation.getParam('postObject', {});
 
+		const postObject = this.props.navigation.getParam('postObject', {});
+		console.log(postObject);
 		if (!postObject.lat || !postObject["lng"]) {
 			return (
 			    <ScrollView style={styles.container}>

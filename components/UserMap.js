@@ -219,8 +219,6 @@ export default class UserMap extends Component{
     );
   }
 
-
-
   setSearchParameters = (params) => {
     if("lat" in params) {
       this.state.searchInfo.lat = params.lat;
@@ -290,8 +288,6 @@ export default class UserMap extends Component{
   fetchRestaurants = () => {
     
     this.setState({articles:[], posts:[]}); //clear articles from the marker state, so they don't show up on the map
-
-
     distance = this.getScreenDistance();
     
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -359,12 +355,12 @@ export default class UserMap extends Component{
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
 
-  renderImage(marker){
+  renderImage(image_url){
     console.log("callout");
     if (Platform.OS === 'ios') {
      console.log("ios");
       return (<Image
-        source={{ uri: ((marker.urlToImage) ? marker.urlToImage : "") }} resizeMode={"cover"}
+        source={{ uri: ((image_url) ? image_url : "") }} resizeMode={"cover"}
         style={{
         width: 145, //static for now...
         height: 110 
@@ -455,8 +451,6 @@ export default class UserMap extends Component{
         region={this.state.region} 
         onRegionChangeComplete={this.onRegionChange}
         showsUserLocation={true} 
-        //customMapStyle={mapStyle} 
-        //provider={PROVIDER_GOOGLE}
       >
         {this.state.articles.map(marker => (
           <MapView.Marker
@@ -468,7 +462,7 @@ export default class UserMap extends Component{
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
-                  {this.renderImage(marker)}
+                  {this.renderImage(marker.urlToImage)}
                   <Text style={{fontSize:16}} numberOfLines={2}>{marker.title}</Text>
 
                 </View>
@@ -501,10 +495,11 @@ export default class UserMap extends Component{
               description={marker.comment}
               image={require('../img/map_icons/marker.png')}
               >
-              <MapView.Callout style={styles.plainView}>            
+              <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ObservationDetails', {postObject: marker});}}>            
                 <View>
-                  <Text numberOfLines={2} style={{fontSize:18}}>{marker.comment}{"\n"}</Text>
-                
+                  {this.renderImage(marker.urlToImage)}
+                  <Text style={{fontSize:16}} numberOfLines={2}>{marker.comment}</Text>
+
                 </View>
               </MapView.Callout>
           </MapView.Marker>

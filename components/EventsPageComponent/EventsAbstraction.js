@@ -45,7 +45,7 @@ export default class EventsAbstraction extends React.Component {
             <Text style={{ marginBottom: 20 }}> {eventsObject.description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+eventsObject.startDate.substring(0, 10) + "   -   " + eventsObject.endDate.substring(0, 10)} </Text>
+            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+eventsObject.startDate.substring(0, 10)+"  "+eventsObject.startDate.substring(11, 16) + "   -   " + eventsObject.endDate.substring(0, 10)+"  "+eventsObject.endDate.substring(11, 16)} </Text>
             </View>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -66,7 +66,7 @@ export default class EventsAbstraction extends React.Component {
             <Text style={{ marginBottom: 20 }}> {eventsObject.description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+eventsObject.startDate.substring(0, 10) + "   -   " + eventsObject.endDate.substring(0, 10)} </Text>
+            <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+eventsObject.startDate.substring(0, 10)+"  "+eventsObject.startDate.substring(11, 16) + "   -   " + eventsObject.endDate.substring(0, 10)+"  "+eventsObject.endDate.substring(11, 16)} </Text>
             </View>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -85,7 +85,7 @@ export default class EventsAbstraction extends React.Component {
           <MapView.Marker
           coordinate={{latitude: eventsObject.lat,
           longitude: eventsObject["lng"]}}
-          title={eventsObject.title}
+          title={eventsObject.name}
           description={"..."}
           />
         </MapView>

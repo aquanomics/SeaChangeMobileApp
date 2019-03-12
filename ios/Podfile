@@ -5,7 +5,7 @@ target 'SeaChangeMobileApp' do
   # Required by RNFirebase
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
-  pod 'GoogleAppMeasurement', '~> 5.5.0'
+  pod 'GoogleAppMeasurement', '~> 5.7.0'
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
   rn_path = '../node_modules/react-native'

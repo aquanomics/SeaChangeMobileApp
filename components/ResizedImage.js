@@ -31,8 +31,8 @@ export default class ResizedImage extends Component {
 		<Image
             source={{ uri: source.uri }}
             style={{
-		width: width * 0.9,
-		height: this.state.height
+        		width: width * 0.9,
+        		height: this.state.height
             }}
             resizeMode={"cover"}
 		/>

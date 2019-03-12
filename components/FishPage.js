@@ -20,7 +20,7 @@ export default class FishPage extends React.Component {
                 searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
                 //This is used in the logic so that when you first try to search something before submission,
                 //the empty list doesn't show up
-                lastSearchText: '',     //This is used for searchList during pagination because if the list is at the end and if we were
+                lastSearchText: '',     //We need to "remember" this value for pagination to know what string to query
                 searchText: '',
                 //to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
                 isSearchActive: false,          //state for search transition
@@ -38,7 +38,7 @@ export default class FishPage extends React.Component {
   }
 
   static navigationOptions = {
-    title: 'Fishes',
+    title: 'Fish',
   };
 
   toggleSearchState = () => {
@@ -46,7 +46,7 @@ export default class FishPage extends React.Component {
       this.setState({
         isSearchActive: false,
         search: [],
-        searchListRefreshing: false,
+        refreshingSearch: false,
         searchSubmitted: false,
         //lastSearchText: this.state.searchText,
       });
@@ -68,13 +68,21 @@ export default class FishPage extends React.Component {
 
   fetchSpeciesSearch = () => {
     getSpeciesSearch(this.searchOffset, this.keyword)
-        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshingSearch: false, lastSearchText: this.keyword}, () => {
-          console.log("Below is the state.search");
-          console.log("LAST TEXT");
-          console.log(this.state.lastSearchText);
-          // tempArray = this.state.search;
-          // this.state.search = Array.from(new Set(tempArray));
-        }); console.log("SUCCESS")})
+        .then(response => {
+          this.setState({
+              search:[...this.state.search, ...response], 
+              refreshingSearch: false, 
+              lastSearchText: this.keyword,
+              emptySearchReturned: response.length == 0,
+          }, () => {
+            console.log("Below is the state.search");
+            console.log("LAST TEXT");
+            console.log(this.state.lastSearchText);
+            // tempArray = this.state.search;
+            // this.state.search = Array.from(new Set(tempArray));
+          }); 
+          console.log("SUCCESS")
+        })
         .catch(() => this.setState({search: [], refreshingSearch: false }));
   }
 
@@ -249,7 +257,12 @@ function DisplaySpecies(props) {
             onRefresh={props.handleRefresh}
             onEndReached={props.handleFetchMore}
             onEndThreshold={0.0}
-            ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
+            ListEmptyComponent={
+              <DisplayNoInternet 
+                styles={styles}  
+                refreshingSearch={props.refreshingSearch}
+                refreshing={props.refreshing}
+              />}
           />;
     } else {
   return <FlatList
@@ -261,7 +274,12 @@ function DisplaySpecies(props) {
             onRefresh={props.handleSearchRefresh}
             onEndReached={props.handleSearchFetchMore}
             onEndThreshold={0.01}
-            ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
+            ListEmptyComponent={
+              <DisplayNoInternet 
+                styles={styles}  
+                refreshingSearch={props.refreshingSearch}
+                refreshing={props.refreshing}
+              />}
             onMomentumScrollBegin={() => props.onScrollMotionBeginHandler()}
             onScrollBeginDrag={() => props.onScrollMotionBeginHandler()}
           />;
@@ -270,10 +288,24 @@ function DisplaySpecies(props) {
 }
 
 function DisplayNoInternet(props) {
-  return <View style={styles.container}>
+  //Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
+  //all state variables undefined
+  if(props.refreshing || props.refreshingSearch || 
+    props.refreshing === undefined || props.refreshingSearch === undefined) {
+    return <View style={styles.container}>
+          <Text style={styles.welcome}>Loading</Text>
+           </View>;
+  } else if(props.emptySearchReturned == true) {
+    return <View style={styles.container}>
+          <Text style={styles.welcome}>No results</Text>
+          <Text style={styles.instructions}>Try a different keyword</Text>
+           </View>;
+  } else {
+    return <View style={styles.container}>
             <Text style={styles.welcome}>Cannot Load Species Nearby</Text>
             <Text style={styles.instructions}>Might want to check your internet</Text>
          </View>;
+  }
 }
 
 const styles = StyleSheet.create({

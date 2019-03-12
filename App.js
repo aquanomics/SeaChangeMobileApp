@@ -10,19 +10,23 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet} from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
+//WARNING: Our naming conventions seem to be inconsistent
+
 import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
-import SettingsPage from "./components/SettingsPage";
+import ProfilePage from "./components/ProfilePage";
+import ForgotPasswordPage from "./components/ForgotPasswordPage";
 import EventsPage from "./components/EventsPage";
 import PostPage from "./components/PostPage";
 import ImagePost from "./components/PostPageComponent/ImagePost";
 import ArticlePost from "./components/PostPageComponent/ArticlePost";
-import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import ArticleWebViewPage from "./components/ArticlePageComponent/ArticleWebView";
 import ArticleAbstractionPage from "./components/ArticlePageComponent/ArticleAbstraction";
 import FishPage from "./components/FishPage";
 import FishDetailPage from "./components/FishDetailPage";
+import ObservationsListPage from "./components/ObservationsListPage";
+import ObservationDetailsPage from "./components/ObservationComponent/ObservationDetails";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -53,14 +57,14 @@ const styles = StyleSheet.create({
 });
 
 const MainNavigator = createStackNavigator({
-    Login: {
-        screen: LoginPage
-    },
-    Fishes: {
+    Fish: {
         screen: FishPage
     },
     Signup: {
         screen: SignupPage
+    },
+    ForgotPassword: {
+        screen: ForgotPasswordPage
     },
     Home: {
         screen: UserMap,
@@ -83,14 +87,20 @@ const MainNavigator = createStackNavigator({
     ArticlePost: {
         screen: ArticlePost,
     },
-    Settings: {
-        screen: SettingsPage,
+    Profile: {
+        screen: ProfilePage,
     },
     ArticleWebView: {
         screen: ArticleWebViewPage,
     },
     ArticleAbstraction: {
         screen: ArticleAbstractionPage,
+    },
+    ObservationsList: {
+        screen: ObservationsListPage,
+    },
+    ObservationDetails: {
+        screen: ObservationDetailsPage,
     },
 }, {
     initialRouteName: 'Home',

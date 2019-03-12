@@ -39,10 +39,10 @@ class EventsPreview extends React.Component {
       'https://www.serebii.net/magikarpjump/events/3.jpg';
   
     return (
-        <TouchableHighlight 
-        onPress={() => this.props.navigation.navigate('FishDetails',{code:id})}
+      <TouchableHighlight
+        onPress={() => this.props.navigation.navigate('EventsAbstraction', {eventsObject: this.props.eventspreview})} //opens up abstraction page 
         underlayColor={'#fffad8'}
-        > 
+      >
         <Card
           featuredTitle={name}
           featuredTitleStyle={featuredTitleStyle}

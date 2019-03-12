@@ -14,6 +14,7 @@ import UserMap from "./components/UserMap";
 import ArticlesPage from "./components/ArticlesPage";
 import SettingsPage from "./components/SettingsPage";
 import EventsPage from "./components/EventsPage";
+import EventsAbstractionPage from "./components/EventsPageComponent/EventsAbstraction"
 import PostPage from "./components/PostPage";
 import ImagePost from "./components/PostPageComponent/ImagePost";
 import ArticlePost from "./components/PostPageComponent/ArticlePost";
@@ -70,6 +71,9 @@ const MainNavigator = createStackNavigator({
     },
     Events: {
         screen: EventsPage,
+    },
+    EventsAbstraction: {
+        screen: EventsAbstractionPage,
     },
     FishDetails: {
         screen: FishDetailPage,

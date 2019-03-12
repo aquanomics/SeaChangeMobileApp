@@ -417,7 +417,6 @@ export default class UserMap extends Component{
         startCollapsed
         showBackdrop={false}
         minimumDistanceThreshold={10}
-        ref={c => this._panel = c}
         draggableRange={this.props.draggableRange}
         onDrag={v => this._draggedValue.setValue(v)}     
         >

@@ -172,7 +172,9 @@ export default class ImagePost extends Component{
                   style={ styles.image }
                 />
                 <Dialog
-                    onTouchOutside={() => {this.setState({ displayDialog: false });}}
+                    onTouchOutside={() => {
+                        this.setState({ displayDialog: false });
+                        this.props.navigation.goBack();}}
                     width={0.9}
                     visible={this.state.displayDialog}
                     dialogAnimation={new ScaleAnimation()}
@@ -185,7 +187,9 @@ export default class ImagePost extends Component{
                         <DialogFooter>
                             <DialogButton
                             text="Continue"
-                            onPress={() => {this.setState({ displayDialog: false });}}
+                            onPress={() => {
+                                this.setState({ displayDialog: false });
+                                this.props.navigation.goBack();}}
                             />
                         </DialogFooter>}     
                 />
@@ -359,9 +363,7 @@ const styles = StyleSheet.create({
         width: 380,
         height: 250,
         borderRadius: 15,
-        borderColor: 'black',
-        resizeMode: 'cover',
-        borderWidth: 2,
+        resizeMode: 'contain',
     },
     input: {
         margin: 10,
@@ -379,7 +381,6 @@ const styles = StyleSheet.create({
         ...systemWeights.bold,
         fontSize: 30,
         marginTop: 10,
-        //color: materialColors.whitePrimary,
     },
     buttonTextFont: {
         ...material.button,

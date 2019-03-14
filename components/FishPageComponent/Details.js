@@ -42,11 +42,11 @@ export default class Details extends React.Component {
 			      {uri: "https://www.fishbase.ca/summary/" + SpecCode})}
 		      underlayColor={'#fffad8'} >           
 		      <Image
-			source={(PicPreferredName != null)
-			  ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}
-			  : require('../../img/place_holders/no-image-available.png')}
-			resizeMode="stretch"
-	    		style={styles.fishImage}
+            source={(PicPreferredName != null)
+              ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}
+              : require('../../img/place_holders/no-image-available.png')}
+            resizeMode="stretch"
+            style={styles.fishImage}
 		      />
 		    </TouchableHighlight>
 	    </View>
@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#8cdff2',
     flexDirection: 'row',
     borderStyle: 'solid',
- //   borderBottomColor: '#dddddd',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
     elevation: 2,
@@ -84,6 +83,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: 200,
     width: 300,
+    borderRadius: 15,
   },
   imageContainer: {
     flex: 1,

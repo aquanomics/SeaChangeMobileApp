@@ -14,7 +14,7 @@ export default class ArticlePost extends Component{
     constructor(props) {
         super(props);
     };
-
+    
     /**
      * When the App component mounts, we listen for any authentication
      * state changes in Firebase.
@@ -135,7 +135,9 @@ export default class ArticlePost extends Component{
             />
             <Text style={styles.boldTitleText}>Upload an Article !!</Text>
             <Dialog
-                onTouchOutside={() => {this.setState({ displayDialog: false });}}
+                onTouchOutside={() => {
+                    this.setState({ displayDialog: false });
+                    this.props.navigation.goBack();}}
                 width={0.9}
                 visible={this.state.displayDialog}
                 dialogAnimation={new ScaleAnimation()}
@@ -148,7 +150,9 @@ export default class ArticlePost extends Component{
                     <DialogFooter>
                         <DialogButton
                             text="Continue"
-                            onPress={() => {this.setState({ displayDialog: false });}}
+                            onPress={() => {
+                                this.setState({ displayDialog: false });
+                                this.props.navigation.goBack();}}
                         />
                     </DialogFooter>}     
             />

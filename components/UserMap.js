@@ -50,10 +50,10 @@ export default class UserMap extends Component{
     super(props);
     this.state = {     
       region: {
-        latitude: 37.68825,
-        longitude: -122.4324,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421
+        latitude: 56.130367,
+        longitude: -106.346771,
+        latitudeDelta: 40,
+        longitudeDelta: 40
       },
       searchInfo: {},
       events: [],
@@ -71,8 +71,8 @@ export default class UserMap extends Component{
     //TEMP SEARCH PARAMS
     //when we add a settings page these can be configurable
     var params = {
-      lat: 49.190077,
-      lng: -123.103008,
+      lat: 53.760860,
+      lng: -98.813873,
       distance: 100,
       limit: 40
     };

@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 100,
     paddingRight: 5,
+    borderRadius: 15,
   },
   textContainer: {
     flex: 1,
@@ -98,8 +99,6 @@ const styles = StyleSheet.create({
     height: 90,
   },
   fishName: {
-    //fontSize: 16,
-    //fontWeight: '500',
     ...material.subheadingObject,
     ...systemWeights.semibold,
   },

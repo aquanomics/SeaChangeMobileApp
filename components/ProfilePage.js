@@ -166,7 +166,7 @@ export default class ProfilePage extends Component{
     render(){
         return (
             <View style={styles.myContainer}>
-                <DisplayAccountInfo
+               <DisplayAccountInfo
                     user={this.state.user}
                     onPressLogIn={this.onPressLogIn}
                     onPressSignUp={this.onPressSignUp}
@@ -220,7 +220,7 @@ function DisplayAccountInfo(props) {
                 <View style={styles.loginContainer}>
                     <Image
                         source={require('../img/icons/login.png')}
-                        style={{ width: 100, height: 100, borderRadius: 15 }}
+                        style={{ width: 100, height: 100 }}
                     />
                     <Text style={styles.boldTitleText}>Login to Unlock More Features!!</Text>
                     <View style={styles.textInputContainer}>
@@ -278,8 +278,12 @@ function DisplayAccountInfo(props) {
 
     } else {    //else, user must be signed in
         return (
-            <ImageBackground source={require('../img/backgrounds/sea-background.png')} style={styles.backgroundImage} >
-                <View style={styles.loginContainer}>
+            <ImageBackground source={require('../img/backgrounds/profile-background.png')} style={styles.backgroundImage} >
+                <View style={styles.accountInfoContainer}>
+                    <Image
+                        source={require('../img/icons/profile-icon.png')}
+                        style={{ width: 100, height: 100 }}
+                    />
                     <Text style={styles.boldTitleText}>{`Hello ${props.userData.username}.`}</Text>
                     <View style={styles.buttonsContainer}>
                         <RoundButton 
@@ -287,7 +291,7 @@ function DisplayAccountInfo(props) {
                             type="primary"
                             text="Sign Out"
                             textStyle= {styles.buttonTextFont}
-                            backgroundColors={['#2193b0', '#6dd5ed']}
+                            backgroundColors={['#58D68D', '#58D68D']}
                             gradientStart={{ x: 0.5, y: 1 }}
                             gradientEnd={{ x: 1, y: 1 }}
                             onPress={props.onPressSignOut} 

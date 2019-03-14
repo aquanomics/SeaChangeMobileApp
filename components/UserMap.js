@@ -471,8 +471,8 @@ export default class UserMap extends Component{
         ))}
         {this.state.restaurants.map(marker => (
           <MapView.Marker
-              coordinate={{latitude:marker.lat, //consistent naming is nessesary
-                longitude:marker.lng}}
+              coordinate={{latitude:marker.latitude, //consistent naming is nessesary
+                longitude:marker.longitude}}
               title={marker.partner_name}
               description={marker.address_1}
               image={require('../img/map_icons/marker.png')}

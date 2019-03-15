@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, TouchableHighlight } from 'react-native';
 import { Text, Card, Divider } from 'react-native-elements';
-import moment from 'moment';
 import Icon from 'react-native-vector-icons/Entypo';
 
 export default class ObservationCard extends React.Component {

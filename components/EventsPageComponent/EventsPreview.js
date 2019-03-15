@@ -33,11 +33,10 @@ class EventsPreview extends React.Component {
       startDate,
       endDate,
       lat,
-      lng
+      lng,
+      urlToImage
     } = this.props.eventspreview;
     const { noteStyle, featuredTitleStyle } = styles;
-    const defaultImg =
-      'https://www.serebii.net/magikarpjump/events/3.jpg';
   
     return (
       <TouchableHighlight
@@ -47,18 +46,18 @@ class EventsPreview extends React.Component {
         <Card
           featuredTitle={name}
           featuredTitleStyle={featuredTitleStyle}
-          image={{
-            uri: defaultImg
-          }}
+          image={(urlToImage != null)
+              ? {uri: urlToImage}                      
+              : require('../../img/place_holders/no-image-event.png')}
         >
             <Text style={{ marginBottom: 20 }}> {description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-           <Text style={{ marginBottom: 15 }}> {"Time:\n\n"+moment(startDate).format('LLLL') + "\nTo\n" + moment(endDate).format('LLLL')}</Text>
+              <Text style={{ marginBottom: 15 }}> {"Tim:\n" + "   " + moment(startDate).format('LLLL') + "\n  To\n" + "   " + moment(endDate).format('LLLL')}</Text>
             </View>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 10 }}> {"Location:\n"+ location +"," + city} </Text>
+              <Text style={{ marginBottom: 10 }}> {"Location:\n" + "   " + location + "," + city} </Text>
             </View>
         </Card>
         </TouchableHighlight>

@@ -190,7 +190,7 @@ leftComponentJSX = () => {
               //WARNING: context is lost within onSelect
               //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
               onSelect={(idx, value) => this.dropdownHandler(idx)}//using getParam is the way to get around "this" context being lost
-          />
+        />
     </View>
             );
   } else {
@@ -276,10 +276,11 @@ function DisplaySpecies(props) {
             onEndThreshold={0.01}
             ListEmptyComponent={
               <DisplayNoInternet 
-                styles={styles}  
-                refreshingSearch={props.refreshingSearch}
-                refreshing={props.refreshing}
-              />}
+                  styles={styles}  
+                  refreshingSearch={props.refreshingSearch}
+                  refreshing={props.refreshing}
+              />
+            }
             onMomentumScrollBegin={() => props.onScrollMotionBeginHandler()}
             onScrollBeginDrag={() => props.onScrollMotionBeginHandler()}
           />;
@@ -293,18 +294,18 @@ function DisplayNoInternet(props) {
   if(props.refreshing || props.refreshingSearch || 
     props.refreshing === undefined || props.refreshingSearch === undefined) {
     return <View style={styles.container}>
-          <Text style={styles.welcome}>Loading</Text>
+            <Text style={styles.welcome}>Loading</Text>
            </View>;
   } else if(props.emptySearchReturned == true) {
     return <View style={styles.container}>
-          <Text style={styles.welcome}>No results</Text>
-          <Text style={styles.instructions}>Try a different keyword</Text>
+            <Text style={styles.welcome}>No results</Text>
+            <Text style={styles.instructions}>Try a different keyword</Text>
            </View>;
   } else {
     return <View style={styles.container}>
             <Text style={styles.welcome}>Cannot Load Species Nearby</Text>
             <Text style={styles.instructions}>Might want to check your internet</Text>
-         </View>;
+           </View>;
   }
 }
 
@@ -316,7 +317,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderTopColor: '#009688'
   },
-
   TouchableOpacity_style: {
     padding: 7,
     flexDirection: 'row',
@@ -325,16 +325,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#F44336',
     borderRadius: 5,
   },
-
   TouchableOpacity_Inside_Text: {
     textAlign: 'center',
     color: '#fff',
     fontSize: 18
   },
   myContainer: {
-  flex: 1,
-  //paddingTop: Constants.statusBarHeight,
-    },
+    flex: 1,
+    //paddingTop: Constants.statusBarHeight,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -355,38 +354,38 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   headerLeft: {
-  flex: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  margin: 0,
-  //backgroundColor: 'red', //debugging use
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 0,
+    //backgroundColor: 'red', //debugging use
   },
-    headerLeftIcon: {
-  marginLeft: 8,    //need this to position the back icon on left header like the other react-native-navigation headers
-        //because we're not using react-native-navigation headers. We're using react-native-elements header
-  paddingTop: 9,
-  paddingBottom: 9,
-  paddingLeft: 13,
-  paddingRight: 13,
-  borderRadius:100,   //makes the TouchableHighlight circular
-  //backgroundColor: 'red', //debugging use
+  headerLeftIcon: {
+    marginLeft: 8, //need this to position the back icon on left header like the other react-native-navigation headers
+    //because we're not using react-native-navigation headers. We're using react-native-elements header
+    paddingTop: 9,
+    paddingBottom: 9,
+    paddingLeft: 13,
+    paddingRight: 13,
+    borderRadius: 100, //makes the TouchableHighlight circular
+    //backgroundColor: 'red', //debugging use
   },
   headerRight: {
-  flex: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  margin: 0,
-  //backgroundColor: 'red', //debugging use
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 0,
+    //backgroundColor: 'red', //debugging use
   },
   headerSearchIcon: {
-  //flex: 1,
-  //marginLeft: 8,  //WARNING: The padding cannot be all same like headerLeft. The boundary gets messed up
-  paddingTop: 9,
-  paddingBottom: 9,
-  paddingLeft: 13,
-  paddingRight: 13,
-  borderRadius:100,   //makes the TouchableHighlight circular
-  alignItems: 'center',
-  //backgroundColor: 'red', //debugging use
-    }
+    //flex: 1,
+    //marginLeft: 8,  //WARNING: The padding cannot be all same like headerLeft. The boundary gets messed up
+    paddingTop: 9,
+    paddingBottom: 9,
+    paddingLeft: 13,
+    paddingRight: 13,
+    borderRadius: 100, //makes the TouchableHighlight circular
+    alignItems: 'center',
+    //backgroundColor: 'red', //debugging use
+  }
 });

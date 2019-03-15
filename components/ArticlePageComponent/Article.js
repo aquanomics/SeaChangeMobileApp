@@ -22,8 +22,6 @@ export default class Article extends React.Component {
     const { noteStyle, featuredTitleStyle } = styles;
     const time = moment(published_at || moment.now()).fromNow();
     const MAXLENGTH = 150;
-    const defaultImg =
-      'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
 
     return (
       <TouchableHighlight
@@ -36,9 +34,9 @@ export default class Article extends React.Component {
         <Card
           featuredTitle={title}
           featuredTitleStyle={featuredTitleStyle}
-          image={{
-            uri: urlToImage || defaultImg
-          }}
+          image={(urlToImage != null)
+              ? {uri: urlToImage}                      
+              : require('../../img/place_holders/no-image-article.png')}
         >
             <Text style={{ marginBottom: 10 }}> {description.substring(0, MAXLENGTH)+" ..." || 'Read More..'} </Text>
 

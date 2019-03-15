@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { Platform, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getEvents, getCities, searchEvents } from './EventsPageComponent/Event';
 import EventsPreview from './EventsPageComponent/EventsPreview';   //Component used to render each entry in the list
@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import ModalDropdown from 'react-native-modal-dropdown';
 
 const dropdownOptions = [];
-//const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
+
 export default class EventsPage extends React.Component {
     constructor(props) {
   super(props);
@@ -45,24 +45,24 @@ export default class EventsPage extends React.Component {
   };
 
   toggleSearchState = () => {
-  if(this.state.isSearchActive == true) {
-      this.setState({
-        isSearchActive: false,
-        search: [],
-        searchListRefreshing: false,
-        searchSubmitted: false,
-        //lastSearchText: this.state.searchText,
-      });
-  } else {
-      this.setState({ isSearchActive: true});
-  }
+    if(this.state.isSearchActive == true) {
+        this.setState({
+          isSearchActive: false,
+          search: [],
+          searchListRefreshing: false,
+          searchSubmitted: false,
+          //lastSearchText: this.state.searchText,
+        });
+    } else {
+        this.setState({ isSearchActive: true});
     }
+  }
 
   componentDidMount() {
-  this.fetchCities(this.state.category);
-  this.fetchEvents(this.state.category);
-  this.props.navigation.setParams({ fetchEvents: this.Event });
-  //console.log(this.filterCity);
+    this.fetchCities(this.state.category);
+    this.fetchEvents(this.state.category);
+    this.props.navigation.setParams({ fetchEvents: this.Event });
+    //console.log(this.filterCity);
   }
 
   fetchEvents = () => {
@@ -110,13 +110,13 @@ export default class EventsPage extends React.Component {
   }
 
   handleSearchRefresh = () => {
-      this.searchOffset = 0;
-      this.setState({refreshingSearch: true, search : [], }, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
+    this.searchOffset = 0;
+    this.setState({refreshingSearch: true, search : [], }, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
   }
 
   handleRefresh() {
-      this.offset = 0;
-      this.setState({refreshing: true, EventsList : [], }, () => this.fetchEvents(this.offset,this.city));
+    this.offset = 0;
+    this.setState({refreshing: true, EventsList : [], }, () => this.fetchEvents(this.offset,this.city));
   }
 
   handleFetchMore() {
@@ -144,73 +144,68 @@ export default class EventsPage extends React.Component {
   }
 
 
-leftComponentJSX = () => {
-  //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-  if(this.state.isSearchActive == true) {
-      return (
-    <View style={styles.headerLeft}>
-        <TouchableHighlight
-      style={styles.headerLeftIcon}
-      underlayColor={'#DCDCDC'}
-      onPress={() => {
-          this.toggleSearchState();
-      } }
-        >
+  leftComponentJSX = () => {
+    //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+    if(this.state.isSearchActive == true) {
+        return (
+      <View style={styles.headerLeft}>
+          <TouchableHighlight
+            style={styles.headerLeftIcon}
+            underlayColor={'#DCDCDC'}
+            onPress={() => { this.toggleSearchState();} }
+          >
           <Icon
-          name="md-close"
-          size={25}
+            name="md-close"
+            size={25}
           />
-        </TouchableHighlight>
-    </View>
-      );
-  }
+          </TouchableHighlight>
+      </View>
+        );
     }
-    rightComponentJSX = () => {
-  //we check for undefined because when using setState to change states,
-  //the state values can momentarily be undefined
-  if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
-      //When search is not active
-            return (
-    <View style={styles.headerRight}>
-        <TouchableHighlight
-          style={styles.headerSearchIcon}
-          underlayColor={'#DCDCDC'}
-          onPress = {this.toggleSearchState}
-        >
-                <Icon
-                  name="md-search"
-                  size={25}
-                />
-        </TouchableHighlight>
-            <ModalDropdown
-              style={styles.dropdown}
-              defaultValue={this.wordDropDown}
-              options={dropdownOptions}
-              //WARNING: context is lost within onSelect
-              //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
-              onSelect={(idx, value) => this.dropdownHandler(idx)}//using getParam is the way to get around "this" context being lost
-          />
-    </View>
-            );
-  } else {
-      //When search is active
-            return (
-                <View style={styles.headerRight}>
-                  <TextInput
-            autoFocus={true}
-            style={{width: 300, height: 40, borderColor: 'gray', borderWidth: 1}}
-            placeholder={"search all categories"}
-            enablesReturnKeyAutomatically={true}
-            //onSubmitEditing={(value) => {this.searchSubmitHandler(value);} }
-            // onChangeText={ (value) => {this.searchSubmitHandler(value);}
-            //  }
-            onSubmitEditing={() => {this.searchSubmitHandler();  this.searchOffset = 0;} }
-            onChangeText={ (text) => {
-              this.setState({searchText: text}, () => console.log(`searchText is: ${this.state.searchText}`));} }
-          />
-                </View>
-            );
   }
+    rightComponentJSX = () => {
+      //we check for undefined because when using setState to change states,
+      //the state values can momentarily be undefined
+      if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+          //When search is not active
+                return (
+        <View style={styles.headerRight}>
+            <TouchableHighlight
+              style={styles.headerSearchIcon}
+              underlayColor={'#DCDCDC'}
+              onPress = {this.toggleSearchState}
+            >
+              <Icon
+                name="md-search"
+                size={25}
+              />
+            </TouchableHighlight>
+            <ModalDropdown
+                style={styles.dropdown}
+                defaultValue={this.wordDropDown}
+                options={dropdownOptions}
+                //WARNING: context is lost within onSelect
+                //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
+                onSelect={(idx, value) => this.dropdownHandler(idx)}//using getParam is the way to get around "this" context being lost
+            />
+        </View>
+                );
+      } else {
+          //When search is active
+                return (
+                  <View style={styles.headerRight}>
+                      <TextInput
+                        autoFocus={true}
+                        style={{width: 300, height: 40, borderColor: 'gray', borderWidth: 1}}
+                        placeholder={"search all categories"}
+                        enablesReturnKeyAutomatically={true}
+                        onSubmitEditing={() => {this.searchSubmitHandler();  this.searchOffset = 0;} }
+                        onChangeText={ (text) => {
+                          this.setState({searchText: text}, () => console.log(`searchText is: ${this.state.searchText}`));} }
+                        />
+                  </View>
+                );
+      }
     }
 
 
@@ -254,7 +249,7 @@ function DisplayEvents(props) {
             //keyExtractor={item => item.SpecCode.toString()}
             refreshing={props.refreshing}
             onRefresh={props.handleRefresh}
-           // onEndReached={props.handleFetchMore}
+            //onEndReached={props.handleFetchMore}
             onEndThreshold={0.0}
             enableEmptySections={true}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
@@ -309,8 +304,8 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   myContainer: {
-  flex: 1,
-  //paddingTop: Constants.statusBarHeight,
+    flex: 1,
+    //paddingTop: Constants.statusBarHeight,
     },
   container: {
     flex: 1,
@@ -332,39 +327,39 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   headerLeft: {
-  flex: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  margin: 0,
-  //backgroundColor: 'red', //debugging use
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 0,
+    //backgroundColor: 'red', //debugging use
   },
-    headerLeftIcon: {
-  marginLeft: 8,    //need this to position the back icon on left header like the other react-native-navigation headers
-        //because we're not using react-native-navigation headers. We're using react-native-elements header
-  paddingTop: 9,
-  paddingBottom: 9,
-  paddingLeft: 13,
-  paddingRight: 13,
-  borderRadius:100,   //makes the TouchableHighlight circular
-  //backgroundColor: 'red', //debugging use
+  headerLeftIcon: {
+    marginLeft: 8,   //need this to position the back icon on left header like the other react-native-navigation headers
+    //because we're not using react-native-navigation headers. We're using react-native-elements header
+    paddingTop: 9,
+    paddingBottom: 9,
+    paddingLeft: 13,
+    paddingRight: 13,
+    borderRadius:100,  //makes the TouchableHighlight circular
+    //backgroundColor: 'red', //debugging use
   },
   headerRight: {
-  flex: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  margin: 0,
-  //backgroundColor: 'red', //debugging use
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 0,
+    //backgroundColor: 'red', //debugging use
   },
   headerSearchIcon: {
-  //flex: 1,
-  //marginLeft: 8,  //WARNING: The padding cannot be all same like headerLeft. The boundary gets messed up
-  paddingTop: 9,
-  paddingBottom: 9,
-  paddingLeft: 13,
-  paddingRight: 13,
-  borderRadius:100,   //makes the TouchableHighlight circular
-  alignItems: 'center',
-  //backgroundColor: 'red', //debugging use
-    }
+    //flex: 1,
+    //marginLeft: 8,  //WARNING: The padding cannot be all same like headerLeft. The boundary gets messed up
+    paddingTop: 9,
+    paddingBottom: 9,
+    paddingLeft: 13,
+    paddingRight: 13,
+    borderRadius:100,   //makes the TouchableHighlight circular
+    alignItems: 'center',
+    //backgroundColor: 'red', //debugging use
+  }
 });
 

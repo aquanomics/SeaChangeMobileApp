@@ -1,26 +1,26 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import { getSpeciesDetails } from './FishPageComponent/Fish';
 import Details from './FishPageComponent/Details'
-import { ActivityIndicator, ListView, Platform, StyleSheet, Text, View, Linking, FlatList} from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 
 export default class FishDetailPage extends Component{
     constructor(props) {
-    super(props);
-    this.state = { data: [],
-                refreshing: true,
-                category: "animal",
-                isLoading: true,
-                fetching_Status: false,};
-                // dataSource: ds.cloneWithRows(SpeciesList),};
-                this.fetchDetails = this.fetchDetails.bind(this);
-                //this.{ navigation } = this.props;
-                 this.itemId = this.props.navigation.getParam('code', 'NO-ID');
-                 this.SpeciesCode = this.itemId;
-                 //console.log(this.itemId)
+      super(props);
+      this.state = { data: [],
+                  refreshing: true,
+                  category: "animal",
+                  isLoading: true,
+                  fetching_Status: false,};
+                  // dataSource: ds.cloneWithRows(SpeciesList),};
+                  this.fetchDetails = this.fetchDetails.bind(this);
+                  //this.{ navigation } = this.props;
+                  this.itemId = this.props.navigation.getParam('code', 'NO-ID');
+                  this.SpeciesCode = this.itemId;
+                  //console.log(this.itemId)
   }
   componentDidMount() {
-  this.fetchDetails(this.state.category);
-  this.props.navigation.setParams({ fetchDetails: this.Details });
+    this.fetchDetails(this.state.category);
+    this.props.navigation.setParams({ fetchDetails: this.Details });
   }
 
   fetchDetails = () => {
@@ -28,33 +28,24 @@ export default class FishDetailPage extends Component{
         .then(response => {
           this.setState({ data:response, refreshing: false});
           console.log("SUCCESS")})
-        .catch(() => {this.setState({data: [], refreshing: false });console.log("ERROR")});
+        .catch(() => {this.setState({data: [], refreshing: false }); console.log("ERROR");});
   }
 
   handleRefresh() {
-        this.setState({refreshing: true, data : [], }, () => this.fetchDetails(this.SpeciesCode));
+    this.setState({refreshing: true, data : [], }, () => this.fetchDetails(this.SpeciesCode));
   }
-//     render(){
-//     const { navigation } = this.props;
-//     const itemId = navigation.getParam('code', 'NO-ID');
-//         return (
-//             <View style={styles.placeholder}>
-//                 <Text>{JSON.stringify(itemId)}</Text>
-//             </View>
-//         );
-//     }
-// }
-render() {
-      return (
-      <DisplaySpecies 
-        data={this.state.data} 
-        refreshing={this.state.refreshing} 
-        handleRefresh={this.handleRefresh.bind(this)} 
-        //handleFetchMore={this.handleFetchMore.bind(this)}
-        key={this._keyExtractor}
-        navigation={this.props.navigation}
-      />
-      );
+
+  render() {
+        return (
+        <DisplaySpecies 
+          data={this.state.data} 
+          refreshing={this.state.refreshing} 
+          handleRefresh={this.handleRefresh.bind(this)} 
+          //handleFetchMore={this.handleFetchMore.bind(this)}
+          key={this._keyExtractor}
+          navigation={this.props.navigation}
+        />
+        );
   }
 }
 
@@ -63,7 +54,6 @@ function DisplaySpecies(props) {
             keyExtractor={props.key}
             data={props.data}
             renderItem={({ item }) => <Details navigation={props.navigation} details={item} index={item.index} />}
-            //keyExtractor={item => item.SpecCode.toString()}
             refreshing={props.refreshing}
             onRefresh={props.handleRefresh}
             ListEmptyComponent={<DisplayNoInternet styles={styles}  />}

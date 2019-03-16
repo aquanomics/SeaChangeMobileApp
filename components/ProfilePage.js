@@ -49,54 +49,7 @@ export default class ProfilePage extends Component{
      */
     //TODO: NEED TO REMOVE console logs.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     componentDidMount() {
-        this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
-            if(user) {
-                console.log("Inside componentDidMount()'s AuthStateChanged callback function. Below is the user");
-                console.log(user);
-                console.log("Retrieving uid of user");
-                console.log(user.uid);
-
-                user.getIdToken()
-                    .then(idToken => {
-                        //for debugging below
-                        console.log('idToken is below.');
-                        console.log(idToken);
-
-                        //Retrieve the rest of user data from mysql db
-                        return fetch(urlUserFetch + `uid=${user.uid}` + `&idToken=${idToken}`);
-                    }).then(response => {
-                        console.log("Got in 2nd then");
-                        if(response.status != 200) {
-                            this.setState({ emptySearchReturned: false});
-                            throw {message: `Internal server error! Error code ${response.status}`};
-                        } else {
-                            return response.json();
-                        }
-                    }).then(response => {
-                        console.log("Got in the 3rd then. Below is the response");
-                        console.log(response);
-                        if(response.User.length == 0) {
-                            //TODO: sign out user here
-                            throw {message: "Error: No corresponding user data with this account. Please contact the admin."};
-                        }
-
-                        //Note: this.state.user is set here
-                        this.setState({user: user, userData: {username: response.User[0].username, created_at: response.User[0].created_at}});
-                    }).catch(error => {
-                        console.log("Inside componentDidMount idToken then chain");
-                        this.setState({displayDialog: true, dialogText: error.message});
-                    })
-
-                //Setting the state for user object may seem unnecessary because we can use firebase.auth().currentUser;
-                //however, in render() comment section, it explains why we need this
-
-                // console.log("Executing navigation switch to new component (UserMap)");
-                // this.props.navigation.navigate('Home', { user: user });
-            } else {
-                console.log("Inside componentDidMount()'s AuthStateChanged callback function. Not logged in");
-                this.setState({user: null});
-            }
-        });
+        this.turnOnFirebaseAuthCallback();
     }
 
     /**
@@ -144,7 +97,65 @@ export default class ProfilePage extends Component{
     }
 
     onPressSignUp = () => {
-        this.props.navigation.navigate('Signup', {});
+        //stop the ProfilePage's firebase auth state change callback function
+        if (this.unsubscriber) {
+            this.unsubscriber();
+        }
+
+        //pass in the binded function so that child can change parent's function that changes parent's component/state
+        this.props.navigation.navigate('Signup', {turnOnFirebaseAuthCallback: this.turnOnFirebaseAuthCallback.bind(this)});
+    }
+
+    //used by and inside the SignUp page in order to turn back on the state change callback function
+    turnOnFirebaseAuthCallback = () => {
+        this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
+            if(user) {
+                console.log("Inside ProfilePage componentDidMount()'s AuthStateChanged callback function. Below is the user");
+                console.log(user);
+                console.log("Retrieving uid of user");
+                console.log(user.uid);
+
+                user.getIdToken()
+                    .then(idToken => {
+                        var urlString = urlUserFetch + `uid=${user.uid}` + `&idToken=${idToken}`;
+                        //for debugging below
+                        console.log(urlString);
+
+                        //Retrieve the rest of user data from mysql db
+                        return fetch(urlString);
+                    }).then(response => {
+                        console.log("Got in 2nd then");
+                        if(response.status != 200) {
+                            this.setState({ emptySearchReturned: false});
+                            throw {message: `Internal server error! Error code ${response.status}`};
+                        } else {
+                            return response.json();
+                        }
+                    }).then(response => {
+                        console.log("Got in the 3rd then. Below is the response");
+                        console.log(response);
+                        if(response.User.length == 0) {
+                            //TODO: sign out user here
+                            throw {message: "Error: No corresponding user data with this account. Please contact the admin."};
+                        }
+
+                        //Note: this.state.user is set here
+                        this.setState({user: user, userData: {username: response.User[0].username, created_at: response.User[0].created_at}});
+                    }).catch(error => {
+                        console.log("Inside componentDidMount idToken then chain");
+                        this.setState({displayDialog: true, dialogText: error.message});
+                    })
+
+                //Setting the state for user object may seem unnecessary because we can use firebase.auth().currentUser;
+                //however, in render() comment section, it explains why we need this
+
+                // console.log("Executing navigation switch to new component (UserMap)");
+                // this.props.navigation.navigate('Home', { user: user });
+            } else {
+                console.log("Inside componentDidMount()'s AuthStateChanged callback function. Not logged in");
+                this.setState({user: null});
+            }
+        });
     }
 
     onPressForgotPassword = () => {

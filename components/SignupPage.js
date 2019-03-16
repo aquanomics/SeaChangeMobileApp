@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, BackHandler } from "react-native";
+import { HeaderBackButton } from 'react-navigation';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -11,9 +12,16 @@ const urlUsernameCheck = "http://seachange.ca-central-1.elasticbeanstalk.com/use
 const urlUserRegister = "http://seachange.ca-central-1.elasticbeanstalk.com/users/register"; //for our db, not firebase
 
 export default class SignupPage extends Component{
-	static navigationOptions = {
+	_didFocusSubscription;
+	_willBlurSubscription;
+
+    static navigationOptions = ({ navigation }) => ({
         title: 'Sign Up',
-    };
+	    headerLeft: <HeaderBackButton onPress={() => {
+	    	navigation.state.params.turnOnFirebaseAuthCallback();
+	    	navigation.goBack(null);
+	    }} />,
+	})
 
   	constructor(props) {
 		super(props);
@@ -31,6 +39,10 @@ export default class SignupPage extends Component{
 			displayDialog: false,
 			dialogText: '',
 		};
+
+		this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+		    BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+	    );
   	}
 
     /**
@@ -51,13 +63,25 @@ export default class SignupPage extends Component{
 				this.setState({user: null});
 			}
 		});
+
+		this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+		    BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+	    );
     }
+
+  	onBackButtonPressAndroid = () => {
+  		//turn on parent's firebase auth callback
+  		this.props.navigation.state.params.turnOnFirebaseAuthCallback();
+	    return false;
+	};
 
     /**
      * Don't forget to stop listening for authentication state changes
      * when the component unmounts.
      */
     componentWillUnmount() {
+	    this._didFocusSubscription && this._didFocusSubscription.remove();
+	    this._willBlurSubscription && this._willBlurSubscription.remove();
 		console.log("Inside componentWillUnmount() of SignUpPage");
 		if (this.unsubscriber) 
 			this.unsubscriber();
@@ -123,10 +147,14 @@ export default class SignupPage extends Component{
 						this.setState({ buttonSignUpState: 'signUp' });
 						throw({'message': `Internal server error! Error code ${response.status}`});
 					}
+					console.log('Sign up complete');
 					//if it's 200, then user creation is successful
 					this.setState({ buttonSignUpState: 'signUp' });
-					this.props.navigation.goBack();
 					this.registeredOnFirebase = false;	//reset the flag
+
+					//go back
+					this.props.navigation.state.params.turnOnFirebaseAuthCallback();	//turn on parent callback
+					this.props.navigation.goBack();
 				})
 				.catch(error => {   
 					//external and internal server error

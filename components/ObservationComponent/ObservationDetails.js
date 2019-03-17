@@ -3,18 +3,30 @@ import { Dimensions, StyleSheet, View, ScrollView } from 'react-native';
 import {DisplayApproval} from './ObservationCard';
 import { Text } from 'react-native-elements';
 import { Divider } from 'react-native-elements';
+import { RoundButton } from 'react-native-button-component';
+import Dialog, {DialogTitle, ScaleAnimation, DialogFooter, DialogButton} from 'react-native-popup-dialog';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 import ResizedImage from '../ResizedImage.js';
 import MapView from "react-native-maps";
 
+const URL = "http://seachange.ca-central-1.elasticbeanstalk.com/post-img/image-delete";
+
 export default class ObservationDetails extends React.Component {
     static navigationOptions = ({ navigation }) => ({
-			title: 'Observation Details'
-			// title: navigation.state.params.myTitle,	//if you want dynamic titles depending on the observation
+		title: 'Observation Details'
+		// title: navigation.state.params.myTitle,	//if you want dynamic titles depending on the observation
     });
 
     constructor(props) {
-			super(props);
-    }
+		super(props);
+	}
+	
+	state = {
+        buttonDeleteState: 'delete',
+		displayResultDialog: false,
+		deleteDialog: false,
+        dialogText: '',
+    };
 
     componentDidMount() {
 			//debugging
@@ -24,14 +36,34 @@ export default class ObservationDetails extends React.Component {
 			//This below is a method of passing data to the navigationOptions.
 			//navigation.state is different from the component's this.state
 			// this.props.navigation.setParams({ myTitle: this.props.navigation.getParam('postObject', {} ).title});
-    }
+	}
+	
+	handleDeleteObservation = (imageKey) => {
+
+		var resultUrl = URL + "?imageKey=" + imageKey; 
+		fetch(resultUrl, { method: "DELETE"})
+		.then(response => {
+			if(response.status != 200) {    //internal server error
+				console.log(`Internal server error! Error code ${response.status}`);
+				this.setState({ buttonDeleteState: 'delete', displayResultDialog: true,  dialogText: "Failed to Delete Observation."});
+			} else {
+				console.log(`Image Deleted`);
+				this.setState({ buttonDeleteState: 'delete', displayResultDialog: true, dialogText: "Delete Successful!" });
+			}
+		})
+		.catch(error => {   //external server error
+			console.log("External server error")
+			this.setState({ buttonUploadState: 'delete', displayResultDialog: true, dialogText: error.message });
+			console.log(error.message);
+		});
+    };
 
     render() {
 			const postObject = this.props.navigation.getParam('postObject', {});
 			console.log(postObject);
 			if (!postObject.lat || !postObject["lng"]) {
 				return (
-						<ScrollView style={styles.container}>
+					<ScrollView style={styles.container}>
 						<View style={styles.imageContainer}>
 							<ResizedImage
 								source={{uri: postObject.urlToImage}}
@@ -46,36 +78,193 @@ export default class ObservationDetails extends React.Component {
 						<View style={styles.summaryContainer}>
 							<Text style={styles.summary}> {postObject.comment == 'null' ? '' : postObject.comment} </Text>
 						</View>
-								<Divider style={styles.divider} />
-						<View style={styles.footer}>
-										<DisplayApproval approved={postObject.approved}/>
-										<Text style={styles.noteStyle}>{postObject.uploaded_at.slice(0, -4)}</Text>
-								</View>
-							</ScrollView>
-				);
-			} else {
-				return (
-						<ScrollView style={styles.container}>
-						<View style={styles.imageContainer}>
-							<ResizedImage
-								source={{uri: postObject.urlToImage}}
-								margin={14}
+
+						<Dialog
+							onTouchOutside={() => {
+								this.setState({ deleteDialog: false });}}
+							width={0.9}
+							visible={this.state.deleteDialog}
+							dialogAnimation={new ScaleAnimation()}
+							dialogTitle={
+								<DialogTitle
+								title={"Do you want to delete this observation ?"}
+								hasTitleBar={false}
+								/>}
+							footer={
+								<DialogFooter>
+									<DialogButton
+									text="Yes"
+									onPress={() => {
+										this.setState({ buttonDeleteState: 'deleting' });
+										this.setState({ deleteDialog: false });
+										this.handleDeleteObservation(postObject.imageKey);}}
+									/>
+									<DialogButton
+									text="No"
+									onPress={() => {this.setState({ deleteDialog: false });}}
+									/>
+								</DialogFooter>}     
+                		/>
+
+						<Dialog
+							onTouchOutside={() => {
+								this.setState({ displayResultDialog: false });
+								this.props.navigation.goBack();}}
+							width={0.9}
+							visible={this.state.displayResultDialog}
+							dialogAnimation={new ScaleAnimation()}
+							dialogTitle={
+								<DialogTitle
+								title={this.state.dialogText}
+								hasTitleBar={false}
+								/>}
+							footer={
+								<DialogFooter>
+									<DialogButton
+									text="Continue"
+									onPress={() => {
+										this.setState({ displayResultDialog: false });
+										this.props.navigation.goBack();}}
+									/>
+								</DialogFooter>}     
+                		/>
+
+						<View style={styles.buttonContainer}>
+							<RoundButton
+								style = {styles.button}
+								buttonState={this.state.buttonDeleteState}
+								gradientStart={{ x: 0.5, y: 1 }}
+								gradientEnd={{ x: 1, y: 1 }}
+								textStyle= {styles.buttonTextFont}
+								states={{
+									delete: {
+										text: 'Delete Observation',
+										backgroundColors: ['#ff3333', '#ff3333'],
+										onPress: () => {
+											this.setState({ deleteDialog: true });
+										},
+									},
+									deleting: {
+										text: 'Deleting Observation...',
+										gradientStart: { x: 0.8, y: 1 },
+										gradientEnd: { x: 1, y: 1 },
+										backgroundColors: ['#FF416C', '#FF4B2B'],
+										spinner: true,
+										onPress: () => {},
+									},
+								}}
 							/>
-						</View>
-
-						<View style={styles.titleContainer}>
-							<Text style={styles.title}> {postObject.name == 'default-name' ? '' : postObject.name} </Text>
-						</View>
-
-						<View style={styles.summaryContainer}>
-							<Text style={styles.summary}> {postObject.comment == 'null' ? '' : postObject.comment} </Text>
 						</View>
 
 						<Divider style={styles.divider} />
+
 						<View style={styles.footer}>
-										<DisplayApproval approved={postObject.approved}/>
-										<Text style={styles.noteStyle}>{postObject.uploaded_at.slice(0, -4)}</Text>
-								</View>
+							<DisplayApproval approved={postObject.approved}/>
+							<Text style={styles.noteStyle}>{postObject.uploaded_at.slice(0, -4)}</Text>
+						</View>
+					</ScrollView>
+				);
+			} else {
+				return (
+					<ScrollView style={styles.container}>
+						<View style={styles.imageContainer}>
+							<ResizedImage
+								source={{uri: postObject.urlToImage}}
+								margin={14}
+							/>
+						</View>
+
+						<View style={styles.titleContainer}>
+							<Text style={styles.title}> {postObject.name == 'default-name' ? '' : postObject.name} </Text>
+						</View>
+
+						<View style={styles.summaryContainer}>
+							<Text style={styles.summary}> {postObject.comment == 'null' ? '' : postObject.comment} </Text>
+						</View>
+
+						<Dialog
+							onTouchOutside={() => {
+								this.setState({ deleteDialog: false });}}
+							width={0.9}
+							visible={this.state.deleteDialog}
+							dialogAnimation={new ScaleAnimation()}
+							dialogTitle={
+								<DialogTitle
+								title={"Do you want to delete this observation ?"}
+								hasTitleBar={false}
+								/>}
+							footer={
+								<DialogFooter>
+									<DialogButton
+									text="Yes"
+									onPress={() => {
+										this.setState({ buttonDeleteState: 'deleting' });
+										this.setState({ deleteDialog: false });
+										this.handleDeleteObservation(postObject.imageKey);}}
+									/>
+									<DialogButton
+									text="No"
+									onPress={() => {this.setState({ deleteDialog: false });}}
+									/>
+								</DialogFooter>}     
+                		/>
+
+						<Dialog
+							onTouchOutside={() => {
+								this.setState({ displayResultDialog: false });
+								this.props.navigation.goBack();}}
+							width={0.9}
+							visible={this.state.displayResultDialog}
+							dialogAnimation={new ScaleAnimation()}
+							dialogTitle={
+								<DialogTitle
+								title={this.state.dialogText}
+								hasTitleBar={false}
+								/>}
+							footer={
+								<DialogFooter>
+									<DialogButton
+									text="Continue"
+									onPress={() => {
+										this.setState({ displayResultDialog: false });
+										this.props.navigation.goBack();}}
+									/>
+								</DialogFooter>}     
+                		/>
+
+						<View style={styles.buttonContainer}>
+							<RoundButton
+								style = {styles.button}
+								buttonState={this.state.buttonDeleteState}
+								gradientStart={{ x: 0.5, y: 1 }}
+								gradientEnd={{ x: 1, y: 1 }}
+								textStyle= {styles.buttonTextFont}
+								states={{
+									delete: {
+										text: 'Delete Observation',
+										backgroundColors: ['#ff3333', '#ff3333'],
+										onPress: () => {
+											this.setState({ deleteDialog: true });
+										},
+									},
+									deleting: {
+										text: 'Deleting Observation...',
+										gradientStart: { x: 0.8, y: 1 },
+										gradientEnd: { x: 1, y: 1 },
+										backgroundColors: ['#FF416C', '#FF4B2B'],
+										spinner: true,
+										onPress: () => {},
+									},
+								}}
+							/>
+						</View>
+
+						<Divider style={styles.divider} />
+						
+						<View style={styles.footer}>
+							<DisplayApproval approved={postObject.approved}/>
+							<Text style={styles.noteStyle}>{postObject.uploaded_at.slice(0, -4)}</Text>
+						</View>
 
 						<View style={styles.mapContainer}>
 							<MapView style={StyleSheet.absoluteFillObject} 
@@ -94,11 +283,18 @@ export default class ObservationDetails extends React.Component {
 								/>
 							</MapView>
 						</View>
-							</ScrollView>
+					</ScrollView>
 				);
 			}
     }
 }
+
+const setUrlParam = (url, param) => {
+    var name = param.imageKey; 
+    var resultUrl = url + "?imageKey=" + param.imageKey; 
+
+    return resultUrl;
+};
 
 const styles = {
 	container: {
@@ -160,5 +356,12 @@ const styles = {
 	footer: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-	}
+	},
+	buttonTextFont: {
+        ...material.button,
+        ...systemWeights.light,
+        color: materialColors.whitePrimary,
+        fontSize: 17,
+        textAlign: 'center',
+    },
 };

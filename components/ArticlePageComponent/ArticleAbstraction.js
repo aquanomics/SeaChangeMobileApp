@@ -54,14 +54,15 @@ export default class ArticleAbstraction extends React.Component {
 									style = {styles.button}
 									onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: articleObject.url})}	//opening another component using <WebView />
 									type="primary"
-									shape="rectangle"
 									backgroundColors={['#0099cc', '#0099cc']}
 									gradientStart={{ x: 0.5, y: 1 }}
 									gradientEnd={{ x: 1, y: 1 }}
 									text="See Full Article"
 								/>
 							</View>
+
 							<Divider style={styles.divider} />
+
 							<View style={styles.footer}>
 									<Text style={styles.noteStyle}>{articleObject.source_name.toUpperCase()}</Text>
 									<Text style={styles.noteStyle}>{time}</Text>
@@ -70,7 +71,7 @@ export default class ArticleAbstraction extends React.Component {
 				);
 			} else {
 				return (
-						<ScrollView style={styles.container}>
+					<ScrollView style={styles.container}>
 						<View style={styles.imageContainer}>
 							<ResizedImage
 								source={(articleObject.urlToImage != null)
@@ -123,7 +124,7 @@ export default class ArticleAbstraction extends React.Component {
 							</MapView>
 					
 						</View>
-							</ScrollView>
+					</ScrollView>
 				);
 			}
     }

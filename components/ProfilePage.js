@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Image, Text, View, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Image, Text, View, ImageBackground, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -30,6 +30,7 @@ export default class ProfilePage extends Component{
 
         this.state = {
             user: null,
+            screenState: "loading",
             email: '',
             password: '',
             displayDialog: externalDisplayDialog,   //if props is not given, this will be false by default
@@ -80,6 +81,7 @@ export default class ProfilePage extends Component{
             var errorStr = `Error: ${missingStr} ${missingArr.length == 1 ? "field is" : "fields are"} empty`;
             this.setState({displayDialog: true, dialogText: errorStr});
         } else {
+            this.setState({screenState: "loading"})
             console.log("Got inside the last else statement inside onPressLogIn()");
             firebase
                 .auth()
@@ -87,7 +89,7 @@ export default class ProfilePage extends Component{
                 .then(() => console.log("successfully logged on"))
                 .catch((e) => {
                     console.log(e.message);
-                    this.setState({displayDialog: true, dialogText: e.message});
+                    this.setState({displayDialog: true, dialogText: e.message, screenState: "logged_out"});
                 });
         }
     }
@@ -140,10 +142,17 @@ export default class ProfilePage extends Component{
                         }
 
                         //Note: this.state.user is set here
-                        this.setState({user: user, userData: {username: response.User[0].username, created_at: response.User[0].created_at}});
+                        this.setState({
+                            user: user, 
+                            userData: {
+                                username: response.User[0].username, 
+                                created_at: response.User[0].created_at
+                            },
+                            screenState: "logged_in"
+                        });
                     }).catch(error => {
                         console.log("Inside componentDidMount idToken then chain");
-                        this.setState({displayDialog: true, dialogText: error.message});
+                        this.setState({displayDialog: true, dialogText: error.message, screenState: "logged_out"});
                     })
 
                 //Setting the state for user object may seem unnecessary because we can use firebase.auth().currentUser;
@@ -153,7 +162,7 @@ export default class ProfilePage extends Component{
                 // this.props.navigation.navigate('Home', { user: user });
             } else {
                 console.log("Inside componentDidMount()'s AuthStateChanged callback function. Not logged in");
-                this.setState({user: null});
+                this.setState({user: null, screenState: "logged_out"});
             }
         });
     }
@@ -187,6 +196,7 @@ export default class ProfilePage extends Component{
                     passwordTextHandler={this.passwordTextHandler}
                     onPressObservation={this.onPressObservation}
                     userData={this.state.userData}
+                    screenState={this.state.screenState}
                 />
                 <Dialog
                     onTouchOutside={() => this.setState({ displayDialog: false, dialogText: '' })}
@@ -225,7 +235,7 @@ function DisplayAccountInfo(props) {
     //In short, when using if(!firebase.auth().currentUser) inside render(), the conditional is only evaluated once
 
     //if user is not signed in yet
-    if(!props.user) {
+    if(props.screenState == "logged_out") {
         return (
             <ImageBackground source={require('../img/backgrounds/sea-background.png')} style={styles.backgroundImage} >
                 <View style={styles.loginContainer}>
@@ -287,7 +297,7 @@ function DisplayAccountInfo(props) {
             </ImageBackground>
         );
 
-    } else {    //else, user must be signed in
+    } else if (props.screenState == "logged_in") {    //else, user must be signed in
         return (
             <ImageBackground source={require('../img/backgrounds/profile-background.png')} style={styles.backgroundImage} >
                 <View style={styles.accountInfoContainer}>
@@ -320,6 +330,14 @@ function DisplayAccountInfo(props) {
                     </View>
                 </View>    
             </ImageBackground>
+        );
+    } else {    //else screen must be loaded
+        return (
+        <ImageBackground source={require('../img/backgrounds/sea-background.png')} style={styles.backgroundImage} >
+            <View style={styles.loginContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        </ImageBackground>
         );
     }
 }

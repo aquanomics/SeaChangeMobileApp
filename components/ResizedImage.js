@@ -32,7 +32,8 @@ export default class ResizedImage extends Component {
             source={{ uri: source.uri }}
             style={{
         		width: width * 0.9,
-        		height: this.state.height
+                height: this.state.height,
+                borderRadius: 15,
             }}
             resizeMode={"cover"}
 		/>

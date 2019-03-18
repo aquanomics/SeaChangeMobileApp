@@ -7,6 +7,7 @@ import { RkCard, RkGalleryImage, RkGallery } from 'react-native-ui-kitten';
 import firebase from 'react-native-firebase';
 import ResizedImage from './ResizedImage.js';
 import ObservationCard from './ObservationComponent/ObservationCard';	//Component used to render each entry in the list
+import { HeaderBackButton } from 'react-navigation';
 
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
@@ -164,9 +165,11 @@ export default class ObservationsListPage extends React.Component {
             .then(response => {
             	console.log("Got in 3rd then");
             	console.log(response);
+            	//Note: empty search returned is not considered an error
             	this.setState({
             		observationList: [...this.state.observationList, ...response.Posts],
             		refreshing: false,
+            		emptySearchReturned: response.Posts.length == 0,
             	});
             })
             .catch(error => {   //for external and internal server error
@@ -208,7 +211,6 @@ export default class ObservationsListPage extends React.Component {
         console.log("Below is the json parsed returned response");
         console.log(resultJson);
 
-        //error check
         //Note: empty search returned is not considered an error
     	this.setState({emptySearchReturned: resultJson.List.length == 0});
 
@@ -296,16 +298,9 @@ export default class ObservationsListPage extends React.Component {
 		if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
 		    return (
 			<View style={styles.headerLeft}>
-			    <TouchableHighlight
-				style={styles.headerLeftIcon}
-				underlayColor={'#DCDCDC'}
-				onPress={() => this.props.navigation.goBack()}
-			    >
-			        <Icon
-			            name="md-arrow-back"
-			            size={25}
-			        />
-			    </TouchableHighlight>
+			    <HeaderBackButton
+				    onPress={() => this.props.navigation.goBack()}
+			    />
 			</View>
 		    );
 		} else {
@@ -450,6 +445,8 @@ function DisplayArticles(props) {
 						emptySearchReturned={props.emptySearchReturned}
 						refreshing={props.refreshing}
 						searchListRefreshing={props.searchListRefreshing}
+						isSearchActive={props.isSearchActive}
+						searchSubmitted={props.searchSubmitted}
 					 />
 				}				
 				onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
@@ -472,6 +469,8 @@ function DisplayArticles(props) {
 						emptySearchReturned={props.emptySearchReturned}
 						refreshing={props.refreshing}
 						searchListRefreshing={props.searchListRefreshing}
+						isSearchActive={props.isSearchActive}
+						searchSubmitted={props.searchSubmitted}
 					 />
 				}
 				onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
@@ -494,7 +493,8 @@ function DisplayEmptyList(props) {
 		//empty case
 		return <View style={styles.container}>
 					<Text style={styles.welcome}>No results</Text>
-					<Text style={styles.instructions}>Try a different keyword</Text>
+					{props.isSearchActive == true && props.searchSubmitted == true ? 
+						<Text style={styles.instructions}>Try a different keyword</Text> : null}
 		       </View>;
     } else {
 		//not empty case --> means there is no internet

@@ -212,7 +212,7 @@ export default class UserMap extends Component{
       (error) => {
         console.log(error);
         this.setState({
-          isModalVisible: LOCATION_NOT_SET_POP         
+          isModalVisible: LOCATION_NOT_SET_POPUP        
         });
 
       }
@@ -390,7 +390,7 @@ export default class UserMap extends Component{
   renderActionButton(){
     return(
       <ActionButton buttonColor="rgba(255,255,255,1)" buttonTextStyle={{color:'#3B3BD4'}} offsetY={actionButtonOffsetY}>
-          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.goToUserLocation}>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.getNewUserLocation}>
               <Icon name="md-locate" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchPosts}>

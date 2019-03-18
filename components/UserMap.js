@@ -27,10 +27,11 @@ const NO_RESTAURANTS_POPUP = 4
 const LOCATION_NOT_SET_POPUP = 5
 
 const NO_INTERNET_POPUP_MESSAGE = "Please Connect to the Internet"
-const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area \n Try Somewhere Else?"
-const NO_POSTS_POPUP_MESSAGE = "No articles in this Area \n, Try Somewhere Else?"
-const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this Area \n Try Somewhere Else?"
+const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area"
+const NO_POSTS_POPUP_MESSAGE = "No articles in this Area"
+const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this Area"
 const LOCATION_NOT_SET_POPUP_MESSAGE = "Turn on your location settings"
+const TRY_AGAIN_MESSAGE = "Try somewhere else?"
 
 export default class UserMap extends Component{
 
@@ -369,12 +370,14 @@ export default class UserMap extends Component{
     else return;
   }
     
-  renderModal(type, message){
+  renderModal(type, heading, subheading){
     return(
     <View>
       <Modal isVisible={this.state.isModalVisible === type}>      
         <View style={styles.modalContent}>
-          <Text>{message}</Text>
+          <Text style={{fontWeight: "bold"}}>{heading}</Text>
+          <Text>{subheading}</Text>
+
           <TouchableOpacity 
             onPress={() => this.setState({ isModalVisible: null })}>
             <View style={styles.button}>
@@ -442,9 +445,9 @@ export default class UserMap extends Component{
     <View style={{ flex: 1 }}>
 
       {this.renderModal(NO_INTERNET_POPUP,NO_INTERNET_POPUP_MESSAGE)}
-      {this.renderModal(NO_ARTICLES_POPUP,NO_ARTICLES_POPUP_MESSAGE)}
-      {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE)}
-      {this.renderModal(NO_POSTS_POPUP,NO_POSTS_POPUP_MESSAGE)}
+      {this.renderModal(NO_ARTICLES_POPUP,NO_ARTICLES_POPUP_MESSAGE, TRY_AGAIN_MESSAGE)}
+      {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE, TRY_AGAIN_MESSAGE)}
+      {this.renderModal(NO_POSTS_POPUP,NO_POSTS_POPUP_MESSAGE,TRY_AGAIN_MESSAGE)}
       {this.renderModal(LOCATION_NOT_SET_POPUP,LOCATION_NOT_SET_POPUP_MESSAGE)}
 
       <MapView style={{ flex: 1 }} 

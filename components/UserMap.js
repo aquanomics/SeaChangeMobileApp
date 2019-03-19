@@ -461,7 +461,7 @@ export default class UserMap extends Component{
                 longitude:marker.lng}}
               title={marker.title}
               description={marker.description}
-              image={require('../img/map_icons/marker.png')}
+              image={require('../img/map_icons/ArticleMarker.png')}
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
@@ -478,7 +478,7 @@ export default class UserMap extends Component{
                 longitude:marker.longitude}}
               title={marker.partner_name}
               description={marker.address_1}
-              image={require('../img/map_icons/marker.png')}
+              image={require('../img/map_icons/RestaurantMarker.png')}
               >
               <MapView.Callout style={styles.plainView} onPress={()=>{(marker.phone_number == "") ? console.log("no num"):Linking.openURL("tel:18008675309")}}>            
                 <View>

@@ -58,7 +58,7 @@ class Species extends React.Component {
 const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
-    backgroundColor: '#8cdff2',
+    backgroundColor: '#ffffff',
     flexDirection: 'row',
     borderStyle: 'solid',
     borderBottomColor: '#dddddd',

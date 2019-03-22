@@ -53,7 +53,7 @@ class EventsPreview extends React.Component {
             <Text style={{ marginBottom: 20 }}> {description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ marginBottom: 15 }}> {"Tim:\n" + "   " + moment(startDate).format('LLLL') + "\n  To\n" + "   " + moment(endDate).format('LLLL')}</Text>
+              <Text style={{ marginBottom: 15 }}> {"Time:\n" + "   " + moment(startDate).format('LLLL') + "\n To:\n" + "   " + moment(endDate).format('LLLL')}</Text>
             </View>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

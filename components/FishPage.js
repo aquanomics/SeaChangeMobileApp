@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text } from 'react-native';
+import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getSpecies } from './FishPageComponent/Fish';
 import { getSpeciesSearch } from './FishPageComponent/Fish';
@@ -37,9 +37,10 @@ export default class FishPage extends React.Component {
 
   }
 
-  static navigationOptions = {
-    title: 'Fish',
-  };
+  static navigationOptions = ({ navigation }) => ({
+  header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+    });
+
 
   toggleSearchState = () => {
   if(this.state.isSearchActive == true) {
@@ -145,9 +146,24 @@ export default class FishPage extends React.Component {
   }
 
 
-leftComponentJSX = () => {
+    leftComponentJSX = () => {
   //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-  if(this.state.isSearchActive == true) {
+  if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+      return (
+    <View style={styles.headerLeft}>
+        <TouchableHighlight
+      style={styles.headerLeftIcon}
+      underlayColor={'#DCDCDC'}
+      onPress={() => this.props.navigation.goBack()}
+        >
+            <Icon
+                name="md-arrow-back"
+                size={25}
+            />
+        </TouchableHighlight>
+    </View>
+      );
+  } else {
       return (
     <View style={styles.headerLeft}>
         <TouchableHighlight
@@ -165,6 +181,22 @@ leftComponentJSX = () => {
     </View>
       );
   }
+    }
+
+  centerComponentJSX = () => {
+  if(this.state.isSearchActive == false) {
+      return (
+    <View style={styles.headerTitleContainer}>
+        <Text style={ {
+      fontWeight: 'bold',
+      textAlign: 'center',
+        } }>
+          Fish
+        </Text>
+    </View>
+      );
+  }
+  return null;
     }
     rightComponentJSX = () => {
   //we check for undefined because when using setState to change states,
@@ -217,13 +249,14 @@ leftComponentJSX = () => {
 
   render() {
 	  return (
-    <View style={styles.myContainer} contentContainerStyle={{flex: 1}}>
-      <Header
-          outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0 }}  //need padding because by default Header has padding on the sides
+      <SafeAreaView style={styles.myContainer}>
+        <Header
+          outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 25 :  70 - 13, padding: 0}} //need padding because by default Header has padding on the sides
           backgroundColor={'white'}
           leftComponent={this.leftComponentJSX()}
+          centerComponent={this.centerComponentJSX()}
           rightComponent={this.rightComponentJSX()}
-      />
+        />
       <DisplaySpecies 
         data={this.state.data} 
         search={this.state.search}
@@ -240,7 +273,7 @@ leftComponentJSX = () => {
         onScrollMotionEndHandler={this.onScrollMotionEndHandler}
         key={this._keyExtractor}
       />
-    </View>
+    </SafeAreaView>
 	  );
   }
 }
@@ -372,6 +405,13 @@ const styles = StyleSheet.create({
     borderRadius: 100, //makes the TouchableHighlight circular
     //backgroundColor: 'red', //debugging use
   },
+  headerTitleContainer: {
+  flex: 1,
+  //flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  //backgroundColor: 'blue',  //debugging use
+    },
   headerRight: {
     flex: 1,
     flexDirection: 'row',

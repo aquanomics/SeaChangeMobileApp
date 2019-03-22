@@ -249,7 +249,7 @@ export default class FishPage extends React.Component {
 
   render() {
 	  return (
-    <SafeAreaView style={styles.myContainer}>
+      <SafeAreaView style={styles.myContainer}>
         <Header
           outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 25 :  70 - 13, padding: 0}} //need padding because by default Header has padding on the sides
           backgroundColor={'white'}
@@ -282,6 +282,7 @@ function DisplaySpecies(props) {
   if(props.isSearchActive == false || props.isSearchActive === undefined
        || props.searchSubmitted == false) {
   return <FlatList
+            style = {{paddingTop:7}}
             keyExtractor={props.key}
             data={props.data}
             renderItem={({ item }) => <Species species={item} index={item.index} />}
@@ -365,6 +366,7 @@ const styles = StyleSheet.create({
   },
   myContainer: {
     flex: 1,
+    backgroundColor: "#8cdff2"
     //paddingTop: Constants.statusBarHeight,
   },
   container: {

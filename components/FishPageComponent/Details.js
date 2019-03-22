@@ -33,37 +33,39 @@ export default class Details extends React.Component {
     } = this.props.details;
     
     return (
-      <Animated.View style={{ opacity: this.state.scaleValue }}>
-        <View style={styles.row}>
-	    <View>
-	    <View style={styles.imageContainer}>
-		    <TouchableHighlight 
-		      onPress={() => this.props.navigation.navigate('ArticleWebView',
-			      {uri: "https://www.fishbase.ca/summary/" + SpecCode})}
-		      underlayColor={'#fffad8'} >           
-		      <Image
-            source={(PicPreferredName != null)
-              ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}
-              : require('../../img/place_holders/no-image-available.png')}
-            resizeMode="stretch"
-            style={styles.fishImage}
-		      />
-		    </TouchableHighlight>
-	    </View>
-            <Text style={styles.fishName} numberOfLines={1}> {FBname.toUpperCase()}</Text>
-            <Text style={styles.fishScienceName} numberOfLines={2}> {Genus + " " + Species} </Text>
-            <Text style={styles.fishBio} numberOfLines={2}> {"Weight: "+Weight/1000+" kg "+"  "+" Length: "+Length/100+" m"}</Text>
-            <Text style={styles.petDescription} numberOfLines={20}> {Comments.replace(/\//g,"").replace(/<i>/g, "").replace(/ *\([^)]*\) */g, "") } </Text>
+      <View style={{backgroundColor:"#8cdff2", flex: 1}}>
+        <Animated.View style={{ opacity: this.state.scaleValue  }}>
+          <View style={styles.row}>
+            <View>
+              <View style={styles.imageContainer}>
+		            <TouchableHighlight 
+		              onPress={() => this.props.navigation.navigate('ArticleWebView',
+			             {uri: "https://www.fishbase.ca/summary/" + SpecCode})}
+		                underlayColor={'#fffad8'} >           
+		            <Image
+                  source={(PicPreferredName != null)
+                  ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}
+                  : require('../../img/place_holders/no-image-available.png')}
+                  resizeMode="stretch"
+                  style={styles.fishImage}
+		            />
+		            </TouchableHighlight>
+              </View>
+              <Text style={styles.fishName} numberOfLines={1}> {FBname.toUpperCase()}</Text>
+              <Text style={styles.fishScienceName} numberOfLines={2}> {Genus + " " + Species} </Text>
+              <Text style={styles.fishBio} numberOfLines={2}> {"Weight: "+Weight/1000+" kg "+"  "+" Length: "+Length/100+" m"}</Text>
+              <Text style={styles.petDescription} numberOfLines={20}> {Comments.replace(/\//g,"").replace(/<i>/g, "").replace(/ *\([^)]*\) */g, "") } </Text>
+            </View>
           </View>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </View>
     );
 }
 }
 const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
-    backgroundColor: '#8cdff2',
+    backgroundColor: '#ffffff',
     flexDirection: 'row',
     borderStyle: 'solid',
     borderBottomWidth: StyleSheet.hairlineWidth,

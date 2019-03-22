@@ -52,13 +52,13 @@ class EventsPreview extends React.Component {
         >
             <Text style={{ marginBottom: 20 }}> {description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ marginBottom: 15 }}> {"Time:\n" + "   " + moment(startDate).format('LLLL') + "\n To:\n" + "   " + moment(endDate).format('LLLL')}</Text>
-            </View>
+              <Text style={styles.heading}> {"Time:"}</Text>
+              <Text style={styles.content}> {"   " + moment(startDate).format('LLLL')}</Text>
+              <Text style={styles.heading}> {"To:"}</Text>
+              <Text style={styles.content}> {"   " + moment(endDate).format('LLLL')}</Text>                    
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ marginBottom: 10 }}> {"Location:\n" + "   " + location + "," + city} </Text>
-            </View>
+            <Text style={styles.heading}> {"Location:"}</Text>
+            <Text style={styles.content}>{"   " + location + "," + city}</Text>  
         </Card>
         </TouchableHighlight>
     );
@@ -66,6 +66,15 @@ class EventsPreview extends React.Component {
 }
 
 const styles = {
+  heading: {
+    marginBottom: 10,
+    marginTop: 5,
+    fontWeight: "bold",
+  },
+  content:{
+    marginBottom: 10
+  },
+
   noteStyle: {
     margin: 5,
     fontStyle: 'italic',

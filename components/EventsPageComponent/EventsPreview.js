@@ -50,12 +50,12 @@ class EventsPreview extends React.Component {
               ? {uri: urlToImage}                      
               : require('../../img/place_holders/no-image-event.png')}
         >
-            <Text style={{ marginBottom: 20 }}> {description} </Text>
+            <Text style={styles.heading}> {description} </Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
-              <Text style={styles.heading}> {"Time:"}</Text>
-              <Text style={styles.content}> {"   " + moment(startDate).format('LLLL')}</Text>
-              <Text style={styles.heading}> {"To:"}</Text>
-              <Text style={styles.content}> {"   " + moment(endDate).format('LLLL')}</Text>                    
+            <Text style={styles.heading}> {"Time:"}</Text>
+            <Text style={styles.content}> {"   " + moment(startDate).format('LLLL')}</Text>
+            <Text style={styles.heading}> {"To:"}</Text>
+            <Text style={styles.content}> {"   " + moment(endDate).format('LLLL')}</Text>                    
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <Text style={styles.heading}> {"Location:"}</Text>
             <Text style={styles.content}>{"   " + location + "," + city}</Text>  

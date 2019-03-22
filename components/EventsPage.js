@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text } from 'react-native';
+import { Platform, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getEvents, getCities, searchEvents } from './EventsPageComponent/Event';
 import EventsPreview from './EventsPageComponent/EventsPreview';   //Component used to render each entry in the list
@@ -40,9 +40,9 @@ export default class EventsPage extends React.Component {
 
   }
 
-  static navigationOptions = {
-    title: 'Events',
-  };
+  static navigationOptions = ({ navigation }) => ({
+  header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+    });
 
   toggleSearchState = () => {
     if(this.state.isSearchActive == true) {
@@ -72,7 +72,7 @@ export default class EventsPage extends React.Component {
   }
   fetchCities = () => {
     getCities()
-        .then(response => {this.setState({ CitiesList:[...this.state.CitiesList, ...response], refreshing: false});for(var x in this.state.CitiesList){dropdownOptions.push(this.state.CitiesList[x]["city"])};console.log(dropdownOptions)})
+        .then(response => {this.setState({ CitiesList:[...this.state.CitiesList, ...response], refreshing: false});dropdownOptions.length = 0;for(var x in this.state.CitiesList){dropdownOptions.push(this.state.CitiesList[x]["city"])};console.log(dropdownOptions)})
         .catch(() => this.setState({CitiesList: [], refreshing: false }));
   }
   fetchSpeciesSearch = () => {
@@ -143,17 +143,33 @@ export default class EventsPage extends React.Component {
     this.searchOnEndReachedCalledDuringMomentum = true;
   }
 
-
   leftComponentJSX = () => {
-    //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-    if(this.state.isSearchActive == true) {
-        return (
-      <View style={styles.headerLeft}>
-          <TouchableHighlight
-            style={styles.headerLeftIcon}
-            underlayColor={'#DCDCDC'}
-            onPress={() => { this.toggleSearchState();} }
-          >
+  //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+  if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+      return (
+    <View style={styles.headerLeft}>
+        <TouchableHighlight
+      style={styles.headerLeftIcon}
+      underlayColor={'#DCDCDC'}
+      onPress={() => this.props.navigation.goBack()}
+        >
+            <Icon
+                name="md-arrow-back"
+                size={25}
+            />
+        </TouchableHighlight>
+    </View>
+      );
+  } else {
+      return (
+    <View style={styles.headerLeft}>
+        <TouchableHighlight
+      style={styles.headerLeftIcon}
+      underlayColor={'#DCDCDC'}
+      onPress={() => {
+          this.toggleSearchState();
+      } }
+        >
           <Icon
             name="md-close"
             size={25}
@@ -162,7 +178,24 @@ export default class EventsPage extends React.Component {
       </View>
         );
     }
+  }  
+
+  centerComponentJSX = () => {
+  if(this.state.isSearchActive == false) {
+      return (
+    <View style={styles.headerTitleContainer}>
+        <Text style={ {
+      fontWeight: 'bold',
+      textAlign: 'center',
+        } }>
+          Events
+        </Text>
+    </View>
+      );
   }
+  return null;
+    }
+
     rightComponentJSX = () => {
       //we check for undefined because when using setState to change states,
       //the state values can momentarily be undefined
@@ -211,13 +244,14 @@ export default class EventsPage extends React.Component {
 
   render() {
     return (
-    <View style={styles.myContainer} contentContainerStyle={{flex: 1}}>
-      <Header
-          outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 5 :  70 - 13, padding: 0}}  //need padding because by default Header has padding on the sides
+    <SafeAreaView style={styles.myContainer}>
+        <Header
+          outerContainerStyles={{height: Platform.OS === 'ios' ? 70 - 25 :  70 - 13, padding: 0}} //need padding because by default Header has padding on the sides
           backgroundColor={'white'}
           leftComponent={this.leftComponentJSX()}
+          centerComponent={this.centerComponentJSX()}
           rightComponent={this.rightComponentJSX()}
-      />
+        />
       <DisplayEvents 
         EventsList={this.state.EventsList} 
         search={this.state.search}
@@ -234,7 +268,7 @@ export default class EventsPage extends React.Component {
         onScrollMotionEndHandler={this.onScrollMotionEndHandler}
         key={this._keyExtractor}
       />
-    </View>
+    </SafeAreaView>
     );
   }
 }
@@ -343,6 +377,13 @@ const styles = StyleSheet.create({
     borderRadius:100,  //makes the TouchableHighlight circular
     //backgroundColor: 'red', //debugging use
   },
+  headerTitleContainer: {
+  flex: 1,
+  //flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  //backgroundColor: 'blue',  //debugging use
+    },
   headerRight: {
     flex: 1,
     flexDirection: 'row',

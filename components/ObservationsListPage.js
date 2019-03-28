@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Image, Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { NetInfo, Dimensions, Image, Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -59,6 +59,7 @@ export default class ObservationsListPage extends React.Component {
 		    searchOffset: 0,			//used for offsetting for pagination FOR searchList[]	
 		    imageFullscreenOn: false,
 		    user: null,
+		    connection_Status : "",		//used to check network state
 		};
 
 		this.initialFetchExecuted = false;	//REMEMBER to reset when disconnected
@@ -72,6 +73,19 @@ export default class ObservationsListPage extends React.Component {
 	    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
 	        BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
 	    );
+
+	    //Used to detect network status change
+	    NetInfo.isConnected.addEventListener(
+        	'connectionChange',
+        	this._handleConnectivityChange 
+	    );
+   
+	    NetInfo.isConnected.fetch().done((isConnected) => {
+	      	if(isConnected == true)
+		       	this.setState({connection_Status : "Online"})
+	      	else
+		        this.setState({connection_Status : "Offline"})
+    	});
 
 	    this.unsubscriber = firebase.auth().onAuthStateChanged(user => {
             if (user) {
@@ -107,7 +121,20 @@ export default class ObservationsListPage extends React.Component {
         if (this.unsubscriber) {
             this.unsubscriber();
         }
+
+        NetInfo.isConnected.removeEventListener(
+        	'connectionChange',
+        	this._handleConnectivityChange
+    	);
     }
+
+	//reference: https://reactnativecode.com/netinfo-example-to-detect-internet-connection/
+    _handleConnectivityChange = (isConnected) => {
+	    if(isConnected == true)
+	        this.setState({connection_Status : "Online"});
+	    else
+	        this.setState({connection_Status : "Offline"});
+  	};
 
     onBackButtonPressAndroid = () => {
 		if (this.state.isSearchActive == true) {
@@ -180,14 +207,22 @@ export default class ObservationsListPage extends React.Component {
 
     handleRefresh = () => {
     	console.log("Inside handleRefresh");
-		this.setState({
-			refreshing: true,
-			offset: 0,
-			observationList: [],
-	    }, () => {
-	    	console.log("inside callback of handleRefresh");
-	    	this.fetchObservation();
-	    });
+    	if(this.state.connection_Status == 'Offline') {
+    		this.setState({
+    			refreshing: false,
+    			offset: 0,
+    			observationList: [],
+    		});
+    	} else {
+			this.setState({
+				refreshing: true,
+				offset: 0,
+				observationList: [],
+		    }, () => {
+		    	console.log("inside callback of handleRefresh");
+		    	this.fetchObservation();
+		    });
+    	}
     }
 
     //WARNING: Not sure if promise is rejected whether or not it will go to catch inside searchSubmitHandler
@@ -411,6 +446,7 @@ export default class ObservationsListPage extends React.Component {
 		    		newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}
 		    		imageOnClick={this.imageOnClick}
 		    		imageFullscreenOn={this.imageFullscreenOn}
+		    		connection_Status={this.state.connection_Status}
 		    	/>
 		    </SafeAreaView>
 		);
@@ -447,6 +483,7 @@ function DisplayArticles(props) {
 						searchListRefreshing={props.searchListRefreshing}
 						isSearchActive={props.isSearchActive}
 						searchSubmitted={props.searchSubmitted}
+			    		connection_Status={props.connection_Status}
 					 />
 				}				
 				onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
@@ -471,6 +508,7 @@ function DisplayArticles(props) {
 						searchListRefreshing={props.searchListRefreshing}
 						isSearchActive={props.isSearchActive}
 						searchSubmitted={props.searchSubmitted}
+			    		connection_Status={props.connection_Status}
 					 />
 				}
 				onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
@@ -480,11 +518,15 @@ function DisplayArticles(props) {
     }
 }
 
-//TODO: Need to account for the case where no results are came back
 function DisplayEmptyList(props) {
+	if(props.connection_Status == 'Offline') {
+		return <View style={styles.container}>
+			<Text style={styles.welcome}>No Internet</Text>
+       </View>;
+	}
 	//Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
 	//all state variables undefined
-	if(props.refreshing || props.searchListRefreshing || 
+	else if(props.refreshing || props.searchListRefreshing || 
 		props.refreshing === undefined || props.searchListRefreshing === undefined) {
 		return <View style={styles.container}>
 					<Text style={styles.welcome}>Loading</Text>
@@ -500,7 +542,7 @@ function DisplayEmptyList(props) {
 		//not empty case --> means there is no internet
 		return <View style={styles.container}>
 					<Text style={styles.welcome}>Cannot Load Observations</Text>
-					<Text style={styles.instructions}>Might want to check your internet</Text>
+					<Text style={styles.instructions}>Might want to check your internet or retry</Text>
 		       </View>;
     }
 }

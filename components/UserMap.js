@@ -13,7 +13,6 @@ const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 import { getPosts } from './ServerRequests/nearbyPosts';
-import { getEvents } from './ServerRequests/nearbyEvents';
 
 
 import SlidingUpPanel from 'rn-sliding-up-panel';
@@ -26,13 +25,11 @@ const NO_ARTICLES_POPUP = 2
 const NO_POSTS_POPUP = 3
 const NO_RESTAURANTS_POPUP = 4
 const LOCATION_NOT_SET_POPUP = 5
-const NO_EVENTS_POPUP = 6
 
-const NO_INTERNET_POPUP_MESSAGE = "Please connect to the internet"
-const NO_ARTICLES_POPUP_MESSAGE = "No articles in this area"
-const NO_POSTS_POPUP_MESSAGE = "No posts in this area"
-const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this area"
-const NO_EVENTS_POPUP_MESSAGE = "No events in this area"
+const NO_INTERNET_POPUP_MESSAGE = "Please Connect to the Internet"
+const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area"
+const NO_POSTS_POPUP_MESSAGE = "No articles in this Area"
+const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this Area"
 const LOCATION_NOT_SET_POPUP_MESSAGE = "Turn on your location settings"
 const TRY_AGAIN_MESSAGE = "Try somewhere else?"
 
@@ -289,8 +286,6 @@ export default class UserMap extends Component{
     
   }
   
-
-
   fetchRestaurants = () => {
     
     this.setState({articles:[], posts:[]}); //clear articles from the marker state, so they don't show up on the map
@@ -357,38 +352,6 @@ export default class UserMap extends Component{
     }).catch((error) => console.log(error)); 
   }
 
-  fetchEvents = () => {
-    
-    this.setState({events:[],restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
-
-    distance = this.getScreenDistance();
-    
-    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
-    console.log(params);
-    this.setSearchParameters(params);
-  
-    NetInfo.isConnected.fetch().then(isConnected => {
-      if(isConnected)
-      {
-        getEvents(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
-          this.setState({ events: result, refreshing: false });
-          if(result.length == 0){
-            this.setState({
-              isModalVisible: NO_EVENTS_POPUP          
-            });
-          }
-          console.log("Events:");
-          console.log(this.state.events);
-        });  
-      }
-      else{
-        console.log("Internet is not connected");
-        this.setState({
-          isModalVisible: NO_INTERNET_POPUP         
-        });
-      }
-    }).catch((error) => console.log(error)); 
-  }
  
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
@@ -442,9 +405,6 @@ export default class UserMap extends Component{
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
               <Icon name="md-paper" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchEvents}>
-              <Icon name="md-calendar" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
 
       </ActionButton>
     )
@@ -489,7 +449,6 @@ export default class UserMap extends Component{
       {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE, TRY_AGAIN_MESSAGE)}
       {this.renderModal(NO_POSTS_POPUP,NO_POSTS_POPUP_MESSAGE,TRY_AGAIN_MESSAGE)}
       {this.renderModal(LOCATION_NOT_SET_POPUP,LOCATION_NOT_SET_POPUP_MESSAGE)}
-      {this.renderModal(NO_EVENTS_POPUP,NO_EVENTS_POPUP_MESSAGE)}
 
       <MapView style={{ flex: 1 }} 
         region={this.state.region} 
@@ -537,7 +496,7 @@ export default class UserMap extends Component{
                 longitude:marker.lng}}
               title={marker.name}
               description={marker.comment}
-              image={require('../img/map_icons/PostMarker.png')}
+              image={require('../img/map_icons/marker.png')}
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ObservationDetails', {postObject: marker});}}>            
                 <View>
@@ -548,26 +507,6 @@ export default class UserMap extends Component{
               </MapView.Callout>
           </MapView.Marker>
         ))}
-        {this.state.events.map(marker => (
-          <MapView.Marker
-              coordinate={{latitude:marker.lat, //consistent naming is nessesary
-                longitude:marker.lng}}
-              title={marker.name}
-              description={marker.description}
-              image={require('../img/map_icons/marker.png')}
-              >
-              <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('EventsAbstraction', {eventsObject: marker});}}>            
-                <View>
-                  {this.renderImage(marker.urlToImage)}
-                  <Text style={{fontSize:16}} numberOfLines={1}>{marker.name}</Text>
-                  <Text style={{fontSize:16}} numberOfLines={2}>{marker.description}</Text>
-
-                </View>
-              </MapView.Callout>
-          </MapView.Marker>
-        ))}
-
-
       </MapView>
       {this.renderActionButton()}
       {this.renderPanel()}

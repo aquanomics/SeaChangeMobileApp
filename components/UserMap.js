@@ -135,6 +135,8 @@ export default class UserMap extends Component{
             longitude: position.coords.longitude
           },
           region:{
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
             latitudeDelta: .05,
             longitudeDelta: .05
           }

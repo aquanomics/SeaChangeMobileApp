@@ -257,7 +257,7 @@ export default class UserMap extends Component{
   }
   
   fetchArticles = () => {  
-    this.setState({restaurants:[],articles:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
 
     distance = this.getScreenDistance();
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -292,7 +292,7 @@ export default class UserMap extends Component{
 
   fetchRestaurants = () => {
     
-    this.setState({articles:[], posts:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
     distance = this.getScreenDistance();
     
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -325,7 +325,7 @@ export default class UserMap extends Component{
 
   fetchPosts = () => {
     
-    this.setState({articles:[],restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
 
     distance = this.getScreenDistance();
     
@@ -358,7 +358,7 @@ export default class UserMap extends Component{
 
   fetchEvents = () => {
     
-    this.setState({events:[],restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
 
     distance = this.getScreenDistance();
     

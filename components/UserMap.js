@@ -69,8 +69,6 @@ export default class UserMap extends Component{
   }
 
   componentDidMount(){
-    this.getInitialUserLocation(); 
-    
     //TEMP SEARCH PARAMS
     //when we add a settings page these can be configurable
     var params = {
@@ -81,49 +79,7 @@ export default class UserMap extends Component{
     };
     this.setSearchParameters(params);
   }
-  
-  getMinMaxLat = () =>{
-    var lowest = Number.POSITIVE_INFINITY;
-    var highest = Number.NEGATIVE_INFINITY;
-    var tmp;
-    console.log(this.state.articles.length);
-    for (var i=this.state.articles.length-1; i>=0; i--) {
-      tmp = this.state.articles[i].lat;
-      if (tmp < lowest) lowest = tmp;
-      if (tmp > highest) highest = tmp;
-    }
-    return([highest,lowest]);
-  }
 
-  getMinMaxLong = () =>{  
-    var lowest = Number.POSITIVE_INFINITY;
-    var highest = Number.NEGATIVE_INFINITY;
-    var tmp;
-    for (var i=this.state.articles.length-1; i>=0; i--) {
-      tmp = this.state.articles[i].lng;
-      if (tmp < lowest) lowest = tmp;
-      if (tmp > highest) highest = tmp;
-    }
-    return([highest,lowest]);
-  }
-  /*
-  fitToArticles = () => {
-    latrange = this.getMinMaxLat();
-    longrange = this.getMinMaxLong();
-    
-    lat = (latrange[0] + latrange[1])/2;
-    long = (longrange[0] + longrange[1])/2;
-    latD = latrange[0] - latrange[1];
-    longD = longrange[0] - longrange[1] + .02;
-    var region = {
-      latitude:lat,
-      longitude:long,
-      latitudeDelta: latD,
-      longitudeDelta: longD
-    };
-    this.setRegion(region);
-  }
-  */
   getMapCenter = () => {
     return {
       latitude: this.state.region.latitude,
@@ -168,15 +124,7 @@ export default class UserMap extends Component{
     });
   }
 
-  onRegionChange = (region) => {
-    //console.log("region change");
-    //console.log(region);
-    this.setState({ region });
-    //console.log("region change");
-    //console.log("region.state");
-  }
   getInitialUserLocation = () => {
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position.coords.latitude);
@@ -185,11 +133,14 @@ export default class UserMap extends Component{
           userLocation: {         
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
+          },
+          region:{
+            latitudeDelta: .05,
+            longitudeDelta: .05
           }
         });
         console.log("setting user location");
         this.goToUserLocation();
-
       }, 
       (error) => {
         console.log(error);
@@ -237,8 +188,13 @@ export default class UserMap extends Component{
     }
   }
 
-  calcDistance = (loc1,loc2) => {
-    return haversine(loc1, loc2)
+  // MAP EVENT HANDLERS
+  onRegionChange = (region) => {
+    this.setState({ region });
+  }
+
+  onMapReady = () => {
+    this.getInitialUserLocation(); 
   }
 
   /**
@@ -256,6 +212,13 @@ export default class UserMap extends Component{
     return distance = this.calcDistance(loc1,loc2)/2;
   }
   
+  calcDistance = (loc1,loc2) => {
+    return haversine(loc1, loc2)
+  }
+  
+  /*
+    Methods for fetching data from DB
+  */
   fetchArticles = () => {  
     this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
 
@@ -288,8 +251,6 @@ export default class UserMap extends Component{
     
   }
   
-
-
   fetchRestaurants = () => {
     
     this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
@@ -326,7 +287,6 @@ export default class UserMap extends Component{
   fetchPosts = () => {
     
     this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
-
     distance = this.getScreenDistance();
     
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -493,6 +453,7 @@ export default class UserMap extends Component{
       <MapView style={{ flex: 1 }} 
         region={this.state.region} 
         onRegionChangeComplete={this.onRegionChange}
+        onMapReady={this.onMapReady}
         showsUserLocation={true} 
       >
         {this.state.articles.map(marker => (
@@ -518,7 +479,7 @@ export default class UserMap extends Component{
                 longitude:marker.longitude}}
               title={marker.partner_name}
               description={marker.address_1}
-              image={require('../img/map_icons/restaurant-icon-wide.png')}
+              image={require('../img/map_icons/restaurant-marker-wide.png')}
               >
               <MapView.Callout style={styles.plainView} onPress={()=>{(marker.phone_number == "") ? console.log("no num"):Linking.openURL("tel:18008675309")}}>            
                 <View>

@@ -6,13 +6,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 import { NetInfo } from 'react-native';
 import Modal from "react-native-modal";
-import firebase from 'react-native-firebase';
 
 
 const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 import { getPosts } from './ServerRequests/nearbyPosts';
+import { getEvents } from './ServerRequests/nearbyEvents';
 
 
 import SlidingUpPanel from 'rn-sliding-up-panel';
@@ -25,11 +25,13 @@ const NO_ARTICLES_POPUP = 2
 const NO_POSTS_POPUP = 3
 const NO_RESTAURANTS_POPUP = 4
 const LOCATION_NOT_SET_POPUP = 5
+const NO_EVENTS_POPUP = 6
 
-const NO_INTERNET_POPUP_MESSAGE = "Please Connect to the Internet"
-const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area"
-const NO_POSTS_POPUP_MESSAGE = "No articles in this Area"
-const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this Area"
+const NO_INTERNET_POPUP_MESSAGE = "Please connect to the internet"
+const NO_ARTICLES_POPUP_MESSAGE = "No articles in this area"
+const NO_POSTS_POPUP_MESSAGE = "No posts in this area"
+const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this area"
+const NO_EVENTS_POPUP_MESSAGE = "No events in this area"
 const LOCATION_NOT_SET_POPUP_MESSAGE = "Turn on your location settings"
 const TRY_AGAIN_MESSAGE = "Try somewhere else?"
 
@@ -286,6 +288,8 @@ export default class UserMap extends Component{
     
   }
   
+
+
   fetchRestaurants = () => {
     
     this.setState({articles:[], posts:[]}); //clear articles from the marker state, so they don't show up on the map
@@ -352,6 +356,38 @@ export default class UserMap extends Component{
     }).catch((error) => console.log(error)); 
   }
 
+  fetchEvents = () => {
+    
+    this.setState({events:[],restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
+
+    distance = this.getScreenDistance();
+    
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
+    console.log(params);
+    this.setSearchParameters(params);
+  
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected)
+      {
+        getEvents(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          this.setState({ events: result, refreshing: false });
+          if(result.length == 0){
+            this.setState({
+              isModalVisible: NO_EVENTS_POPUP          
+            });
+          }
+          console.log("Events:");
+          console.log(this.state.events);
+        });  
+      }
+      else{
+        console.log("Internet is not connected");
+        this.setState({
+          isModalVisible: NO_INTERNET_POPUP         
+        });
+      }
+    }).catch((error) => console.log(error)); 
+  }
  
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
@@ -397,13 +433,16 @@ export default class UserMap extends Component{
               <Icon name="md-locate" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchPosts}>
-              <Icon name="md-cloud-upload" style={styles.actionButtonIcon} />
+              <Icon name="md-images" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
-              <Icon name="md-pizza" style={styles.actionButtonIcon} />
+            <Icon name="md-restaurant" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
-              <Icon name="md-paper" style={styles.actionButtonIcon} />
+              <Icon name="md-list" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchEvents}>
+              <Icon name="md-calendar" style={styles.actionButtonIcon} />
           </ActionButton.Item>
 
       </ActionButton>
@@ -425,8 +464,8 @@ export default class UserMap extends Component{
           <View style={styles.menu}>
             <View style={styles.menuRow}>
               <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
-              <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
-              <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+              <MenuButton iconName="md-list" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
+              <MenuButton iconName="ios-images" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
             </View>
             <View style={styles.menuRow}>
               <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => console.log('TODO: settings page tapped')}></MenuButton>
@@ -449,6 +488,7 @@ export default class UserMap extends Component{
       {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE, TRY_AGAIN_MESSAGE)}
       {this.renderModal(NO_POSTS_POPUP,NO_POSTS_POPUP_MESSAGE,TRY_AGAIN_MESSAGE)}
       {this.renderModal(LOCATION_NOT_SET_POPUP,LOCATION_NOT_SET_POPUP_MESSAGE)}
+      {this.renderModal(NO_EVENTS_POPUP,NO_EVENTS_POPUP_MESSAGE)}
 
       <MapView style={{ flex: 1 }} 
         region={this.state.region} 
@@ -461,7 +501,7 @@ export default class UserMap extends Component{
                 longitude:marker.lng}}
               title={marker.title}
               description={marker.description}
-              image={require('../img/map_icons/ArticleMarker.png')}
+              image={require('../img/map_icons/article-marker-wide6.png')}
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
@@ -474,11 +514,11 @@ export default class UserMap extends Component{
         ))}
         {this.state.restaurants.map(marker => (
           <MapView.Marker
-              coordinate={{latitude:marker.latitude, //consistent naming is nessesary
+              coordinate={{latitude:marker.latitude,
                 longitude:marker.longitude}}
               title={marker.partner_name}
               description={marker.address_1}
-              image={require('../img/map_icons/RestaurantMarker.png')}
+              image={require('../img/map_icons/restaurant-icon-wide.png')}
               >
               <MapView.Callout style={styles.plainView} onPress={()=>{(marker.phone_number == "") ? console.log("no num"):Linking.openURL("tel:18008675309")}}>            
                 <View>
@@ -492,11 +532,11 @@ export default class UserMap extends Component{
         ))}
         {this.state.posts.map(marker => (
           <MapView.Marker
-              coordinate={{latitude:marker.lat, //consistent naming is nessesary
+              coordinate={{latitude:marker.lat,
                 longitude:marker.lng}}
               title={marker.name}
               description={marker.comment}
-              image={require('../img/map_icons/marker.png')}
+              image={require('../img/map_icons/post-marker-wide.png')}
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ObservationDetails', {postObject: marker});}}>            
                 <View>
@@ -507,6 +547,26 @@ export default class UserMap extends Component{
               </MapView.Callout>
           </MapView.Marker>
         ))}
+        {this.state.events.map(marker => (
+          <MapView.Marker
+              coordinate={{latitude:marker.lat,
+                longitude:marker.lng}}
+              title={marker.name}
+              description={marker.description}
+              image={require('../img/map_icons/event-marker.png')}
+              >
+              <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('EventsAbstraction', {eventsObject: marker});}}>            
+                <View>
+                  {this.renderImage(marker.urlToImage)}
+                  <Text style={{fontSize:16}} numberOfLines={1}>{marker.name}</Text>
+                  <Text style={{fontSize:16}} numberOfLines={2}>{marker.description}</Text>
+
+                </View>
+              </MapView.Callout>
+          </MapView.Marker>
+        ))}
+
+
       </MapView>
       {this.renderActionButton()}
       {this.renderPanel()}
@@ -540,7 +600,7 @@ const styles = StyleSheet.create({
     },
     actionButtonIcon: {
       fontSize: 20,
-      height: 26,
+      height: 20,
       color: 'white',
     },
     menu: {

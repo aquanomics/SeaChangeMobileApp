@@ -34,12 +34,15 @@ const LOCATION_NOT_SET_POPUP_MESSAGE = "Turn on your location settings"
 const TRY_AGAIN_MESSAGE = "Try somewhere else?"
 
 export default class UserMap extends Component{
+  static navigationOptions = ({ navigation }) => ({
+    header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+  });
 
   static defaultProps = {
     draggableRange: {
       //top: height / 1.75,
-      top: 320, // make this flexible to screen size later
-      bottom: 140
+      top: 240, // make this flexible to screen size later
+      bottom: 75
     }
   }
 

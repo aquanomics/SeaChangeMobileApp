@@ -5,6 +5,7 @@ import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
 import firebase from 'react-native-firebase';
+import { HeaderBackButton } from 'react-navigation';
 
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
@@ -233,40 +234,33 @@ export default class ArticlesPage extends React.Component {
     //render functions that return JSX
 
     leftComponentJSX = () => {
-			//BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-			if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
-					return (
-					<View style={styles.headerLeft}>
-							<TouchableHighlight
-							style={styles.headerLeftIcon}
-							underlayColor={'#DCDCDC'}
-							onPress={() => this.props.navigation.goBack()}
-							>
-									<Icon
-											name="md-arrow-back"
-											size={25}
-									/>
-							</TouchableHighlight>
-					</View>
-					);
-			} else {
-					return (
-					<View style={styles.headerLeft}>
-							<TouchableHighlight
-							style={styles.headerLeftIcon}
-							underlayColor={'#DCDCDC'}
-							onPress={() => {
-									this.toggleSearchState();
-							}}
-							>
-								<Icon
-									name="md-close"
-									size={25}
-								/>
-							</TouchableHighlight>
-					</View>
-					);
-			}
+		//BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+		if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+			return (
+				<View style={styles.headerLeft}>
+					<HeaderBackButton
+					    onPress={() => this.props.navigation.goBack()}
+				    />
+				</View>
+			);
+		} else {
+			return (
+				<View style={styles.headerLeft}>
+					<TouchableHighlight
+						style={styles.headerLeftIcon}
+						underlayColor={'#DCDCDC'}
+						onPress={() => {
+								this.toggleSearchState();
+						}}
+					>
+						<Icon
+							name="md-close"
+							size={25}
+						/>
+					</TouchableHighlight>
+				</View>
+			);
+		}
     }
 
     centerComponentJSX = () => {

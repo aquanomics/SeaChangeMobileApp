@@ -5,6 +5,7 @@ import { getEvents, getCities, searchEvents } from './EventsPageComponent/Event'
 import EventsPreview from './EventsPageComponent/EventsPreview';   //Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
 import ModalDropdown from 'react-native-modal-dropdown';
+import { HeaderBackButton } from 'react-navigation';
 
 const dropdownOptions = [];
 
@@ -210,16 +211,9 @@ export default class EventsPage extends React.Component {
   if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
       return (
     <View style={styles.headerLeft}>
-        <TouchableHighlight
-      style={styles.headerLeftIcon}
-      underlayColor={'#DCDCDC'}
-      onPress={() => this.props.navigation.goBack()}
-        >
-            <Icon
-                name="md-arrow-back"
-                size={25}
-            />
-        </TouchableHighlight>
+      <HeaderBackButton
+        onPress={() => this.props.navigation.goBack()}
+      />
     </View>
       );
   } else {

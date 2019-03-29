@@ -6,6 +6,8 @@ import { getSpeciesSearch } from './FishPageComponent/Fish';
 import Species from './FishPageComponent/Species'
 import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { HeaderBackButton } from 'react-navigation';
+
 const dropdownOptions = [21, 67, 18];
 const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
 export default class FishPage extends React.Component {
@@ -208,42 +210,35 @@ export default class FishPage extends React.Component {
   }
 
 
-    leftComponentJSX = () => {
-  //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-  if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+  leftComponentJSX = () => {
+    //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+    if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
       return (
-    <View style={styles.headerLeft}>
-        <TouchableHighlight
-      style={styles.headerLeftIcon}
-      underlayColor={'#DCDCDC'}
-      onPress={() => this.props.navigation.goBack()}
-        >
-            <Icon
-                name="md-arrow-back"
-                size={25}
-            />
-        </TouchableHighlight>
-    </View>
-      );
-  } else {
-      return (
-    <View style={styles.headerLeft}>
-        <TouchableHighlight
-      style={styles.headerLeftIcon}
-      underlayColor={'#DCDCDC'}
-      onPress={() => {
-          this.toggleSearchState();
-      } }
-        >
-          <Icon
-          name="md-close"
-          size={25}
+        <View style={styles.headerLeft}>
+          <HeaderBackButton
+            onPress={() => this.props.navigation.goBack()}
           />
-        </TouchableHighlight>
-    </View>
+        </View>
       );
-  }
+    } else {
+      return (
+        <View style={styles.headerLeft}>
+          <TouchableHighlight
+            style={styles.headerLeftIcon}
+            underlayColor={'#DCDCDC'}
+            onPress={() => {
+                this.toggleSearchState();
+            }}
+          >
+            <Icon
+              name="md-close"
+              size={25}
+            />
+          </TouchableHighlight>
+        </View>
+      );
     }
+  }
 
   centerComponentJSX = () => {
   if(this.state.isSearchActive == false) {

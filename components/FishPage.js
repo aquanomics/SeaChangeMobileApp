@@ -9,6 +9,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const dropdownOptions = [21, 67, 18];
 const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
 export default class FishPage extends React.Component {
+  _didFocusSubscription;
+  _willBlurSubscription;
+
   constructor(props) {
   	super(props);
   	this.state = { 
@@ -37,11 +40,15 @@ export default class FishPage extends React.Component {
     this.keyword ='';
     this.wordDropDown = "Filter";
     this.searchOnEndReachedCalledDuringMomentum = true; 
+
+    this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
   }
 
   static navigationOptions = ({ navigation }) => ({
-  header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
-    });
+    header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+  });
 
 
   toggleSearchState = () => {
@@ -59,6 +66,10 @@ export default class FishPage extends React.Component {
     }
 
 	componentDidMount() {
+    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+
     this.fetchSpecies(this.state.category);
     this.props.navigation.setParams({ fetchSpecies: this.Species });
 
@@ -77,14 +88,24 @@ export default class FishPage extends React.Component {
   }
 
   componentWillUnmount() {
-    // this._didFocusSubscription && this._didFocusSubscription.remove();
-    // this._willBlurSubscription && this._willBlurSubscription.remove();
+    this._didFocusSubscription && this._didFocusSubscription.remove();
+    this._willBlurSubscription && this._willBlurSubscription.remove();
 
     NetInfo.isConnected.removeEventListener(
       'connectionChange',
       this._handleConnectivityChange
     );
   }
+
+  onBackButtonPressAndroid = () => {
+    console.log("Inside onBackButtonPressAndroid");
+    if (this.state.isSearchActive == true) {
+      this.toggleSearchState();
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   //reference: https://reactnativecode.com/netinfo-example-to-detect-internet-connection/
   _handleConnectivityChange = (isConnected) => {

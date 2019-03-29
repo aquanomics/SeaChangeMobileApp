@@ -1,5 +1,5 @@
 import React from 'react';
-import { NetInfo, Platform, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { BackHandler, NetInfo, Platform, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getEvents, getCities, searchEvents } from './EventsPageComponent/Event';
 import EventsPreview from './EventsPageComponent/EventsPreview';   //Component used to render each entry in the list
@@ -9,6 +9,9 @@ import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = [];
 
 export default class EventsPage extends React.Component {
+  _didFocusSubscription;
+  _willBlurSubscription;
+
   constructor(props) {
     super(props);
     this.state = { 
@@ -41,6 +44,10 @@ export default class EventsPage extends React.Component {
     this.wordDropDown = "Filter";
     this.searchOnEndReachedCalledDuringMomentum = true; 
     this.filterCity = [];
+
+    this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -62,6 +69,10 @@ export default class EventsPage extends React.Component {
   }
 
   componentDidMount() {
+    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+
     this.fetchCities(this.state.category);
     this.fetchEvents(this.state.category);
     this.props.navigation.setParams({ fetchEvents: this.Event });
@@ -82,14 +93,24 @@ export default class EventsPage extends React.Component {
   }
 
   componentWillUnmount() {
-    // this._didFocusSubscription && this._didFocusSubscription.remove();
-    // this._willBlurSubscription && this._willBlurSubscription.remove();
+    this._didFocusSubscription && this._didFocusSubscription.remove();
+    this._willBlurSubscription && this._willBlurSubscription.remove();
 
     NetInfo.isConnected.removeEventListener(
       'connectionChange',
       this._handleConnectivityChange
     );
   }
+
+  onBackButtonPressAndroid = () => {
+    console.log("Inside onBackButtonPressAndroid");
+    if (this.state.isSearchActive == true) {
+      this.toggleSearchState();
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   //reference: https://reactnativecode.com/netinfo-example-to-detect-internet-connection/
   _handleConnectivityChange = (isConnected) => {

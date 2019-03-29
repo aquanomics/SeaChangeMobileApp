@@ -15,9 +15,8 @@ export default class FishPage extends React.Component {
       data: [],
       search: [],
       refreshing: true,
-      refreshingSearch: true,
+      refreshingSearch: false,
       category: "animal",
-      isLoading: true,
       searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
       //This is used in the logic so that when you first try to search something before submission,
       //the empty list doesn't show up
@@ -80,9 +79,6 @@ export default class FishPage extends React.Component {
   componentWillUnmount() {
     // this._didFocusSubscription && this._didFocusSubscription.remove();
     // this._willBlurSubscription && this._willBlurSubscription.remove();
-    if (this.unsubscriber) {
-      this.unsubscriber();
-    }
 
     NetInfo.isConnected.removeEventListener(
       'connectionChange',
@@ -93,9 +89,9 @@ export default class FishPage extends React.Component {
   //reference: https://reactnativecode.com/netinfo-example-to-detect-internet-connection/
   _handleConnectivityChange = (isConnected) => {
     if(isConnected == true)
-      this.setState({connection_Status : "Online"})
+      this.setState({connection_Status : "Online"});
     else
-      this.setState({connection_Status : "Offline"})
+      this.setState({connection_Status : "Offline"});
   };
 
   fetchSpecies = () => {
@@ -155,7 +151,15 @@ export default class FishPage extends React.Component {
 
   handleRefresh() {
     this.offset = 0;
-    this.setState({refreshing: true, data : [], }, () => this.fetchSpecies(this.offset,this.faoCode));
+    console.log("Inside handleRefresh");
+    if(this.state.connection_Status == 'Offline') {
+      this.setState({
+        refreshing: false,
+        data: [],
+      });
+    } else {
+      this.setState({refreshing: true, data : [], }, () => this.fetchSpecies(this.offset,this.faoCode));
+    }
   }
 
   handleFetchMore() {
@@ -368,27 +372,6 @@ function DisplaySpecies(props) {
 
 }
 
-// function DisplayEmptyList(props) {
-//   //Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
-//   //all state variables undefined
-//   if(props.refreshing || props.refreshingSearch || 
-//     props.refreshing === undefined || props.refreshingSearch === undefined) {
-//     return <View style={styles.container}>
-//             <Text style={styles.welcome}>Loading</Text>
-//            </View>;
-//   } else if(props.emptySearchReturned == true) {
-//     return <View style={styles.container}>
-//             <Text style={styles.welcome}>No results</Text>
-//             <Text style={styles.instructions}>Try a different keyword</Text>
-//            </View>;
-//   } else {
-//     return <View style={styles.container}>
-//             <Text style={styles.welcome}>Cannot Load Species Nearby</Text>
-//             <Text style={styles.instructions}>Might want to check your internet</Text>
-//            </View>;
-//   }
-// }
-
 function DisplayEmptyList(props) {
   console.log(`Inside DisplayEmptyList. refreshing: ${props.refreshing} refreshingSearch: ${props.refreshingSearch}`);
   if(props.connection_Status == 'Offline') {
@@ -400,22 +383,24 @@ function DisplayEmptyList(props) {
   //all state variables undefined
   else if(props.refreshing || props.refreshingSearch || 
     props.refreshing === undefined || props.refreshingSearch === undefined) {
-    return <View style={styles.container}>
-          <Text style={styles.welcome}>Loading</Text>
-           </View>;
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>Loading</Text>
+            </View>;
   } else if(props.emptySearchReturned == true) {
     //empty case
-    return <View style={styles.container}>
-          <Text style={styles.welcome}>No results</Text>
-          {props.isSearchActive == true && props.searchSubmitted == true ? 
-            <Text style={styles.instructions}>Try a different keyword</Text> : null}
-           </View>;
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>No results</Text>
+              {props.isSearchActive == true && props.searchSubmitted == true ? 
+                <Text style={styles.instructions}>Try a different keyword</Text> : null
+              }
+              <Text style={styles.instructions}>If connection was lost previously, try again</Text>
+            </View>;
     } else {
     //not empty case --> means there is no internet
-    return <View style={styles.container}>
-          <Text style={styles.welcome}>Cannot Load Observations</Text>
-          <Text style={styles.instructions}>Might want to check your internet</Text>
-           </View>;
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>Cannot Load Data</Text>
+              <Text style={styles.instructions}>If connection was lost previously, try again</Text>
+            </View>;
     }
 }
 

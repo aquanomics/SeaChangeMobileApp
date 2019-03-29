@@ -1,10 +1,11 @@
 import React from 'react';
-import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { NetInfo, Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 import Article from './ArticlePageComponent/Article';	//Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
 import firebase from 'react-native-firebase';
+import { HeaderBackButton } from 'react-navigation';
 
 import ModalDropdown from 'react-native-modal-dropdown';
 const dropdownOptions = ['TopStories', 'Canada', 'World'];
@@ -47,7 +48,8 @@ export default class ArticlesPage extends React.Component {
 					emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
 								//This is used in the logic to differentiate whether to say No Internet or No Results
 					offset: 0,				//used for offsetting for pagination FOR NewsArticle[]	
-					searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]	
+					searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]
+				    connection_Status : "",		//used to check network state	
 			};		
 
 					this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
@@ -56,41 +58,67 @@ export default class ArticlesPage extends React.Component {
     }
 
     componentDidMount() {
-			this.fetchNews(this.state.category);	//fetch news for the first time
-				this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
-						BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
-				);
-				console.log("Value of firebase.auth().currentUser is below");
-				console.log(firebase.auth().currentUser);
+    	//Used to detect network status change
+	    NetInfo.isConnected.addEventListener(
+        	'connectionChange',
+        	this._handleConnectivityChange 
+	    );
+   
+	    NetInfo.isConnected.fetch().done((isConnected) => {
+	      	if(isConnected == true)
+		       	this.setState({connection_Status : "Online"})
+	      	else
+		        this.setState({connection_Status : "Offline"})
+    	});
+
+		this.fetchNews(this.state.category);	//fetch news for the first time
+		this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+				BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+		);
+		console.log("Value of firebase.auth().currentUser is below");
+		console.log(firebase.auth().currentUser);
     }
     
     componentWillUnmount() {
-			this._didFocusSubscription && this._didFocusSubscription.remove();
-			this._willBlurSubscription && this._willBlurSubscription.remove();
+    	NetInfo.isConnected.removeEventListener(
+        	'connectionChange',
+        	this._handleConnectivityChange
+    	);
+
+		this._didFocusSubscription && this._didFocusSubscription.remove();
+		this._willBlurSubscription && this._willBlurSubscription.remove();
     }
 
+    //reference: https://reactnativecode.com/netinfo-example-to-detect-internet-connection/
+    _handleConnectivityChange = (isConnected) => {
+	    if(isConnected == true)
+	        this.setState({connection_Status : "Online"})
+	    else
+	        this.setState({connection_Status : "Offline"})
+  	};
+
     onBackButtonPressAndroid = () => {
-			if (this.state.isSearchActive == true) {
-					this.toggleSearchState();
-					return true;
-			} else {
-					return false;
-			}
+		if (this.state.isSearchActive == true) {
+				this.toggleSearchState();
+				return true;
+		} else {
+				return false;
+		}
     };
 
     toggleSearchState = () => {
-			if(this.state.isSearchActive == true) {
-					this.setState({
-					isSearchActive: false,
-					SearchArticle: [],
-					searchListRefreshing: false,
-					searchOffset: 0,
-					searchSubmitted: false,
-					lastSearchText: this.state.searchText,
-					});
-			} else {
-					this.setState({ isSearchActive: true});
-			}
+		if(this.state.isSearchActive == true) {
+			this.setState({
+				isSearchActive: false,
+				SearchArticle: [],
+				searchListRefreshing: false,
+				searchOffset: 0,
+				searchSubmitted: false,
+				lastSearchText: this.state.searchText,
+			});
+		} else {
+			this.setState({ isSearchActive: true});
+		}
     }
 
     //WARNING: fetch does not replace the state.NewsArticle anymore. Therefore, before this function is called,
@@ -103,15 +131,23 @@ export default class ArticlesPage extends React.Component {
     }
     
     dropdownHandler = (value) => {
-			this.setState({
-					NewsArticle: [],
-					refreshing: true,
-					category: value,
-					offset: 0,
-			}, () => this.fetchNews(value));	//Need to update the current category being viewed
+		this.setState({
+				NewsArticle: [],
+				refreshing: true,
+				category: value,
+				offset: 0,
+		}, () => this.fetchNews(value));	//Need to update the current category being viewed
     }
 
     handleRefresh = () => {
+    	console.log("Inside handleRefresh");
+    	if(this.state.connection_Status == 'Offline') {
+    		this.setState({
+    			refreshing: false,
+    			offset: 0,
+    			NewsArticle: [],
+    		});
+    	} else {
 			this.setState({
 				refreshing: true,
 				offset: 0,
@@ -119,32 +155,44 @@ export default class ArticlesPage extends React.Component {
 			},
 					() => this.fetchNews(this.state.category)
 			);
+		}
     }
 
     searchSubmitHandler = (forPagination) => {
-			console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
-			if(forPagination === undefined) {
-					this.setState({
-					searchSubmitted: true,
-					lastSearchText: this.state.searchText,
-					SearchArticle: [],			//clear the browser
-					//searchListRefreshing: true,
-					searchOffset: 0,
-					}, () => {
-					getArticleSearch(this.state.searchText, this.state.searchOffset, LIMIT)
-							.then( returnedObject => {
-							this.setState({ SearchArticle: returnedObject.SearchArticle, emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
-							})
-							.catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
-					});
-			} else {
-					//this branch is for pagination
-					getArticleSearch(this.state.lastSearchText, this.state.searchOffset, LIMIT)
+		console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
+		if(forPagination === undefined) {
+			this.setState({
+				searchSubmitted: true,
+				lastSearchText: this.state.searchText,
+				SearchArticle: [],			//clear the browser
+				searchListRefreshing: true,
+				searchOffset: 0,
+			}, () => {
+				getArticleSearch(this.state.searchText, this.state.searchOffset, LIMIT)
 					.then( returnedObject => {
-							this.setState({ SearchArticle: [...this.state.SearchArticle, ...returnedObject.SearchArticle], emptySearchReturned: returnedObject.emptySearchReturned, searchListRefreshing: false });
+						this.setState({ SearchArticle: returnedObject.SearchArticle, 
+							emptySearchReturned: returnedObject.emptySearchReturned, 
+							searchListRefreshing: false,
+							refreshing: false,
+						});
 					})
 					.catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
-			}
+			});
+		} else {
+			//this branch is for pagination
+			this.setState({
+				searchListRefreshing: true,
+			}, () => {
+				getArticleSearch(this.state.lastSearchText, this.state.searchOffset, LIMIT)
+					.then( returnedObject => {
+						this.setState({ SearchArticle: [...this.state.SearchArticle, ...returnedObject.SearchArticle], 
+							emptySearchReturned: returnedObject.emptySearchReturned, 
+							searchListRefreshing: false 
+						});
+					})
+					.catch(() => this.setState({SearchArticle: [], searchListRefreshing: false }));
+			});
+		}
     }
 
     newsHandleFetchMore = () => {
@@ -166,7 +214,6 @@ export default class ArticlesPage extends React.Component {
 					console.log("Inside searchHandleFetchMore. fetch executed");
 					this.setState({
 					searchOffset: this.state.searchOffset + OFFSET_CONST,
-					//searchListRefreshing: true,
 					}, () => this.searchSubmitHandler(true));
 
 					this.searchOnEndReachedCalledDuringMomentum = true;
@@ -187,40 +234,33 @@ export default class ArticlesPage extends React.Component {
     //render functions that return JSX
 
     leftComponentJSX = () => {
-			//BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-			if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
-					return (
-					<View style={styles.headerLeft}>
-							<TouchableHighlight
-							style={styles.headerLeftIcon}
-							underlayColor={'#DCDCDC'}
-							onPress={() => this.props.navigation.goBack()}
-							>
-									<Icon
-											name="md-arrow-back"
-											size={25}
-									/>
-							</TouchableHighlight>
-					</View>
-					);
-			} else {
-					return (
-					<View style={styles.headerLeft}>
-							<TouchableHighlight
-							style={styles.headerLeftIcon}
-							underlayColor={'#DCDCDC'}
-							onPress={() => {
-									this.toggleSearchState();
-							}}
-							>
-								<Icon
-									name="md-close"
-									size={25}
-								/>
-							</TouchableHighlight>
-					</View>
-					);
-			}
+		//BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+		if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+			return (
+				<View style={styles.headerLeft}>
+					<HeaderBackButton
+					    onPress={() => this.props.navigation.goBack()}
+				    />
+				</View>
+			);
+		} else {
+			return (
+				<View style={styles.headerLeft}>
+					<TouchableHighlight
+						style={styles.headerLeftIcon}
+						underlayColor={'#DCDCDC'}
+						onPress={() => {
+								this.toggleSearchState();
+						}}
+					>
+						<Icon
+							name="md-close"
+							size={25}
+						/>
+					</TouchableHighlight>
+				</View>
+			);
+		}
     }
 
     centerComponentJSX = () => {
@@ -309,7 +349,8 @@ export default class ArticlesPage extends React.Component {
 							newsHandleFetchMore={this.newsHandleFetchMore}		//no need to bind if use arrow functions
 							searchHandleFetchMore={this.searchHandleFetchMore}	//no need to bind if use arrow functions
 							searchOnEndReachedCalledDuringMomentumHandler={this.searchOnEndReachedCalledDuringMomentumHandler}  
-							newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler}  
+							newsOnEndReachedCalledDuringMomentumHandler={this.newsOnEndReachedCalledDuringMomentumHandler} 
+				    		connection_Status={this.state.connection_Status} 
 						/>
 					</SafeAreaView>
 			);
@@ -328,7 +369,17 @@ function DisplayArticles(props) {
 				onRefresh={props.handleRefresh}
         		onEndReached={props.newsHandleFetchMore}
         		onEndReachedThreshold={0.1}
-				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+				ListEmptyComponent={
+					<DisplayEmptyList 
+						styles={styles} 
+						emptySearchReturned={props.emptySearchReturned} 
+						refreshing={props.refreshing}
+						searchListRefreshing={props.searchListRefreshing}
+						isSearchActive={props.isSearchActive}
+						searchSubmitted={props.searchSubmitted}
+						connection_Status={props.connection_Status}
+					/>
+				}
 				onMomentumScrollBegin={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
 				onScrollBeginDrag={() => props.newsOnEndReachedCalledDuringMomentumHandler()}
 			/>;
@@ -341,7 +392,17 @@ function DisplayArticles(props) {
 				refreshing={props.searchListRefreshing}
         		onEndReached={props.searchHandleFetchMore}
         		onEndReachedThreshold={0.1}
-				ListEmptyComponent={<DisplayEmptyList styles={styles} emptySearchReturned={props.emptySearchReturned} />}
+				ListEmptyComponent={
+					<DisplayEmptyList 
+						styles={styles} 
+						emptySearchReturned={props.emptySearchReturned}
+						refreshing={props.refreshing} 
+						searchListRefreshing={props.searchListRefreshing}
+						isSearchActive={props.isSearchActive}
+						searchSubmitted={props.searchSubmitted}
+						connection_Status={props.connection_Status}
+					/>
+				}
 				onMomentumScrollBegin={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
 	            onScrollBeginDrag={() => props.searchOnEndReachedCalledDuringMomentumHandler()}
 			/>;
@@ -350,24 +411,33 @@ function DisplayArticles(props) {
 }
 
 function DisplayEmptyList(props) {
+	console.log(`Inside DisplayEmptyList. refreshing: ${props.refreshing} searchListRefreshing: ${props.searchListRefreshing}`);
+	if(props.connection_Status == 'Offline') {
+		return <View style={styles.container}>
+			<Text style={styles.welcome}>No Internet</Text>
+       </View>;
+	}
 	//Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
 	//all state variables undefined
-	if(props.refreshing || props.searchListRefreshing || 
+	else if(props.refreshing || props.searchListRefreshing || 
 		props.refreshing === undefined || props.searchListRefreshing === undefined) {
 		return <View style={styles.container}>
-							<Text style={styles.welcome}>Loading</Text>
+					<Text style={styles.welcome}>Loading</Text>
 		       </View>;
-    } else if(props.emptySearchReturned == true) {
+	} else if(props.emptySearchReturned == true) {
 		//empty case
 		return <View style={styles.container}>
-							<Text style={styles.welcome}>No results</Text>
-							<Text style={styles.instructions}>Try a different keyword</Text>
+					<Text style={styles.welcome}>No results</Text>
+					{props.isSearchActive == true && props.searchSubmitted == true ? 
+						<Text style={styles.instructions}>Try a different keyword</Text> : null
+					}
+					<Text style={styles.instructions}>If connection was lost previously, try again</Text>
 		       </View>;
     } else {
 		//not empty case --> means there is no internet
 		return <View style={styles.container}>
-							<Text style={styles.welcome}>Cannot Load Articles</Text>
-							<Text style={styles.instructions}>Might want to check your internet</Text>
+					<Text style={styles.welcome}>Cannot Load Articles</Text>
+					<Text style={styles.instructions}>If connection was lost previously, try again</Text>
 		       </View>;
     }
 }

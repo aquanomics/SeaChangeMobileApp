@@ -1,90 +1,146 @@
 import React from 'react';
-import { Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { NetInfo, Platform, BackHandler, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getSpecies } from './FishPageComponent/Fish';
 import { getSpeciesSearch } from './FishPageComponent/Fish';
 import Species from './FishPageComponent/Species'
 import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { HeaderBackButton } from 'react-navigation';
+
 const dropdownOptions = [21, 67, 18];
 const dropdownOptionsLocation =["21: Northwest Atlantic", "67: Pacific, Northeast", "18: Arctic Sea"]
 export default class FishPage extends React.Component {
-    constructor(props) {
-	super(props);
-	this.state = { data: [],
-                 search: [],
-		            refreshing: true,
-                refreshingSearch: true,
-                category: "animal",
-                isLoading: true,
-                searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
-                //This is used in the logic so that when you first try to search something before submission,
-                //the empty list doesn't show up
-                lastSearchText: '',     //We need to "remember" this value for pagination to know what string to query
-                searchText: '',
-                //to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
-                isSearchActive: false,          //state for search transition
-                emptySearchReturned: false, 
-                fetching_Status: false,};
-                // dataSource: ds.cloneWithRows(SpeciesList),};
-                this.fetchSpecies = this.fetchSpecies.bind(this);
-                this.offset = 0;
-                this.searchOffset = 0;
-                this.faoCode = 67;
-                this.keyword ='';
-                this.wordDropDown = "Filter";
-                this.searchOnEndReachedCalledDuringMomentum = true; 
+  _didFocusSubscription;
+  _willBlurSubscription;
 
+  constructor(props) {
+  	super(props);
+  	this.state = { 
+      data: [],
+      search: [],
+      refreshing: true,
+      refreshingSearch: false,
+      category: "animal",
+      searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
+      //This is used in the logic so that when you first try to search something before submission,
+      //the empty list doesn't show up
+      lastSearchText: '',     //We need to "remember" this value for pagination to know what string to query
+      searchText: '',
+      //to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
+      isSearchActive: false,          //state for search transition
+      emptySearchReturned: false, 
+      fetching_Status: false,
+      connection_Status : "",   //used to check network state
+    };
+
+    // dataSource: ds.cloneWithRows(SpeciesList),};
+    this.fetchSpecies = this.fetchSpecies.bind(this);
+    this.offset = 0;
+    this.searchOffset = 0;
+    this.faoCode = 67;
+    this.keyword ='';
+    this.wordDropDown = "Filter";
+    this.searchOnEndReachedCalledDuringMomentum = true; 
+
+    this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
   }
 
   static navigationOptions = ({ navigation }) => ({
-  header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
-    });
+    header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+  });
 
 
   toggleSearchState = () => {
-  if(this.state.isSearchActive == true) {
-      this.setState({
-        isSearchActive: false,
-        search: [],
-        refreshingSearch: false,
-        searchSubmitted: false,
-        //lastSearchText: this.state.searchText,
-      });
-  } else {
-      this.setState({ isSearchActive: true});
-  }
+      if(this.state.isSearchActive == true) {
+        this.setState({
+          isSearchActive: false,
+          search: [],
+          refreshingSearch: false,
+          searchSubmitted: false,
+          //lastSearchText: this.state.searchText,
+        });
+      } else {
+        this.setState({ isSearchActive: true});
+      }
     }
 
 	componentDidMount() {
-  this.fetchSpecies(this.state.category);
-  this.props.navigation.setParams({ fetchSpecies: this.Species });
+    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+
+    this.fetchSpecies(this.state.category);
+    this.props.navigation.setParams({ fetchSpecies: this.Species });
+
+    //Used to detect network status change
+    NetInfo.isConnected.addEventListener(
+      'connectionChange',
+      this._handleConnectivityChange 
+    );
+ 
+    NetInfo.isConnected.fetch().done((isConnected) => {
+      if(isConnected == true)
+        this.setState({connection_Status : "Online"})
+      else
+        this.setState({connection_Status : "Offline"})
+    });
   }
+
+  componentWillUnmount() {
+    this._didFocusSubscription && this._didFocusSubscription.remove();
+    this._willBlurSubscription && this._willBlurSubscription.remove();
+
+    NetInfo.isConnected.removeEventListener(
+      'connectionChange',
+      this._handleConnectivityChange
+    );
+  }
+
+  onBackButtonPressAndroid = () => {
+    console.log("Inside onBackButtonPressAndroid");
+    if (this.state.isSearchActive == true) {
+      this.toggleSearchState();
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  //reference: https://reactnativecode.com/netinfo-example-to-detect-internet-connection/
+  _handleConnectivityChange = (isConnected) => {
+    if(isConnected == true)
+      this.setState({connection_Status : "Online"});
+    else
+      this.setState({connection_Status : "Offline"});
+  };
 
   fetchSpecies = () => {
     getSpecies(this.offset,this.faoCode)
-        .then(response => {this.setState({ data:[...this.state.data, ...response], refreshing: false});})
-        .catch(() => this.setState({data: [], refreshing: false }));
+      .then(response => {this.setState({ data:[...this.state.data, ...response], refreshing: false});})
+      .catch(() => this.setState({data: [], refreshing: false }));
   }
 
   fetchSpeciesSearch = () => {
     getSpeciesSearch(this.searchOffset, this.keyword)
-        .then(response => {
-          this.setState({
-              search:[...this.state.search, ...response], 
-              refreshingSearch: false, 
-              lastSearchText: this.keyword,
-              emptySearchReturned: response.length == 0,
-          }, () => {
-            console.log("Below is the state.search");
-            console.log("LAST TEXT");
-            console.log(this.state.lastSearchText);
-            // tempArray = this.state.search;
-            // this.state.search = Array.from(new Set(tempArray));
-          }); 
-          console.log("SUCCESS")
-        })
-        .catch(() => this.setState({search: [], refreshingSearch: false }));
+      .then(response => {
+        this.setState({
+          search:[...this.state.search, ...response], 
+          refreshingSearch: false, 
+          lastSearchText: this.keyword,
+          emptySearchReturned: response.length == 0,
+        }, () => {
+          console.log("Below is the state.search");
+          console.log("LAST TEXT");
+          console.log(this.state.lastSearchText);
+          // tempArray = this.state.search;
+          // this.state.search = Array.from(new Set(tempArray));
+        }); 
+        console.log("SUCCESS")
+      })
+      .catch(() => this.setState({search: [], refreshingSearch: false }));
   }
 
   dropdownHandler = (value) => {
@@ -93,8 +149,8 @@ export default class FishPage extends React.Component {
     this.faoCode = dropdownOptions[value];
     this.offset = 0;
     this.setState({
-        data: [],
-        refreshing: true
+      data: [],
+      refreshing: true
     }, () => this.fetchSpecies(this.offset,this.faoCode));  //Need to update the current category being viewed
   }
 
@@ -104,21 +160,29 @@ export default class FishPage extends React.Component {
     this.keyword = this.state.searchText;
     this.offset = 0;
     this.setState({
-        search: [],
-        refreshingSearch: true,
-        searchSubmitted: true,
-        lastSearchText: this.state.searchText,
+      search: [],
+      refreshingSearch: true,
+      searchSubmitted: true,
+      lastSearchText: this.state.searchText,
     }, () => this.fetchSpeciesSearch(this.searchOffset,this.state.searchText));  //Need to update the current category being viewed
   }
 
   handleSearchRefresh = () => {
-      this.searchOffset = 0;
-      this.setState({refreshingSearch: true, search : [], }, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
+    this.searchOffset = 0;
+    this.setState({refreshingSearch: true, search : [], }, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
   }
 
   handleRefresh() {
-      this.offset = 0;
-	    this.setState({refreshing: true, data : [], }, () => this.fetchSpecies(this.offset,this.faoCode));
+    this.offset = 0;
+    console.log("Inside handleRefresh");
+    if(this.state.connection_Status == 'Offline') {
+      this.setState({
+        refreshing: false,
+        data: [],
+      });
+    } else {
+      this.setState({refreshing: true, data : [], }, () => this.fetchSpecies(this.offset,this.faoCode));
+    }
   }
 
   handleFetchMore() {
@@ -146,42 +210,35 @@ export default class FishPage extends React.Component {
   }
 
 
-    leftComponentJSX = () => {
-  //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
-  if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
+  leftComponentJSX = () => {
+    //BE CAREFUL: Need to check for undefined because the state parameters can be undefined during state transition
+    if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
       return (
-    <View style={styles.headerLeft}>
-        <TouchableHighlight
-      style={styles.headerLeftIcon}
-      underlayColor={'#DCDCDC'}
-      onPress={() => this.props.navigation.goBack()}
-        >
-            <Icon
-                name="md-arrow-back"
-                size={25}
-            />
-        </TouchableHighlight>
-    </View>
-      );
-  } else {
-      return (
-    <View style={styles.headerLeft}>
-        <TouchableHighlight
-      style={styles.headerLeftIcon}
-      underlayColor={'#DCDCDC'}
-      onPress={() => {
-          this.toggleSearchState();
-      } }
-        >
-          <Icon
-          name="md-close"
-          size={25}
+        <View style={styles.headerLeft}>
+          <HeaderBackButton
+            onPress={() => this.props.navigation.goBack()}
           />
-        </TouchableHighlight>
-    </View>
+        </View>
       );
-  }
+    } else {
+      return (
+        <View style={styles.headerLeft}>
+          <TouchableHighlight
+            style={styles.headerLeftIcon}
+            underlayColor={'#DCDCDC'}
+            onPress={() => {
+                this.toggleSearchState();
+            }}
+          >
+            <Icon
+              name="md-close"
+              size={25}
+            />
+          </TouchableHighlight>
+        </View>
+      );
     }
+  }
 
   centerComponentJSX = () => {
   if(this.state.isSearchActive == false) {
@@ -272,6 +329,7 @@ export default class FishPage extends React.Component {
         onScrollMotionBeginHandler={this.onScrollMotionBeginHandler}  
         onScrollMotionEndHandler={this.onScrollMotionEndHandler}
         key={this._keyExtractor}
+        connection_Status={this.state.connection_Status}
       />
     </SafeAreaView>
 	  );
@@ -292,10 +350,14 @@ function DisplaySpecies(props) {
             onEndReached={props.handleFetchMore}
             onEndThreshold={0.0}
             ListEmptyComponent={
-              <DisplayNoInternet 
+              <DisplayEmptyList 
                 styles={styles}  
                 refreshingSearch={props.refreshingSearch}
                 refreshing={props.refreshing}
+                emptySearchReturned={props.emptySearchReturned}
+                isSearchActive={props.isSearchActive}
+                searchSubmitted={props.searchSubmitted}
+                connection_Status={props.connection_Status}
               />}
           />;
     } else {
@@ -309,10 +371,14 @@ function DisplaySpecies(props) {
             onEndReached={props.handleSearchFetchMore}
             onEndThreshold={0.01}
             ListEmptyComponent={
-              <DisplayNoInternet 
-                  styles={styles}  
-                  refreshingSearch={props.refreshingSearch}
-                  refreshing={props.refreshing}
+              <DisplayEmptyList 
+                styles={styles}  
+                refreshingSearch={props.refreshingSearch}
+                refreshing={props.refreshing}
+                emptySearchReturned={props.emptySearchReturned}
+                isSearchActive={props.isSearchActive}
+                searchSubmitted={props.searchSubmitted}
+                connection_Status={props.connection_Status}
               />
             }
             onMomentumScrollBegin={() => props.onScrollMotionBeginHandler()}
@@ -322,25 +388,36 @@ function DisplaySpecies(props) {
 
 }
 
-function DisplayNoInternet(props) {
+function DisplayEmptyList(props) {
+  console.log(`Inside DisplayEmptyList. refreshing: ${props.refreshing} refreshingSearch: ${props.refreshingSearch}`);
+  if(props.connection_Status == 'Offline') {
+    return <View style={styles.container}>
+      <Text style={styles.welcome}>No Internet</Text>
+       </View>;
+  }
   //Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
   //all state variables undefined
-  if(props.refreshing || props.refreshingSearch || 
+  else if(props.refreshing || props.refreshingSearch || 
     props.refreshing === undefined || props.refreshingSearch === undefined) {
-    return <View style={styles.container}>
-            <Text style={styles.welcome}>Loading</Text>
-           </View>;
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>Loading</Text>
+            </View>;
   } else if(props.emptySearchReturned == true) {
-    return <View style={styles.container}>
-            <Text style={styles.welcome}>No results</Text>
-            <Text style={styles.instructions}>Try a different keyword</Text>
-           </View>;
-  } else {
-    return <View style={styles.container}>
-            <Text style={styles.welcome}>Cannot Load Species Nearby</Text>
-            <Text style={styles.instructions}>Might want to check your internet</Text>
-           </View>;
-  }
+    //empty case
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>No results</Text>
+              {props.isSearchActive == true && props.searchSubmitted == true ? 
+                <Text style={styles.instructions}>Try a different keyword</Text> : null
+              }
+              <Text style={styles.instructions}>If connection was lost previously, try again</Text>
+            </View>;
+    } else {
+    //not empty case --> means there is no internet
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>Cannot Load Data</Text>
+              <Text style={styles.instructions}>If connection was lost previously, try again</Text>
+            </View>;
+    }
 }
 
 const styles = StyleSheet.create({

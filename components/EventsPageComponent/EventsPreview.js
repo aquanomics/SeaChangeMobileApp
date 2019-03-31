@@ -74,7 +74,6 @@ const styles = {
   content:{
     marginBottom: 10
   },
-
   noteStyle: {
     margin: 5,
     fontStyle: 'italic',

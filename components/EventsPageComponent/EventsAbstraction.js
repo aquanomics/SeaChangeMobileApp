@@ -41,15 +41,17 @@ export default class EventsAbstraction extends React.Component {
               margin={14}
             />
           </View>
-          <Text style={{ marginBottom: 20 }}> {eventsObject.description} </Text>
+          <Text style={{ marginVertical: 10, marginLeft: 15 }}>{eventsObject.description}</Text>
           <Divider style={{ backgroundColor: '#dfe6e9' }} />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 15 }}> {"Time:\n" + "   " + moment(startDate).format('LLLL') + "\n  To\n" + "   " + moment(endDate).format('LLLL')}</Text>
-          </View>
-          <Divider style={{ backgroundColor: '#dfe6e9' }} />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ marginBottom: 10 }}> {"Location:\n" + "   " + location + "," + city} </Text>
-          </View>
+          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Text style={styles.heading}> {"Time:"}</Text>
+              <Text style={styles.content}> {"   " + moment(eventsObject.startDate).format('LLLL')}</Text>
+              <Text style={styles.heading}> {"To:"}</Text>
+              <Text style={styles.content}> {"   " + moment(eventsObject.endDate).format('LLLL')}</Text>
+              <Divider style={{ backgroundColor: '#dfe6e9', marginTop: 2, }} />
+              <Text style={styles.heading}> {"Location:"}</Text>
+              <Text style={styles.content}>{"   " + eventsObject.location + "," + eventsObject.city}</Text>
+            </View>
           </ScrollView>
       );
       } else {
@@ -64,14 +66,16 @@ export default class EventsAbstraction extends React.Component {
               />
             </View>
 
-            <Text style={{ marginBottom: 20, marginLeft: 15 }}> {eventsObject.description} </Text>
+            <Text style={{ marginVertical: 10, marginLeft: 15 }}>{eventsObject.description}</Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ marginBottom: 15, marginLeft: 15 }}> {"Time:\n" + "   " + moment(eventsObject.startDate).format('LLLL') + "\n  To\n" + "   " + moment(eventsObject.endDate).format('LLLL')}</Text>
-            </View>
-            <Divider style={{ backgroundColor: '#dfe6e9' }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ marginBottom: 10, marginLeft: 15 }}> {"Location:\n" + "   " + eventsObject.location + "," + eventsObject.city} </Text>
+            <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Text style={styles.heading}> {"Time:"}</Text>
+              <Text style={styles.content}> {"   " + moment(eventsObject.startDate).format('LLLL')}</Text>
+              <Text style={styles.heading}> {"To:"}</Text>
+              <Text style={styles.content}> {"   " + moment(eventsObject.endDate).format('LLLL')}</Text>
+              <Divider style={{ backgroundColor: '#dfe6e9', marginTop: 2, }} />
+              <Text style={styles.heading}> {"Location:"}</Text>
+              <Text style={styles.content}>{"   " + eventsObject.location + "," + eventsObject.city}</Text>
             </View>
 
             <View style={styles.mapContainer}>
@@ -98,9 +102,17 @@ export default class EventsAbstraction extends React.Component {
 }
 
 const styles = {
+  heading: {
+    marginVertical: 4,
+    fontWeight: "bold",
+  },
+  content:{
+    marginVertical: 4
+  },
   container: {
     //alignItems: 'stretch',
     //justifyContent: 'center',
+    marginHorizontal: 10,
   },
   buttonContainer: {
     justifyContent: 'center',
@@ -114,9 +126,7 @@ const styles = {
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingLeft: 8, //BE CAREFUL: If the padding number is changed, remember to update the prop to ResizedImage.js
-    paddingRight: 8,
-    marginTop: 20,
+    marginTop: 18,
   },
   titleContainer: {
     justifyContent: 'center',

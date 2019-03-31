@@ -6,13 +6,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MenuButton from './MenuButton'
 import { NetInfo } from 'react-native';
 import Modal from "react-native-modal";
-import firebase from 'react-native-firebase';
 
 
 const haversine = require('haversine');
 import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 import { getPosts } from './ServerRequests/nearbyPosts';
+import { getEvents } from './ServerRequests/nearbyEvents';
 
 
 import SlidingUpPanel from 'rn-sliding-up-panel';
@@ -25,13 +25,14 @@ const NO_ARTICLES_POPUP = 2
 const NO_POSTS_POPUP = 3
 const NO_RESTAURANTS_POPUP = 4
 const LOCATION_NOT_SET_POPUP = 5
+const NO_EVENTS_POPUP = 6
 
-const NO_INTERNET_POPUP_MESSAGE = "Please Connect to the Internet"
-const NO_ARTICLES_POPUP_MESSAGE = "No articles in this Area"
-const NO_POSTS_POPUP_MESSAGE = "No articles in this Area"
-const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this Area"
+const NO_INTERNET_POPUP_MESSAGE = "Please connect to the internet"
+const NO_ARTICLES_POPUP_MESSAGE = "No articles in this area"
+const NO_POSTS_POPUP_MESSAGE = "No posts in this area"
+const NO_RESTAURANTS_POPUP_MESSAGE = "No restaurants in this area"
+const NO_EVENTS_POPUP_MESSAGE = "No events in this area"
 const LOCATION_NOT_SET_POPUP_MESSAGE = "Turn on your location settings"
-const TRY_AGAIN_MESSAGE = "Try somewhere else?"
 
 export default class UserMap extends Component{
   static navigationOptions = ({ navigation }) => ({
@@ -70,8 +71,6 @@ export default class UserMap extends Component{
   }
 
   componentDidMount(){
-    this.getInitialUserLocation(); 
-    
     //TEMP SEARCH PARAMS
     //when we add a settings page these can be configurable
     var params = {
@@ -82,49 +81,7 @@ export default class UserMap extends Component{
     };
     this.setSearchParameters(params);
   }
-  
-  getMinMaxLat = () =>{
-    var lowest = Number.POSITIVE_INFINITY;
-    var highest = Number.NEGATIVE_INFINITY;
-    var tmp;
-    console.log(this.state.articles.length);
-    for (var i=this.state.articles.length-1; i>=0; i--) {
-      tmp = this.state.articles[i].lat;
-      if (tmp < lowest) lowest = tmp;
-      if (tmp > highest) highest = tmp;
-    }
-    return([highest,lowest]);
-  }
 
-  getMinMaxLong = () =>{  
-    var lowest = Number.POSITIVE_INFINITY;
-    var highest = Number.NEGATIVE_INFINITY;
-    var tmp;
-    for (var i=this.state.articles.length-1; i>=0; i--) {
-      tmp = this.state.articles[i].lng;
-      if (tmp < lowest) lowest = tmp;
-      if (tmp > highest) highest = tmp;
-    }
-    return([highest,lowest]);
-  }
-  /*
-  fitToArticles = () => {
-    latrange = this.getMinMaxLat();
-    longrange = this.getMinMaxLong();
-    
-    lat = (latrange[0] + latrange[1])/2;
-    long = (longrange[0] + longrange[1])/2;
-    latD = latrange[0] - latrange[1];
-    longD = longrange[0] - longrange[1] + .02;
-    var region = {
-      latitude:lat,
-      longitude:long,
-      latitudeDelta: latD,
-      longitudeDelta: longD
-    };
-    this.setRegion(region);
-  }
-  */
   getMapCenter = () => {
     return {
       latitude: this.state.region.latitude,
@@ -169,15 +126,7 @@ export default class UserMap extends Component{
     });
   }
 
-  onRegionChange = (region) => {
-    //console.log("region change");
-    //console.log(region);
-    this.setState({ region });
-    //console.log("region change");
-    //console.log("region.state");
-  }
   getInitialUserLocation = () => {
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position.coords.latitude);
@@ -186,11 +135,16 @@ export default class UserMap extends Component{
           userLocation: {         
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
+          },
+          region:{
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: .05,
+            longitudeDelta: .05
           }
         });
         console.log("setting user location");
         this.goToUserLocation();
-
       }, 
       (error) => {
         console.log(error);
@@ -238,8 +192,13 @@ export default class UserMap extends Component{
     }
   }
 
-  calcDistance = (loc1,loc2) => {
-    return haversine(loc1, loc2)
+  // MAP EVENT HANDLERS
+  onRegionChange = (region) => {
+    this.setState({ region });
+  }
+
+  onMapReady = () => {
+    this.getInitialUserLocation(); 
   }
 
   /**
@@ -257,8 +216,15 @@ export default class UserMap extends Component{
     return distance = this.calcDistance(loc1,loc2)/2;
   }
   
+  calcDistance = (loc1,loc2) => {
+    return haversine(loc1, loc2)
+  }
+  
+  /*
+    Methods for fetching data from DB
+  */
   fetchArticles = () => {  
-    this.setState({restaurants:[],articles:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
 
     distance = this.getScreenDistance();
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -291,7 +257,7 @@ export default class UserMap extends Component{
   
   fetchRestaurants = () => {
     
-    this.setState({articles:[], posts:[]}); //clear articles from the marker state, so they don't show up on the map
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
     distance = this.getScreenDistance();
     
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -324,8 +290,7 @@ export default class UserMap extends Component{
 
   fetchPosts = () => {
     
-    this.setState({articles:[],restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
-
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
     distance = this.getScreenDistance();
     
     var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
@@ -355,6 +320,38 @@ export default class UserMap extends Component{
     }).catch((error) => console.log(error)); 
   }
 
+  fetchEvents = () => {
+    
+    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
+
+    distance = this.getScreenDistance();
+    
+    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
+    console.log(params);
+    this.setSearchParameters(params);
+  
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected)
+      {
+        getEvents(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          this.setState({ events: result, refreshing: false });
+          if(result.length == 0){
+            this.setState({
+              isModalVisible: NO_EVENTS_POPUP          
+            });
+          }
+          console.log("Events:");
+          console.log(this.state.events);
+        });  
+      }
+      else{
+        console.log("Internet is not connected");
+        this.setState({
+          isModalVisible: NO_INTERNET_POPUP         
+        });
+      }
+    }).catch((error) => console.log(error)); 
+  }
  
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
@@ -400,13 +397,16 @@ export default class UserMap extends Component{
               <Icon name="md-locate" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchPosts}>
-              <Icon name="md-cloud-upload" style={styles.actionButtonIcon} />
+              <Icon name="md-images" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4'  onPress={this.fetchRestaurants}>
-              <Icon name="md-pizza" style={styles.actionButtonIcon} />
+            <Icon name="md-restaurant" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchArticles}>
-              <Icon name="md-paper" style={styles.actionButtonIcon} />
+              <Icon name="md-list" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3B3BD4' onPress={this.fetchEvents}>
+              <Icon name="md-calendar" style={styles.actionButtonIcon} />
           </ActionButton.Item>
 
       </ActionButton>
@@ -428,8 +428,8 @@ export default class UserMap extends Component{
           <View style={styles.menu}>
             <View style={styles.menuRow}>
               <MenuButton iconName="md-calendar" buttonTitle="Events" onClick={() => this.props.navigation.navigate('Events')}></MenuButton>
-              <MenuButton iconName="md-paper" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
-              <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
+              <MenuButton iconName="md-list" buttonTitle="Articles" onClick={() => this.props.navigation.navigate('Articles')}></MenuButton>
+              <MenuButton iconName="ios-images" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
             </View>
             <View style={styles.menuRow}>
               <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => console.log('TODO: settings page tapped')}></MenuButton>
@@ -448,14 +448,16 @@ export default class UserMap extends Component{
     <View style={{ flex: 1 }}>
 
       {this.renderModal(NO_INTERNET_POPUP,NO_INTERNET_POPUP_MESSAGE)}
-      {this.renderModal(NO_ARTICLES_POPUP,NO_ARTICLES_POPUP_MESSAGE, TRY_AGAIN_MESSAGE)}
-      {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE, TRY_AGAIN_MESSAGE)}
-      {this.renderModal(NO_POSTS_POPUP,NO_POSTS_POPUP_MESSAGE,TRY_AGAIN_MESSAGE)}
+      {this.renderModal(NO_ARTICLES_POPUP,NO_ARTICLES_POPUP_MESSAGE)}
+      {this.renderModal(NO_RESTAURANTS_POPUP,NO_RESTAURANTS_POPUP_MESSAGE)}
+      {this.renderModal(NO_POSTS_POPUP,NO_POSTS_POPUP_MESSAGE)}
       {this.renderModal(LOCATION_NOT_SET_POPUP,LOCATION_NOT_SET_POPUP_MESSAGE)}
+      {this.renderModal(NO_EVENTS_POPUP,NO_EVENTS_POPUP_MESSAGE)}
 
       <MapView style={{ flex: 1 }} 
         region={this.state.region} 
         onRegionChangeComplete={this.onRegionChange}
+        onMapReady={this.onMapReady}
         showsUserLocation={true} 
       >
         {this.state.articles.map(marker => (
@@ -464,7 +466,7 @@ export default class UserMap extends Component{
                 longitude:marker.lng}}
               title={marker.title}
               description={marker.description}
-              image={require('../img/map_icons/ArticleMarker.png')}
+              image={require('../img/map_icons/article-marker-wide6.png')}
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ArticleAbstraction', {articleObject: marker});}}>            
                 <View>
@@ -477,11 +479,11 @@ export default class UserMap extends Component{
         ))}
         {this.state.restaurants.map(marker => (
           <MapView.Marker
-              coordinate={{latitude:marker.latitude, //consistent naming is nessesary
+              coordinate={{latitude:marker.latitude,
                 longitude:marker.longitude}}
               title={marker.partner_name}
               description={marker.address_1}
-              image={require('../img/map_icons/RestaurantMarker.png')}
+              image={require('../img/map_icons/restaurant-marker-wide.png')}
               >
               <MapView.Callout style={styles.plainView} onPress={()=>{(marker.phone_number == "") ? console.log("no num"):Linking.openURL("tel:18008675309")}}>            
                 <View>
@@ -495,11 +497,11 @@ export default class UserMap extends Component{
         ))}
         {this.state.posts.map(marker => (
           <MapView.Marker
-              coordinate={{latitude:marker.lat, //consistent naming is nessesary
+              coordinate={{latitude:marker.lat,
                 longitude:marker.lng}}
               title={marker.name}
               description={marker.comment}
-              image={require('../img/map_icons/marker.png')}
+              image={require('../img/map_icons/post-marker-wide.png')}
               >
               <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('ObservationDetails', {postObject: marker});}}>            
                 <View>
@@ -510,6 +512,26 @@ export default class UserMap extends Component{
               </MapView.Callout>
           </MapView.Marker>
         ))}
+        {this.state.events.map(marker => (
+          <MapView.Marker
+              coordinate={{latitude:marker.lat,
+                longitude:marker.lng}}
+              title={marker.name}
+              description={marker.description}
+              image={require('../img/map_icons/event-marker.png')}
+              >
+              <MapView.Callout style={styles.plainView} onPress= {() => {this.props.navigation.navigate('EventsAbstraction', {eventsObject: marker});}}>            
+                <View>
+                  {this.renderImage(marker.urlToImage)}
+                  <Text style={{fontSize:16}} numberOfLines={1}>{marker.name}</Text>
+                  <Text style={{fontSize:16}} numberOfLines={2}>{marker.description}</Text>
+
+                </View>
+              </MapView.Callout>
+          </MapView.Marker>
+        ))}
+
+
       </MapView>
       {this.renderActionButton()}
       {this.renderPanel()}
@@ -543,7 +565,7 @@ const styles = StyleSheet.create({
     },
     actionButtonIcon: {
       fontSize: 20,
-      height: 26,
+      height: 20,
       color: 'white',
     },
     menu: {

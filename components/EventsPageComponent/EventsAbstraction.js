@@ -50,7 +50,7 @@ export default class EventsAbstraction extends React.Component {
               <Text style={styles.content}> {"   " + moment(eventsObject.endDate).format('LLLL')}</Text>
               <Divider style={{ backgroundColor: '#dfe6e9', marginTop: 2, }} />
               <Text style={styles.heading}> {"Location:"}</Text>
-              <Text style={styles.content}>{"   " + eventsObject.location + "," + eventsObject.city}</Text>
+              <Text style={styles.content}> {"   " + eventsObject.location + "," + eventsObject.city}</Text>
             </View>
           </ScrollView>
       );
@@ -65,7 +65,6 @@ export default class EventsAbstraction extends React.Component {
                 margin={14}
               />
             </View>
-
             <Text style={{ marginVertical: 10, marginLeft: 15 }}>{eventsObject.description}</Text>
             <Divider style={{ backgroundColor: '#dfe6e9' }} />
             <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -75,9 +74,8 @@ export default class EventsAbstraction extends React.Component {
               <Text style={styles.content}> {"   " + moment(eventsObject.endDate).format('LLLL')}</Text>
               <Divider style={{ backgroundColor: '#dfe6e9', marginTop: 2, }} />
               <Text style={styles.heading}> {"Location:"}</Text>
-              <Text style={styles.content}>{"   " + eventsObject.location + "," + eventsObject.city}</Text>
+              <Text style={styles.content}> {"   " + eventsObject.location + "," + eventsObject.city}</Text>
             </View>
-
             <View style={styles.mapContainer}>
               <MapView style={StyleSheet.absoluteFillObject} 
                 initialRegion={{
@@ -107,7 +105,11 @@ const styles = {
     fontWeight: "bold",
   },
   content:{
-    marginVertical: 4
+    marginVertical: 4,
+    fontWeight: "bold",
+  },
+  content:{
+    // marginBottom: 10
   },
   container: {
     //alignItems: 'stretch',

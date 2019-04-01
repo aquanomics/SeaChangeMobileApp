@@ -1,16 +1,18 @@
 import React from 'react';
-import { View, Slider,TouchableOpacity} from 'react-native';
+import { View, Slider,TouchableOpacity, Switch} from 'react-native';
 import { Text } from 'react-native-elements';
-
+import { RoundButton } from 'react-native-button-component';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 
 export default class SettingsPage extends React.Component {
-    //static navigationOptions = ({ navigation }) => ({
-    //  title: navigation.state.params.myTitle,
-    //});
+    static navigationOptions = ({ navigation }) => ({
+      title: navigation.state.params.myTitle,
+    });
 
     constructor(props) {
       super(props);
       this.handleChange = this.handleChange.bind(this);
+      this.toggleSwitch1 = this.toggleSwitch1.bind(this);
       settingsObject = this.props.navigation.getParam('settingsObject', {} )
       console.log(settingsObject);
       this.state = {
@@ -25,16 +27,12 @@ export default class SettingsPage extends React.Component {
       f(this.state.settings);
       //this.props.onSettingsChange(this.state.settings);
     }
-/*
-    componentDidMount() {
-      console.log(settingsObject);
-      settingsObject = this.props.navigation.getParam('settingsObject', {} )
-      console.log(settingsObject);
-      this.setState(
-        {settings: settingsObject}
-      );
+
+    toggleSwitch1 = (value) => {
+      this.setState({switch1Value: value})
+      console.log('Switch 1 is: ' + value)
     }
-*/
+
     
 
     render() {
@@ -62,11 +60,28 @@ export default class SettingsPage extends React.Component {
                       value={this.state.settings.maxSearchResults}
                       />
                 </View>
+                <View style={styles.switchrow}>
+                  <Switch
+                    style={{marginLeft: 20, marginRight: 20}}
+                    onValueChange = {value => { 
+                      this.setState({  
+                        settings:{
+                          searchUserArea: this.state.settings.searchUserArea,
+                          setCustomRadius: value,
+                          customSearchRadius: this.state.settings.customSearchRadius,
+                          maxSearchResults: this.state.settings.maxSearchResults
+                        }
+                      })
+                    }}
+                    value = {this.state.settings.setCustomRadius}/>
+                  <Text style={styles.text1}>Custom Radius</Text>
+                </View>
                 <Text style={styles.text1}>{"Search Radius (km)"}</Text>
                 <Text style={styles.text2}>{String(this.state.settings.customSearchRadius)}</Text>
                 <View style={{marginLeft: 20, marginRight: 20}}>
                   <Slider
                       step={1}
+                      disabled={!this.state.settings.setCustomRadius}
                       minimumValue={1}
                       maximumValue={100}
                       onValueChange={value => { 
@@ -79,15 +94,38 @@ export default class SettingsPage extends React.Component {
                           }
                         })
                       }}
-                      value={this.state.settings.maxSearchResults}
+                      value={this.state.settings.customSearchRadius}
                       />
                 </View>
-                <TouchableOpacity onPress={() => {
-                  console.log(this.state.settings);
-                  this.handleChange();
-                  }}>
-                    <Text>Change Settings</Text>                   
-                </TouchableOpacity>
+                <View style={styles.switchrow}>
+                  <Switch
+                    style={{marginLeft: 20, marginRight: 20}}
+                    onValueChange = {value => { 
+                      this.setState({  
+                        settings:{
+                          searchUserArea: value,
+                          setCustomRadius: this.state.settings.setCustomRadius,
+                          customSearchRadius: this.state.settings.customSearchRadius,
+                          maxSearchResults: this.state.settings.maxSearchResults
+                        }
+                      })
+                    }}
+                    value = {this.state.settings.searchUserArea}/>
+                  <Text style={styles.text1}>Search User Area</Text>
+                </View>
+                <RoundButton 
+                    style = {styles.button}
+                    type="primary"
+                    text="Modify Settings"
+                    textStyle= {styles.buttonTextFont}
+                    backgroundColors={['#2193b0', '#6dd5ed']}
+                    gradientStart={{ x: 0.5, y: 1 }}
+                    gradientEnd={{ x: 1, y: 1 }}
+                    onPress={() => {
+                      console.log(this.state.settings);
+                      this.handleChange();
+                    }} />
+               
 
             </View>
         );
@@ -97,9 +135,20 @@ export default class SettingsPage extends React.Component {
 
 const styles = {
     container: {
-        flex: 1,
-        flexDirection: 'column',
-     
+      flex: 1,
+      flexDirection: 'column',
+    },
+    switchrow: {
+      flexDirection: 'row',
+    },
+    button: {
+      margin: 10,
+      height: 50,
+      width: 300,
+  },
+    button: {
+      justifyContent: 'center', 
+      alignItems: 'center'
     },
     text1: {
         fontSize: 20,
@@ -112,4 +161,11 @@ const styles = {
         marginLeft: 20,
         textAlign: 'left',
     },
+    buttonTextFont: {
+      ...material.button,
+      ...systemWeights.light,
+      color: materialColors.whitePrimary,
+      fontSize: 17,
+      textAlign: 'center',
+  }
 };

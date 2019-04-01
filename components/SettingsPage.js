@@ -4,21 +4,29 @@ import { Text } from 'react-native-elements';
 import { RoundButton } from 'react-native-button-component';
 import { material, materialColors, systemWeights } from 'react-native-typography';
 
+/*
+textColor: {
+          BLACK = "#222222",
+          GREY = "#6d6d6d"
+        }
+*/
 export default class SettingsPage extends React.Component {
     static navigationOptions = ({ navigation }) => ({
       title: navigation.state.params.myTitle,
     });
-
+    
     constructor(props) {
       super(props);
       this.handleChange = this.handleChange.bind(this);
       this.toggleSwitch1 = this.toggleSwitch1.bind(this);
       settingsObject = this.props.navigation.getParam('settingsObject', {} )
       console.log(settingsObject);
-      this.state = {
-        settings: settingsObject
-      }
       
+      this.state = {
+        settings: settingsObject,
+        text: "#6d6d6d",
+        
+      }     
     }
 
     handleChange() {
@@ -33,7 +41,6 @@ export default class SettingsPage extends React.Component {
       console.log('Switch 1 is: ' + value)
     }
 
-    
 
     render() {
         //const {} = this.state.settings.maxSearchResults; 
@@ -55,7 +62,6 @@ export default class SettingsPage extends React.Component {
                             maxSearchResults: value
                           }
                         })
-                      
                       }}
                       value={this.state.settings.maxSearchResults}
                       />
@@ -70,15 +76,16 @@ export default class SettingsPage extends React.Component {
                           setCustomRadius: value,
                           customSearchRadius: this.state.settings.customSearchRadius,
                           maxSearchResults: this.state.settings.maxSearchResults
-                        }
+                        },
+                        text: ((value) ? "#222222" : "#6d6d6d")
                       })
                     }}
                     value = {this.state.settings.setCustomRadius}/>
                   <Text style={styles.text1}>Custom Radius</Text>
                 </View>
-                <Text style={styles.text1}>{"Search Radius (km)"}</Text>
-                <Text style={styles.text2}>{String(this.state.settings.customSearchRadius)}</Text>
-                <View style={{marginLeft: 20, marginRight: 20}}>
+                <Text style={[styles.text1,{color:this.state.text}]}>{"Search Radius (km)"}</Text>
+                <Text style={[styles.text2,{color:this.state.text}]}>{String(this.state.settings.customSearchRadius)}</Text>
+                <View style={{marginLeft: 10, marginRight: 20}}>
                   <Slider
                       step={1}
                       disabled={!this.state.settings.setCustomRadius}
@@ -99,7 +106,7 @@ export default class SettingsPage extends React.Component {
                 </View>
                 <View style={styles.switchrow}>
                   <Switch
-                    style={{marginLeft: 20, marginRight: 20}}
+                    style={{marginLeft: 20, marginRight: 10, marginBottom : 20}}
                     onValueChange = {value => { 
                       this.setState({  
                         settings:{
@@ -145,7 +152,7 @@ const styles = {
       margin: 10,
       height: 50,
       width: 300,
-  },
+    },
     button: {
       justifyContent: 'center', 
       alignItems: 'center'
@@ -155,11 +162,13 @@ const styles = {
         marginLeft: 20,
         textAlign: 'left',
         fontWeight: "bold",
+        
     },
     text2: {
         fontSize: 20,
         marginLeft: 20,
         textAlign: 'left',
+        
     },
     buttonTextFont: {
       ...material.button,

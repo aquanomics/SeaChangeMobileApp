@@ -24,7 +24,7 @@ export default class SettingsPage extends React.Component {
       
       this.state = {
         settings: settingsObject,
-        text: "#6d6d6d",
+        text: (settingsObject.setCustomRadius ? "#222222":"#6d6d6d")
         
       }     
     }

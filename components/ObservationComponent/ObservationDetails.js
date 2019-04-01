@@ -72,11 +72,11 @@ export default class ObservationDetails extends React.Component {
 						</View>
 
 						<View style={styles.titleContainer}>
-							<Text style={styles.title}> {postObject.name == 'default-name' ? '' : postObject.name} </Text>
+							<Text style={styles.title}>{postObject.name == 'default-name' ? '' : postObject.name}</Text>
 						</View>
 
 						<View style={styles.summaryContainer}>
-							<Text style={styles.summary}> {postObject.comment == 'null' ? '' : postObject.comment} </Text>
+							<Text style={styles.summary}>{postObject.comment == 'null' ? '' : postObject.comment}</Text>
 						</View>
 
 						<Dialog
@@ -175,11 +175,11 @@ export default class ObservationDetails extends React.Component {
 						</View>
 
 						<View style={styles.titleContainer}>
-							<Text style={styles.title}> {postObject.name == 'default-name' ? '' : postObject.name} </Text>
+							<Text style={styles.title}>{postObject.name == 'default-name' ? '' : postObject.name}</Text>
 						</View>
 
 						<View style={styles.summaryContainer}>
-							<Text style={styles.summary}> {postObject.comment == 'null' ? '' : postObject.comment} </Text>
+							<Text style={styles.summary}>{postObject.comment == 'null' ? '' : postObject.comment}</Text>
 						</View>
 
 						<Dialog

@@ -20,7 +20,7 @@ export async function getArticleSearch(search, offset, limit) {
 
     let result = await fetch(urlSearch + `search=${search}&offset=${offset}&limit=${limit}`).then(response => response.json());
 
-    console.log("Below is the result for article search");
+    console.log("Below is the result for article search. It will say NewsArticle, but it's SearchArticle");
     console.log(result);
 
     //Warning: It says NewsArticle because I didn't change backend to pass back the array as SearchArticle

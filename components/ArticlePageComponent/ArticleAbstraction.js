@@ -42,11 +42,11 @@ export default class ArticleAbstraction extends React.Component {
 							</View>
 
 							<View style={styles.titleContainer}>
-								<Text style={styles.title}> {articleObject.title} </Text>
+								<Text style={styles.title}>{articleObject.title}</Text>
 							</View>
 
 							<View style={styles.summaryContainer}>
-								<Text style={styles.summary}> {articleObject.description} </Text>
+								<Text style={styles.summary}>{articleObject.description}</Text>
 							</View>
 
 							<View style={styles.buttonContainer}>
@@ -82,11 +82,11 @@ export default class ArticleAbstraction extends React.Component {
 						</View>
 
 						<View style={styles.titleContainer}>
-							<Text style={styles.title}> {articleObject.title} </Text>
+							<Text style={styles.title}>{articleObject.title}</Text>
 						</View>
 
 						<View style={styles.summaryContainer}>
-							<Text style={styles.summary}> {articleObject.description} </Text>
+							<Text style={styles.summary}>{articleObject.description}</Text>
 						</View>
 
 						<View style={styles.buttonContainer}>
@@ -138,7 +138,7 @@ const styles = {
 	buttonContainer: {
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginTop: 20, //adds space at the top so that the buttons don't go underneath the header
+		marginTop: 18, //adds space at the top so that the buttons don't go underneath the header
 	},
 	button: {
 		height: 50,

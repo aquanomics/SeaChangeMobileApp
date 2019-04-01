@@ -1,48 +1,59 @@
 import React from 'react';
-import { Platform, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { BackHandler, NetInfo, Platform, TouchableHighlight, TextInput, FlatList, StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Header } from 'react-native-elements';
 import { getEvents, getCities, searchEvents } from './EventsPageComponent/Event';
 import EventsPreview from './EventsPageComponent/EventsPreview';   //Component used to render each entry in the list
 import Icon from 'react-native-vector-icons/Ionicons';
 import ModalDropdown from 'react-native-modal-dropdown';
+import { HeaderBackButton } from 'react-navigation';
 
 const dropdownOptions = [];
 
 export default class EventsPage extends React.Component {
-    constructor(props) {
-  super(props);
-  this.state = { EventsList: [],
-                 CitiesList: [],
-                 search: [],
-                refreshing: true,
-                refreshingSearch: true,
-                category: "animal",
-                isLoading: true,
-                searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
-                //This is used in the logic so that when you first try to search something before submission,
-                //the empty list doesn't show up
-                lastSearchText: '',     //This is used for searchList during pagination because if the list is at the end and if we were
-                searchText: '',
-                //to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
-                isSearchActive: false,          //state for search transition
-                emptySearchReturned: false, 
-                fetching_Status: false,};
-                // dataSource: ds.cloneWithRows(SpeciesList),};
-                this.fetchEvents = this.fetchEvents.bind(this);
-                this.fetchCities = this.fetchCities.bind(this);
-                this.offset = 0;
-                this.searchOffset = 0;
-                this.city = "Vancouver";
-                this.keyword ='';
-                this.wordDropDown = "Filter";
-                this.searchOnEndReachedCalledDuringMomentum = true; 
-                this.filterCity = [];
+  _didFocusSubscription;
+  _willBlurSubscription;
 
+  constructor(props) {
+    super(props);
+    this.state = { 
+      EventsList: [],
+      CitiesList: [],
+      search: [],
+      refreshing: true,
+      refreshingSearch: false,
+      category: "animal",
+      isLoading: true,
+      searchSubmitted: false,   //to keep track of whether search has been submitted at least once during the search session
+      //This is used in the logic so that when you first try to search something before submission,
+      //the empty list doesn't show up
+      lastSearchText: '',     //This is used for searchList during pagination because if the list is at the end and if we were
+      searchText: '',
+      //to search at that time, onEndReached() of <FlatList> would constantly fire which is undesirable
+      isSearchActive: false,          //state for search transition
+      emptySearchReturned: false, 
+      fetching_Status: false,
+      connection_Status : "",   //used to check network state
+    };
+
+    // dataSource: ds.cloneWithRows(SpeciesList),};
+    this.fetchEvents = this.fetchEvents.bind(this);
+    this.fetchCities = this.fetchCities.bind(this);
+    this.offset = 0;
+    this.searchOffset = 0;
+    this.city = "Vancouver";
+    this.keyword ='';
+    this.wordDropDown = "Filter";
+    this.searchOnEndReachedCalledDuringMomentum = true; 
+    this.filterCity = [];
+
+    this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
   }
 
   static navigationOptions = ({ navigation }) => ({
-  header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
-    });
+    header: null, //gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+  });
 
   toggleSearchState = () => {
     if(this.state.isSearchActive == true) {
@@ -59,11 +70,56 @@ export default class EventsPage extends React.Component {
   }
 
   componentDidMount() {
+    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+
     this.fetchCities(this.state.category);
     this.fetchEvents(this.state.category);
     this.props.navigation.setParams({ fetchEvents: this.Event });
     //console.log(this.filterCity);
+
+    //Used to detect network status change
+    NetInfo.isConnected.addEventListener(
+      'connectionChange',
+      this._handleConnectivityChange 
+    );
+ 
+    NetInfo.isConnected.fetch().done((isConnected) => {
+      if(isConnected == true)
+        this.setState({connection_Status : "Online"})
+      else
+        this.setState({connection_Status : "Offline"})
+    });
   }
+
+  componentWillUnmount() {
+    this._didFocusSubscription && this._didFocusSubscription.remove();
+    this._willBlurSubscription && this._willBlurSubscription.remove();
+
+    NetInfo.isConnected.removeEventListener(
+      'connectionChange',
+      this._handleConnectivityChange
+    );
+  }
+
+  onBackButtonPressAndroid = () => {
+    console.log("Inside onBackButtonPressAndroid");
+    if (this.state.isSearchActive == true) {
+      this.toggleSearchState();
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  //reference: https://reactnativecode.com/netinfo-example-to-detect-internet-connection/
+  _handleConnectivityChange = (isConnected) => {
+    if(isConnected == true)
+      this.setState({connection_Status : "Online"});
+    else
+      this.setState({connection_Status : "Offline"});
+  };
 
   fetchEvents = () => {
     getEvents(this.city)
@@ -116,7 +172,14 @@ export default class EventsPage extends React.Component {
 
   handleRefresh() {
     this.offset = 0;
-    this.setState({refreshing: true, EventsList : [], }, () => this.fetchEvents(this.offset,this.city));
+    if(this.state.connection_Status == 'Offline') {
+      this.setState({
+        refreshing: false,
+        EventsList: [],
+      });
+    } else {
+      this.setState({refreshing: true, EventsList : [], }, () => this.fetchEvents(this.offset,this.city));
+    }
   }
 
   handleFetchMore() {
@@ -148,16 +211,9 @@ export default class EventsPage extends React.Component {
   if(this.state.isSearchActive == false || this.state.isSearchActive === undefined) {
       return (
     <View style={styles.headerLeft}>
-        <TouchableHighlight
-      style={styles.headerLeftIcon}
-      underlayColor={'#DCDCDC'}
-      onPress={() => this.props.navigation.goBack()}
-        >
-            <Icon
-                name="md-arrow-back"
-                size={25}
-            />
-        </TouchableHighlight>
+      <HeaderBackButton
+        onPress={() => this.props.navigation.goBack()}
+      />
     </View>
       );
   } else {
@@ -267,6 +323,7 @@ export default class EventsPage extends React.Component {
         onScrollMotionBeginHandler={this.onScrollMotionBeginHandler}  
         onScrollMotionEndHandler={this.onScrollMotionEndHandler}
         key={this._keyExtractor}
+        connection_Status={this.state.connection_Status}
       />
     </SafeAreaView>
     );
@@ -286,7 +343,17 @@ function DisplayEvents(props) {
             //onEndReached={props.handleFetchMore}
             onEndThreshold={0.0}
             enableEmptySections={true}
-            ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
+            ListEmptyComponent={
+              <DisplayEmptyList 
+                styles={styles}  
+                refreshingSearch={props.refreshingSearch}
+                refreshing={props.refreshing}
+                emptySearchReturned={props.emptySearchReturned}
+                isSearchActive={props.isSearchActive}
+                searchSubmitted={props.searchSubmitted}
+                connection_Status={props.connection_Status}
+              />
+            }
           />;
     } else {
   return <FlatList
@@ -299,7 +366,17 @@ function DisplayEvents(props) {
             onEndReached={props.handleSearchFetchMore}
             onEndThreshold={0.01}
             enableEmptySections={true}
-            ListEmptyComponent={<DisplayNoInternet styles={styles}  />}
+            ListEmptyComponent={
+              <DisplayEmptyList 
+                styles={styles}  
+                refreshingSearch={props.refreshingSearch}
+                refreshing={props.refreshing}
+                emptySearchReturned={props.emptySearchReturned}
+                isSearchActive={props.isSearchActive}
+                searchSubmitted={props.searchSubmitted}
+                connection_Status={props.connection_Status}
+              />
+            }            
             onMomentumScrollBegin={() => props.onScrollMotionBeginHandler()}
             onScrollBeginDrag={() => props.onScrollMotionBeginHandler()}
           />;
@@ -307,11 +384,36 @@ function DisplayEvents(props) {
 
 }
 
-function DisplayNoInternet(props) {
-  return <View style={styles.container}>
-            <Text style={styles.welcome}>Cannot Load Events Nearby</Text>
-            <Text style={styles.instructions}>Might want to check your internet</Text>
-         </View>;
+function DisplayEmptyList(props) {
+  console.log(`Inside DisplayEmptyList. refreshing: ${props.refreshing} refreshingSearch: ${props.refreshingSearch}`);
+  if(props.connection_Status == 'Offline') {
+    return <View style={styles.container}>
+      <Text style={styles.welcome}>No Internet</Text>
+       </View>;
+  }
+  //Note: need to check for undefined because render functions are ran before constructor() is ran which renders (no pun intended)
+  //all state variables undefined
+  else if(props.refreshing || props.refreshingSearch || 
+    props.refreshing === undefined || props.refreshingSearch === undefined) {
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>Loading</Text>
+            </View>;
+  } else if(props.emptySearchReturned == true) {
+    //empty case
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>No results</Text>
+              {props.isSearchActive == true && props.searchSubmitted == true ? 
+                <Text style={styles.instructions}>Try a different keyword</Text> : null
+              }
+              <Text style={styles.instructions}>If connection was lost previously, try again</Text>
+            </View>;
+    } else {
+    //not empty case --> means there is no internet
+    return  <View style={styles.container}>
+              <Text style={styles.welcome}>Cannot Load Data</Text>
+              <Text style={styles.instructions}>If connection was lost previously, try again</Text>
+            </View>;
+    }
 }
 
 const styles = StyleSheet.create({

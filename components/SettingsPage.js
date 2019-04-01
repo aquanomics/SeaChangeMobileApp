@@ -1,15 +1,9 @@
 import React from 'react';
-import { View, Slider,TouchableOpacity, Switch} from 'react-native';
+import { View, Slider, Switch} from 'react-native';
 import { Text } from 'react-native-elements';
 import { RoundButton } from 'react-native-button-component';
-import { material, materialColors, systemWeights } from 'react-native-typography';
+import { material} from 'react-native-typography';
 
-/*
-textColor: {
-          BLACK = "#222222",
-          GREY = "#6d6d6d"
-        }
-*/
 export default class SettingsPage extends React.Component {
     static navigationOptions = ({ navigation }) => ({
       title: navigation.state.params.myTitle,
@@ -33,7 +27,7 @@ export default class SettingsPage extends React.Component {
       f = this.props.navigation.getParam("onSettingsChange", {});
       console.log("handling")
       f(this.state.settings);
-      //this.props.onSettingsChange(this.state.settings);
+      this.props.navigation.goBack();
     }
 
     toggleSwitch1 = (value) => {
@@ -43,7 +37,6 @@ export default class SettingsPage extends React.Component {
 
 
     render() {
-        //const {} = this.state.settings.maxSearchResults; 
         return(
             <View style={styles.container}>
                 <Text style={styles.text1}>{"Max Number of Search Results"}</Text>
@@ -150,6 +143,7 @@ const styles = {
     },
     button: {
       margin: 10,
+     
       height: 50,
       width: 300,
     },

@@ -272,8 +272,18 @@ export default class UserMap extends Component{
     lng = this.state.region.longitude;
 
     if(this.state.settingsObject.searchUserArea){ //add internet check
-      lat = this.state.userLocation.latitude;
-      lng = this.state.userLocation.longitude;
+      if(this.state.userLocation){
+        lat = this.state.userLocation.latitude;
+        lng = this.state.userLocation.longitude;
+      }
+      else {
+        this.setState({
+          isModalVisible: LOCATION_NOT_SET_POPUP         
+        });
+        return;
+      }
+
+  
     }
     var params = {lat:lat, lng:lng, distance: distance, limit:limit};
     console.log(params);

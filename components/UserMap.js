@@ -321,8 +321,19 @@ export default class UserMap extends Component{
     
     this.setState({articles:[], posts:[]}); //clear articles from the marker state, so they don't show up on the map
     distance = this.getScreenDistance();
-    
-    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
+    if(this.state.settingsObject.setCustomRadius){
+      distance = this.state.settingsObject.customSearchRadius;
+    }
+    limit = this.state.settingsObject.maxSearchResults;
+    lat = this.state.region.latitude;
+    lng = this.state.region.longitude;
+
+    if(this.state.settingsObject.searchUserArea){ //add internet check
+      lat = this.state.userLocation.latitude;
+      lng = this.state.userLocation.longitude;
+    }
+
+    var params = {lat:lat, lng:lng, distance: distance, limit:limit};
     console.log(params);
     this.setSearchParameters(params);
   
@@ -355,8 +366,19 @@ export default class UserMap extends Component{
     this.setState({articles:[],restaurants:[]}); //clear articles from the marker state, so they don't show up on the map
 
     distance = this.getScreenDistance();
-    
-    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
+    if(this.state.settingsObject.setCustomRadius){
+      distance = this.state.settingsObject.customSearchRadius;
+    }
+    limit = this.state.settingsObject.maxSearchResults;
+    lat = this.state.region.latitude;
+    lng = this.state.region.longitude;
+
+    if(this.state.settingsObject.searchUserArea){ //add internet check
+      lat = this.state.userLocation.latitude;
+      lng = this.state.userLocation.longitude;
+    }
+
+    var params = {lat:lat, lng:lng, distance: distance, limit:limit};
     console.log(params);
     this.setSearchParameters(params);
   

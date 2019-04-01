@@ -28,7 +28,7 @@ import FishPage from "./components/FishPage";
 import FishDetailPage from "./components/FishDetailPage";
 import ObservationsListPage from "./components/ObservationsListPage";
 import ObservationDetailsPage from "./components/ObservationComponent/ObservationDetails";
-
+import SettingsPage from "./components/SettingsPage"
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -105,6 +105,9 @@ const MainNavigator = createStackNavigator({
     },
     ObservationDetails: {
         screen: ObservationDetailsPage,
+    },
+    Settings: {
+        screen: SettingsPage,
     },
 }, {
     initialRouteName: 'Home',

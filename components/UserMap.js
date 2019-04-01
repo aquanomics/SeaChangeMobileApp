@@ -63,6 +63,12 @@ export default class UserMap extends Component{
       posts:[],
       result: null,
       isModalVisible: null,
+      settingsObject: {
+        searchUserArea: false,
+        setCustomRadius: false,
+        customSearchRadius: 0,
+        maxSearchResults: 50
+      }
     };
   }
 
@@ -80,6 +86,19 @@ export default class UserMap extends Component{
     this.setSearchParameters(params);
   }
   
+  handleSettingsPageChange = (settingsObject) => {
+    this.setState({
+      settingsObject:{
+        searchUserArea: settingsObject.searchUserArea,
+        setCustomRadius: settingsObject.setCustomRadius,
+        customSearchRadius: settingsObject.customSearchRadius,
+        maxSearchResults: settingsObject.maxSearchResults
+      }
+    });
+    console.log("New State:");
+    console.log(settingsObject);
+  }
+
   getMinMaxLat = () =>{
     var lowest = Number.POSITIVE_INFINITY;
     var highest = Number.NEGATIVE_INFINITY;
@@ -429,7 +448,7 @@ export default class UserMap extends Component{
               <MenuButton iconName="ios-cloud-upload" buttonTitle="Posts" onClick={() => this.props.navigation.navigate('Posts')}></MenuButton>
             </View>
             <View style={styles.menuRow}>
-              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => console.log('TODO: settings page tapped')}></MenuButton>
+              <MenuButton iconName="md-settings" buttonTitle="Settings" onClick={() => this.props.navigation.navigate('Settings',{settingsObject: this.state.settingsObject, onSettingsChange: this.handleSettingsPageChange})}></MenuButton>
               <MenuButton iconName="md-person" buttonTitle="Profile" onClick={() => this.props.navigation.navigate('Profile')}></MenuButton>
               <MenuButton iconName="ios-boat" buttonTitle="Fish" onClick={() => this.props.navigation.navigate('Fish')}></MenuButton>
             </View>

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Slider, Switch} from 'react-native';
 import { Text } from 'react-native-elements';
 import { RoundButton } from 'react-native-button-component';
-import { material} from 'react-native-typography';
+import { material, materialColors, systemWeights } from 'react-native-typography';
 
 export default class SettingsPage extends React.Component {
     static navigationOptions = ({ navigation }) => ({

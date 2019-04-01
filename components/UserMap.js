@@ -13,12 +13,18 @@ import { getArticles } from './ServerRequests/nearbyArticles';
 import { getRestaurants } from './ServerRequests/nearbyRestaurants';
 import { getPosts } from './ServerRequests/nearbyPosts';
 import { getEvents } from './ServerRequests/nearbyEvents';
+import { getNearby } from './ServerRequests/getNearby'
 
 
 import SlidingUpPanel from 'rn-sliding-up-panel';
 //import Communications from 'react-native-communications';
 const {height} = Dimensions.get('window')
 const actionButtonOffsetY = 65
+
+const ARTICLES = 1
+const RESTAURANTS = 2
+const POSTS = 3
+const EVENTS = 4
 
 const NO_INTERNET_POPUP = 1
 const NO_ARTICLES_POPUP = 2
@@ -70,7 +76,7 @@ export default class UserMap extends Component{
       settingsObject: {
         searchUserArea: false,
         setCustomRadius: false,
-        customSearchRadius: 0,
+        customSearchRadius: 1,
         maxSearchResults: 50
       }
     };
@@ -243,52 +249,20 @@ export default class UserMap extends Component{
     Methods for fetching data from DB
   */
   fetchArticles = () => {  
-    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
-
-    distance = this.getScreenDistance();
-    if(this.state.settingsObject.setCustomRadius){
-      distance = this.state.settingsObject.customSearchRadius;
-    }
-    limit = this.state.settingsObject.maxSearchResults;
-    lat = this.state.region.latitude;
-    lng = this.state.region.longitude;
-
-    if(this.state.settingsObject.searchUserArea){ //add internet check
-      lat = this.state.userLocation.latitude;
-      lng = this.state.userLocation.longitude;
-    }
-
-    var params = {lat:lat, lng:lng, distance: distance, limit:limit};
-    console.log(params);
-    this.setSearchParameters(params);
-  
-    NetInfo.isConnected.fetch().then(isConnected => {
-      if(isConnected)
-      {
-        getArticles(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
-          this.setState({ articles:result, refreshing: false });
-          if(result.length == 0){
-            this.setState({
-              isModalVisible: NO_ARTICLES_POPUP           
-            });
-          }
-          console.log("Articles:");
-          console.log(this.state.articles); 
-        });  
-      }
-      else{
-        console.log("Internet is not connected");
-        this.setState({
-          isModalVisible: NO_INTERNET_POPUP           
-        });
-      }
-    }).catch((error) => console.log(error));
-    
+    this.fetchData("getNearbyArticles", ARTICLES);
+  }
+  fetchRestaurants = () => {  
+    this.fetchData("getNearbyRestaurants", RESTAURANTS);
+  }
+  fetchPosts = () => {  
+    this.fetchData("getNearbyPosts", POSTS);
+  }
+  fetchEvents = () => {  
+    this.fetchData("getNearbyEvents", EVENTS);
   }
   
-  fetchRestaurants = () => {
-    
-    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
+  fetchData = (queryName, dataType) => {
+    this.setState({restaurants:[],articles:[],posts:[], events:[]});
     distance = this.getScreenDistance();
     if(this.state.settingsObject.setCustomRadius){
       distance = this.state.settingsObject.customSearchRadius;
@@ -301,7 +275,6 @@ export default class UserMap extends Component{
       lat = this.state.userLocation.latitude;
       lng = this.state.userLocation.longitude;
     }
-
     var params = {lat:lat, lng:lng, distance: distance, limit:limit};
     console.log(params);
     this.setSearchParameters(params);
@@ -309,15 +282,41 @@ export default class UserMap extends Component{
     NetInfo.isConnected.fetch().then(isConnected => {
       if(isConnected)
       {
-        getRestaurants(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
-          this.setState({ restaurants:result, refreshing: false });
-          if(result.length == 0){
-            this.setState({
-              isModalVisible: NO_RESTAURANTS_POPUP          
-            });
+        getNearby(queryName, this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
+          if(dataType == ARTICLES){
+            this.setState({ articles:result, refreshing: false });
+            if(result.length == 0){
+              this.setState({
+                isModalVisible: NO_ARTICLES_POPUP          
+              });
+            }
           }
-          console.log("Restaurants:");
-          console.log(this.state.restaurants);
+          else if(dataType == RESTAURANTS){
+            this.setState({ restaurants:result, refreshing: false });
+            if(result.length == 0){
+              this.setState({
+                isModalVisible: NO_RESTAURANTS_POPUP          
+              });
+            }
+          }
+          else if(dataType == POSTS){
+            this.setState({ posts:result, refreshing: false });
+            if(result.length == 0){
+              this.setState({
+                isModalVisible: NO_POSTS_POPUP          
+              });
+            }
+          }
+          else if(dataType == EVENTS){
+            this.setState({ events:result, refreshing: false });
+            if(result.length == 0){
+              this.setState({
+                isModalVisible: NO_EVENTS_POPUP          
+              });
+            }
+          }
+          console.log("Data:");
+          console.log(result);
         });  
       }
       else{
@@ -327,85 +326,8 @@ export default class UserMap extends Component{
         });
       }
     }).catch((error) => console.log(error));
-    
   }
 
-  fetchPosts = () => {
-    
-    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
-    distance = this.getScreenDistance();
-    if(this.state.settingsObject.setCustomRadius){
-      distance = this.state.settingsObject.customSearchRadius;
-    }
-    limit = this.state.settingsObject.maxSearchResults;
-    lat = this.state.region.latitude;
-    lng = this.state.region.longitude;
-
-    if(this.state.settingsObject.searchUserArea){ //add internet check
-      lat = this.state.userLocation.latitude;
-      lng = this.state.userLocation.longitude;
-    }
-
-    var params = {lat:lat, lng:lng, distance: distance, limit:limit};
-    console.log(params);
-    this.setSearchParameters(params);
-  
-    NetInfo.isConnected.fetch().then(isConnected => {
-      if(isConnected)
-      {
-        getPosts(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
-          this.setState({ posts:result, refreshing: false });
-          if(result.length == 0){
-            this.setState({
-              isModalVisible: NO_POSTS_POPUP          
-            });
-          }
-          console.log("Posts:");
-          console.log(this.state.posts);
-        });  
-      }
-      else{
-        console.log("Internet is not connected");
-        this.setState({
-          isModalVisible: NO_INTERNET_POPUP         
-        });
-      }
-    }).catch((error) => console.log(error)); 
-  }
-
-  fetchEvents = () => {
-    
-    this.setState({restaurants:[],articles:[],posts:[], events:[]}); //clear articles from the marker state, so they don't show up on the map
-
-    distance = this.getScreenDistance();
-    
-    var params = {lat:this.state.region.latitude, lng:this.state.region.longitude, distance};
-    console.log(params);
-    this.setSearchParameters(params);
-  
-    NetInfo.isConnected.fetch().then(isConnected => {
-      if(isConnected)
-      {
-        getEvents(this.state.searchInfo.lat,this.state.searchInfo.lng,this.state.searchInfo.distance,this.state.searchInfo.limit).then(result => {
-          this.setState({ events: result, refreshing: false });
-          if(result.length == 0){
-            this.setState({
-              isModalVisible: NO_EVENTS_POPUP          
-            });
-          }
-          console.log("Events:");
-          console.log(this.state.events);
-        });  
-      }
-      else{
-        console.log("Internet is not connected");
-        this.setState({
-          isModalVisible: NO_INTERNET_POPUP         
-        });
-      }
-    }).catch((error) => console.log(error)); 
-  }
- 
   _toggleModal = () =>
     this.setState({ isModalVisible: !this.state.isModalVisible });
 

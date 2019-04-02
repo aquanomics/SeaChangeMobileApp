@@ -4,12 +4,12 @@ import { Text, Card, Divider } from 'react-native-elements';
 import moment from 'moment';
 
 export default class Article extends React.Component {
-    constructor(props) {
+  constructor(props) {
     	super(props);
-    }
+  }
 
-    componentDidMount() {
-    }
+  componentDidMount() {
+  }
 
   render() {
     const {
@@ -25,27 +25,31 @@ export default class Article extends React.Component {
 
     return (
       <TouchableHighlight
-        //onPress={() => Linking.openURL(url)}		//If you want to open in chrome
-	      //Below is if you want to open up a new WebView to the actual article
-        //onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: url})}	//opening another component using <WebView />
-        onPress={() => this.props.navigation.navigate('ArticleAbstraction', {articleObject: this.props.article})}
-	      underlayColor={'#fffad8'}
+        // onPress={() => Linking.openURL(url)}		//If you want to open in chrome
+	      // Below is if you want to open up a new WebView to the actual article
+        // onPress={() => this.props.navigation.navigate('ArticleWebView', {uri: url})}	//opening another component using <WebView />
+        onPress={() => this.props.navigation.navigate('ArticleAbstraction', { articleObject: this.props.article })}
+        underlayColor="#fffad8"
       >
         <Card
           featuredTitle={title}
           featuredTitleStyle={featuredTitleStyle}
           image={(urlToImage != null)
-              ? {uri: urlToImage}                      
-              : require('../../img/place_holders/no-image-article.png')}
+            ? { uri: urlToImage }
+            : require('../../img/place_holders/no-image-article.png')}
         >
-            <Text style={{ marginBottom: 10 }}> {description.substring(0, MAXLENGTH)+" ..." || 'Read More..'} </Text>
+          <Text style={{ marginBottom: 10 }}>
+            {' '}
+            {`${description.substring(0, MAXLENGTH)} ...` || 'Read More..'}
+            {' '}
+          </Text>
 
-            <Divider style={{ backgroundColor: '#dfe6e9' }} />
+          <Divider style={{ backgroundColor: '#dfe6e9' }} />
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={noteStyle}>{source_name.toUpperCase()}</Text>
-                <Text style={noteStyle}>{time}</Text>
-            </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={noteStyle}>{source_name.toUpperCase()}</Text>
+            <Text style={noteStyle}>{time}</Text>
+          </View>
         </Card>
       </TouchableHighlight>
     );

@@ -1,26 +1,27 @@
 import React from 'react';
 import { withNavigation } from 'react-navigation';
-import { Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight} from 'react-native';
+import {
+  Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight
+} from 'react-native';
 import { material, materialColors, systemWeights } from 'react-native-typography';
+
 class Species extends React.Component {
-
-
   constructor(props) {
     super(props);
-      this.state = {
-        scaleValue: new Animated.Value(0)
-      }
-      this.render = this.render.bind(this);
-  }   
+    this.state = {
+      scaleValue: new Animated.Value(0)
+    };
+    this.render = this.render.bind(this);
+  }
 
-  //TODO: IN-PROGESS TO MAKE GOOD ANIMATION FOR EACH CARD RENDER
+  // TODO: IN-PROGESS TO MAKE GOOD ANIMATION FOR EACH CARD RENDER
   componentDidMount() {
     Animated.timing(this.state.scaleValue, {
-        toValue: 1,
-        duration : 600,
-        delay: this.props.index * 300
+      toValue: 1,
+      duration: 600,
+      delay: this.props.index * 300
     }).start();
-  } 
+  }
 
   render() {
     const {
@@ -30,29 +31,37 @@ class Species extends React.Component {
     	Species,
     	PicPreferredName
     } = this.props.species;
-  
+
     return (
-    <TouchableHighlight 
-    onPress={() => this.props.navigation.navigate('FishDetails',{code:SpecCode})}
-    underlayColor={'#fffad8'}
-    > 
-    	<Animated.View style={{ opacity: this.state.scaleValue }}>
-        <View style={styles.row}>
-          <Image
-            style={styles.imageContainer}
-            source={(PicPreferredName != null)
-              ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}                      
-              : require('../../img/place_holders/no-image-available.png')}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.fishName} numberOfLines={2}> {FBname} </Text>
-            <Text style={styles.petDescription} numberOfLines={2}> {Genus + " " + Species} </Text>
+      <TouchableHighlight
+        onPress={() => this.props.navigation.navigate('FishDetails', { code: SpecCode })}
+        underlayColor="#fffad8"
+      >
+        <Animated.View style={{ opacity: this.state.scaleValue }}>
+          <View style={styles.row}>
+            <Image
+              style={styles.imageContainer}
+              source={(PicPreferredName != null)
+                ? { uri: `https://www.fishbase.ca/images/species/${PicPreferredName}` }
+                : require('../../img/place_holders/no-image-available.png')}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.fishName} numberOfLines={2}>
+                {' '}
+                {FBname}
+                {' '}
+              </Text>
+              <Text style={styles.petDescription} numberOfLines={2}>
+                {' '}
+                {`${Genus} ${Species}`}
+                {' '}
+              </Text>
+            </View>
           </View>
-        </View>
-      </Animated.View>
-    </TouchableHighlight>
+        </Animated.View>
+      </TouchableHighlight>
     );
-}
+  }
 }
 
 const styles = StyleSheet.create({
@@ -76,7 +85,7 @@ const styles = StyleSheet.create({
 
   },
   imageContainer: {
-    resizeMode:"contain",
+    resizeMode: 'contain',
     width: 150,
     height: 100,
     paddingRight: 5,

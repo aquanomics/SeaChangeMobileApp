@@ -1,22 +1,18 @@
+/* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import {
-  Platform, View, Button, StyleSheet, Text, TouchableOpacity, TouchableHighlight, Dimensions, Animated, Image, Linking
+  Platform, View, StyleSheet, Text, TouchableOpacity, Dimensions, Animated, Image, Linking, NetInfo
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { NetInfo } from 'react-native';
 import Modal from 'react-native-modal';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import { getNearby } from './ServerRequests/getNearby';
-
-
 import MenuButton from './MenuButton';
 
-
 const haversine = require('haversine');
-// import Communications from 'react-native-communications';
-const { height } = Dimensions.get('window');
+
 const actionButtonOffsetY = 65;
 
 const ARTICLES = 1;
@@ -39,7 +35,7 @@ const NO_EVENTS_POPUP_MESSAGE = 'No events in this area';
 const LOCATION_NOT_SET_POPUP_MESSAGE = 'Turn on your location settings';
 
 export default class UserMap extends Component {
-  static navigationOptions = ({ navigation }) => ({
+  static navigationOptions = () => ({
     header: null, // gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
   });
 
@@ -69,7 +65,6 @@ export default class UserMap extends Component {
       articles: [],
       restaurants: [],
       posts: [],
-      result: null,
       isModalVisible: null,
       settingsObject: {
         searchUserArea: false,
@@ -229,7 +224,7 @@ export default class UserMap extends Component {
       latitude: this.state.region.latitude,
       longitude: (this.state.region.longitude + this.state.region.longitudeDelta)
     };
-    return distance = this.calcDistance(loc1, loc2) / 2;
+    return this.calcDistance(loc1, loc2) / 2;
   }
 
   calcDistance = (loc1, loc2) => haversine(loc1, loc2)
@@ -257,13 +252,13 @@ export default class UserMap extends Component {
     this.setState({
       restaurants: [], articles: [], posts: [], events: []
     });
-    distance = this.getScreenDistance();
+    let distance = this.getScreenDistance();
     if (this.state.settingsObject.setCustomRadius) {
       distance = this.state.settingsObject.customSearchRadius;
     }
-    limit = this.state.settingsObject.maxSearchResults;
-    lat = this.state.region.latitude;
-    lng = this.state.region.longitude;
+    const limit = this.state.settingsObject.maxSearchResults;
+    let lat = this.state.region.latitude;
+    let lng = this.state.region.longitude;
 
     if (this.state.settingsObject.searchUserArea) { // add internet check
       if (this.state.userLocation) {
@@ -285,30 +280,30 @@ export default class UserMap extends Component {
     NetInfo.isConnected.fetch().then((isConnected) => {
       if (isConnected) {
         getNearby(queryName, this.state.searchInfo.lat, this.state.searchInfo.lng, this.state.searchInfo.distance, this.state.searchInfo.limit).then((result) => {
-          if (dataType == ARTICLES) {
+          if (dataType === ARTICLES) {
             this.setState({ articles: result, refreshing: false });
-            if (result.length == 0) {
+            if (result.length === 0) {
               this.setState({
                 isModalVisible: NO_ARTICLES_POPUP
               });
             }
-          } else if (dataType == RESTAURANTS) {
+          } else if (dataType === RESTAURANTS) {
             this.setState({ restaurants: result, refreshing: false });
-            if (result.length == 0) {
+            if (result.length === 0) {
               this.setState({
                 isModalVisible: NO_RESTAURANTS_POPUP
               });
             }
-          } else if (dataType == POSTS) {
+          } else if (dataType === POSTS) {
             this.setState({ posts: result, refreshing: false });
-            if (result.length == 0) {
+            if (result.length === 0) {
               this.setState({
                 isModalVisible: NO_POSTS_POPUP
               });
             }
-          } else if (dataType == EVENTS) {
+          } else if (dataType === EVENTS) {
             this.setState({ events: result, refreshing: false });
-            if (result.length == 0) {
+            if (result.length === 0) {
               this.setState({
                 isModalVisible: NO_EVENTS_POPUP
               });

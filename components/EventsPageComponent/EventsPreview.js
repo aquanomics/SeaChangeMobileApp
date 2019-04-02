@@ -3,7 +3,7 @@ import moment from 'moment';
 import { withNavigation } from 'react-navigation';
 import { Card, Divider } from 'react-native-elements';
 import {
-  Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight
+  Animated, Text, TouchableHighlight
 } from 'react-native';
 
 class EventsPreview extends React.Component {
@@ -26,18 +26,15 @@ class EventsPreview extends React.Component {
 
   render() {
     const {
-      id,
       name,
       description,
       location,
       city,
       startDate,
       endDate,
-      lat,
-      lng,
       urlToImage
     } = this.props.eventspreview;
-    const { noteStyle, featuredTitleStyle } = styles;
+    const { featuredTitleStyle } = styles;
 
     return (
       <TouchableHighlight

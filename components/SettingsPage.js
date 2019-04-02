@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { View, Slider, Switch } from 'react-native';
 import { Text } from 'react-native-elements';
@@ -12,7 +13,7 @@ export default class SettingsPage extends React.Component {
     constructor(props) {
       super(props);
       this.handleChange = this.handleChange.bind(this);
-      settingsObject = this.props.navigation.getParam('settingsObject', {});
+      const settingsObject = this.props.navigation.getParam('settingsObject', {});
       console.log(settingsObject);
 
       this.state = {
@@ -24,9 +25,9 @@ export default class SettingsPage extends React.Component {
     }
 
     handleChange() {
-      f = this.props.navigation.getParam('onSettingsChange', {});
+      const changeHandler = this.props.navigation.getParam('onSettingsChange', {});
       console.log('handling');
-      f(this.state.settings);
+      changeHandler(this.state.settings);
       this.props.navigation.goBack();
     }
 
@@ -143,10 +144,6 @@ const styles = {
     width: 300,
 
   },
-  // button: {
-  //  justifyContent: 'center',
-  //  alignItems: 'center'
-  // },
   text1: {
     fontSize: 20,
     marginLeft: 20,

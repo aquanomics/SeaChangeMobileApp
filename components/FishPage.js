@@ -13,6 +13,10 @@ import Species from './FishPageComponent/Species';
 const dropdownOptions = [21, 67, 18];
 const dropdownOptionsLocation = ['21: Northwest Atlantic', '67: Pacific, Northeast', '18: Arctic Sea'];
 export default class FishPage extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    header: null, // gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
+  });
+
   _didFocusSubscription;
 
   _willBlurSubscription;
@@ -48,11 +52,6 @@ export default class FishPage extends React.Component {
 
     this._didFocusSubscription = props.navigation.addListener('didFocus', payload => BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid));
   }
-
-  static navigationOptions = ({ navigation }) => ({
-    header: null, // gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
-  });
-
 
   toggleSearchState = () => {
     if (this.state.isSearchActive == true) {

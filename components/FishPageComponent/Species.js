@@ -1,9 +1,9 @@
 import React from 'react';
 import { withNavigation } from 'react-navigation';
 import {
-  Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight
+  Animated, StyleSheet, Text, View, Image, TouchableHighlight
 } from 'react-native';
-import { material, materialColors, systemWeights } from 'react-native-typography';
+import { material, systemWeights } from 'react-native-typography';
 
 class Species extends React.Component {
   constructor(props) {

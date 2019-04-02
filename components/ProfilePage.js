@@ -58,16 +58,12 @@ export default class ProfilePage extends Component{
      * when the component unmounts.
      */
     componentWillUnmount() {
-        console.log("Inside componentWillUnmount()");
         if (this.unsubscriber) {
             this.unsubscriber();
         }
     }
 
     onPressLogIn = () => {
-        console.log('Login pressed');
-        console.log("this.state.email is: " + this.state.email);
-
         //check strings are not empty. Firebase function will give an error saying string is empty, 
         //but it won't tell you which string (id or pw) is empty so check it ourselves and give the message
 
@@ -82,7 +78,6 @@ export default class ProfilePage extends Component{
             this.setState({displayDialog: true, dialogText: errorStr});
         } else {
             this.setState({screenState: "loading"})
-            console.log("Got inside the last else statement inside onPressLogIn()");
             firebase
                 .auth()
                 .signInWithEmailAndPassword(this.state.email, this.state.password)
@@ -112,21 +107,13 @@ export default class ProfilePage extends Component{
     turnOnFirebaseAuthCallback = () => {
         this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
             if(user) {
-                console.log("Inside ProfilePage componentDidMount()'s AuthStateChanged callback function. Below is the user");
-                console.log(user);
-                console.log("Retrieving uid of user");
-                console.log(user.uid);
-
                 user.getIdToken()
                     .then(idToken => {
                         var urlString = urlUserFetch + `uid=${user.uid}` + `&idToken=${idToken}`;
-                        //for debugging below
-                        console.log(urlString);
 
                         //Retrieve the rest of user data from mysql db
                         return fetch(urlString);
                     }).then(response => {
-                        console.log("Got in 2nd then");
                         if(response.status != 200) {
                             this.setState({ emptySearchReturned: false});
                             throw {message: `Internal server error! Error code ${response.status}`};
@@ -134,8 +121,6 @@ export default class ProfilePage extends Component{
                             return response.json();
                         }
                     }).then(response => {
-                        console.log("Got in the 3rd then. Below is the response");
-                        console.log(response);
                         if(response.User.length == 0) {
                             //TODO: sign out user here
                             throw {message: "Error: No corresponding user data with this account. Please contact the admin."};
@@ -151,7 +136,6 @@ export default class ProfilePage extends Component{
                             screenState: "logged_in"
                         });
                     }).catch(error => {
-                        console.log("Inside componentDidMount idToken then chain");
                         this.setState({displayDialog: true, dialogText: error.message, screenState: "logged_out"});
                     })
 
@@ -161,7 +145,6 @@ export default class ProfilePage extends Component{
                 // console.log("Executing navigation switch to new component (UserMap)");
                 // this.props.navigation.navigate('Home', { user: user });
             } else {
-                console.log("Inside componentDidMount()'s AuthStateChanged callback function. Not logged in");
                 this.setState({user: null, screenState: "logged_out"});
             }
         });
@@ -257,7 +240,7 @@ function DisplayAccountInfo(props) {
                         />
                         <RkTextInput 
                             rkType="topLabel" 
-                            label="password"
+                            label="Password"
                             style={styles.textInput}
                             labelStyle={{color: '#D5DBDB'}}
                             inputStyle={{color: '#F4F6F6'}}

@@ -16,10 +16,6 @@ export default class EventsAbstraction extends React.Component {
     }
 
     componentDidMount() {
-      //debugging
-      console.log("inside ArticleAbstraction.js. Below is the props passed to it");
-      console.log(this.props.navigation.getParam('eventsObject', {}));
-
       //This below is a method of passing data to the navigationOptions.
       //I think navigation.state is different from the component's state
       this.props.navigation.setParams({

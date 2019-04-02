@@ -6,17 +6,17 @@ import { StyleSheet, Text, View, FlatList } from 'react-native';
 export default class FishDetailPage extends Component{
     constructor(props) {
       super(props);
-      this.state = { data: [],
-                  refreshing: true,
-                  category: "animal",
-                  isLoading: true,
-                  fetching_Status: false,};
-                  // dataSource: ds.cloneWithRows(SpeciesList),};
-                  this.fetchDetails = this.fetchDetails.bind(this);
-                  //this.{ navigation } = this.props;
-                  this.itemId = this.props.navigation.getParam('code', 'NO-ID');
-                  this.SpeciesCode = this.itemId;
-                  //console.log(this.itemId)
+      this.state = { 
+        data: [],
+        refreshing: true,
+        category: "animal",
+        isLoading: true,
+        fetching_Status: false,
+      };
+
+      this.fetchDetails = this.fetchDetails.bind(this);
+      this.itemId = this.props.navigation.getParam('code', 'NO-ID');
+      this.SpeciesCode = this.itemId;
   }
   componentDidMount() {
     this.fetchDetails(this.state.category);
@@ -25,10 +25,9 @@ export default class FishDetailPage extends Component{
 
   fetchDetails = () => {
     getSpeciesDetails(this.SpeciesCode)
-        .then(response => {
-          this.setState({ data:response, refreshing: false});
-          console.log("SUCCESS")})
-        .catch(() => {this.setState({data: [], refreshing: false }); console.log("ERROR");});
+      .then(response => {
+        this.setState({ data:response, refreshing: false});})
+      .catch(() => {this.setState({data: [], refreshing: false }); console.log("ERROR");});
   }
 
   handleRefresh() {

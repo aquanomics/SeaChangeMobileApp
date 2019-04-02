@@ -3,10 +3,7 @@ const urlSearch= "http://seachange.ca-central-1.elasticbeanstalk.com/api/article
 //const urlSearch= "http://seachange.ca-central-1.elasticbeanstalk.com/api/articleSearch?search=";
 
 export async function getNews(category, offset, limit) {
-    console.log(`category: ${category} offset: ${offset} limit: ${limit}`);
     let result = await fetch(urlCategory + "category=" + category + "&offset=" + offset + "&limit=" + limit).then(response => response.json());
-    console.log("Below is the result for NewsArticle");
-    console.log(result);
     return result.NewsArticle;
 }
 
@@ -16,12 +13,7 @@ export async function getNews(category, offset, limit) {
 //Therefore, on the backend code, the url will have the '+', but when you extract the parameters through
 //express' functions, they will be converted to ' '
 export async function getArticleSearch(search, offset, limit) {
-    console.log(`search: ${search} offset: ${offset} limit: ${limit}`);
-
     let result = await fetch(urlSearch + `search=${search}&offset=${offset}&limit=${limit}`).then(response => response.json());
-
-    console.log("Below is the result for article search. It will say NewsArticle, but it's SearchArticle");
-    console.log(result);
 
     //Warning: It says NewsArticle because I didn't change backend to pass back the array as SearchArticle
     if (result.NewsArticle === undefined || (result.NewsArticle.length == 0 && offset == 0) )

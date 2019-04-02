@@ -45,7 +45,6 @@ export default class ImagePost extends Component{
             } else {
                 //Note: Since this page is only accessible while signed in, when signed out,
                 //redirect the user to the log in page
-                console.log('not logged in');
                 this.setState({user: null}, () => {
                     this.props.navigation.goBack();     //go back to universal post page
                     this.props.navigation.goBack();     //go back to map page
@@ -63,7 +62,6 @@ export default class ImagePost extends Component{
      * when the component unmounts.
      */
     componentWillUnmount() {
-        console.log("Inside componentWillUnmount() of ArticlePostPage");
         if (this.unsubscriber) {
             this.unsubscriber();
         }
@@ -104,25 +102,19 @@ export default class ImagePost extends Component{
                 Object.assign(tempParam, this.state.param);
                 tempParam.body.idToken = idToken;
                 tempParam.body.uid = this.state.user.uid;
-                console.log("Below is the tempParam");
-                console.log(tempParam);
 
                 var url = setUrlParam(URL, tempParam);
-                console.log(`This is the upload url: ${url}`);
                 return fetch(url, { method: "POST", body: createFormData(this.state.photo, {}) });
             })
             .then(response => {
                 if(response.status != 200) {    //internal server error
-                    console.log(`Internal server error! Error code ${response.status}`);
                     this.setState({ buttonUploadState: 'upload', displayDialog: true,  dialogText: "Failed to Upload Photo :("});
                 } else {
                     this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: "Photo Successfully Uploaded :)" });
                 }
             })
             .catch(error => {   //external server error
-                console.log("External server error")
                 this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: error.message });
-                console.log(error.message);
             });
     };
 
@@ -137,7 +129,6 @@ export default class ImagePost extends Component{
 
             this.setState({currState});
         }, error => {
-            console.log(error)
             var currState = setUserLocation(this.state, null, null, 'init', true, "Failed to Include User Location"); 
             this.setState({currState});
         });

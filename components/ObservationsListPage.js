@@ -89,7 +89,6 @@ export default class ObservationsListPage extends React.Component {
 
 	    this.unsubscriber = firebase.auth().onAuthStateChanged(user => {
             if (user) {
-            	console.log("Got here");
                 this.setState({'user': user}, () => {
                 	//this callback function can be called multiple times when internet is unavailable
                 	//This ensures auto fetch is only executed once 
@@ -101,7 +100,6 @@ export default class ObservationsListPage extends React.Component {
             } else {
                 //Note: Since this page is only accessible while signed in, when signed out,
                 //redirect the user to the log in page
-                console.log('not logged in');
                 this.setState({user: null}, () => {
                     this.props.navigation.goBack();     //go back to profile page
                     this.props.navigation.goBack();     //go back to map page
@@ -165,10 +163,6 @@ export default class ObservationsListPage extends React.Component {
     //which you sometimes want it to happen aka pagination
     //PRECONDITION: Assumes you will call this AFTER this.state.offset has been updated
     fetchObservation = () => {
-		// getNews(category, this.state.offset, LIMIT)
-		//     .then(response => this.setState({ observationList: [...this.state.observationList, ...response], refreshing: false }))
-		//     .catch(() => this.setState({observationList: [], refreshing: false }));
-		console.log(`Inside fetchObservation. This is the value of offset: ${this.state.offset}` );
 
 		this.state.user.getIdToken()
             .then(idToken => {
@@ -177,11 +171,9 @@ export default class ObservationsListPage extends React.Component {
 		    		`&idToken=${idToken}` + 
 		    		`&offset=${this.state.offset}` +
 		    		`&limit=${LIMIT}`;
-		    	console.log("Got in 1st then");
 		    	return fetch(completeUrl);
             })
             .then(response => {
-            	console.log("Got in 2nd then");
             	if(response.status != 200) {
                     this.setState({ emptySearchReturned: false});
                     throw {message: `Internal server error! Error code ${response.status}`};
@@ -190,8 +182,6 @@ export default class ObservationsListPage extends React.Component {
                 }
             })
             .then(response => {
-            	console.log("Got in 3rd then");
-            	console.log(response);
             	//Note: empty search returned is not considered an error
             	this.setState({
             		observationList: [...this.state.observationList, ...response.Posts],
@@ -205,8 +195,14 @@ export default class ObservationsListPage extends React.Component {
             });;
     }
 
+    //This function is for the observation details page to call if deletion is successful. We need to refresh
+    //because deleted observations should not appear in the list after deletion
+    deletionRefreshListData = () => {
+    	this.handleRefresh();
+    	this.searchSubmitHandler();
+    }
+
     handleRefresh = () => {
-    	console.log("Inside handleRefresh");
     	if(this.state.connection_Status == 'Offline') {
     		this.setState({
     			refreshing: false,
@@ -219,7 +215,6 @@ export default class ObservationsListPage extends React.Component {
 				offset: 0,
 				observationList: [],
 		    }, () => {
-		    	console.log("inside callback of handleRefresh");
 		    	this.fetchObservation();
 		    });
     	}
@@ -228,23 +223,17 @@ export default class ObservationsListPage extends React.Component {
     //WARNING: Not sure if promise is rejected whether or not it will go to catch inside searchSubmitHandler
     //Post Condition: Returns the relevant array containing the pertinent data
     observationSearch = async (searchText) => {
-	    console.log(`search: ${searchText} offset: ${this.state.searchOffset} limit: ${LIMIT}`);
 	    var idToken = await this.state.user.getIdToken();
 	    var urlComplete = urlPostSearch + `search=${searchText}` + `&offset=${this.state.searchOffset}`
 	    	+ `&limit=${LIMIT}` + `&idToken=${idToken}` + `&uid=${this.state.user.uid}`;
 	    var result = await fetch(urlComplete);
 
-	    console.log("Below is the returned object before json parsing");
-	    console.log(result);
-	    console.log(`The status code is: ${result.status}`);
         if(result.status != 200) {
         	this.setState({ emptySearchReturned: false});
             throw {message: `Internal server error! Error code ${response.status}`};
         }
 
         var resultJson = await result.json();
-        console.log("Below is the json parsed returned response");
-        console.log(resultJson);
 
         //Note: empty search returned is not considered an error
     	this.setState({emptySearchReturned: resultJson.List.length == 0});
@@ -253,7 +242,6 @@ export default class ObservationsListPage extends React.Component {
 	}
 
     searchSubmitHandler = (forPagination) => {
-		console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
 		if(forPagination === undefined) {
 		    this.setState({
 				searchSubmitted: true,
@@ -289,26 +277,20 @@ export default class ObservationsListPage extends React.Component {
 
     observationsFetchMore = () => {
 		if(!this.newsOnEndReachedCalledDuringMomentum) {
-		    console.log("Inside observationsFetchMore. fetch executed");
 		    this.setState({
 				offset: this.state.offset + OFFSET_CONST,
 				//refreshing: true,
 		    }, () => this.fetchObservation());
 		    this.newsOnEndReachedCalledDuringMomentum = true;
-		} else {
-		    console.log("Inside observationsFetchMore. fetch NOT executed");
 		}
     }
 
     searchHandleFetchMore = () => {
 		if(!this.searchOnEndReachedCalledDuringMomentum) {
-		    console.log("Inside searchHandleFetchMore. fetch executed");
 		    this.setState({
 				searchOffset: this.state.searchOffset + OFFSET_CONST,
 		    }, () => this.searchSubmitHandler(true));
 		    this.searchOnEndReachedCalledDuringMomentum = true;
-		} else {
-		    console.log("Inside searchHandleFetchMore. fetch NOT executed");
 		}
     }
 
@@ -322,7 +304,6 @@ export default class ObservationsListPage extends React.Component {
     }
 
     imageOnClick = () => {
-    	console.log("inside imageOnClick");
     	this.setState({imageFullscreenOn: !this.state.imageFullscreenOn});
     }
 
@@ -447,6 +428,7 @@ export default class ObservationsListPage extends React.Component {
 		    		imageOnClick={this.imageOnClick}
 		    		imageFullscreenOn={this.imageFullscreenOn}
 		    		connection_Status={this.state.connection_Status}
+		    		deletionRefreshListData={this.deletionRefreshListData.bind(this)}
 		    	/>
 		    </SafeAreaView>
 		);
@@ -469,7 +451,7 @@ function DisplayArticles(props) {
 		return (
 			<FlatList
 				data={props.observationList}
-				renderItem={({item}) => <ObservationCard item={item} navigation={props.navigation} />}
+				renderItem={({item}) => <ObservationCard item={item} navigation={props.navigation} deletionRefreshListData={props.deletionRefreshListData} />}
 				keyExtractor={item => item.imageKey}
 				refreshing={props.refreshing}
 				onRefresh={props.handleRefresh}
@@ -495,7 +477,7 @@ function DisplayArticles(props) {
 		return (
 			<FlatList
 				data={props.searchList}
-				renderItem={({item}) => <ObservationCard item={item} navigation={props.navigation} />}
+				renderItem={({item}) => <ObservationCard item={item} navigation={props.navigation} deletionRefreshListData={props.deletionRefreshListData} />}
 				keyExtractor={item => item.imageKey}
 				refreshing={props.searchListRefreshing}
         		onEndReached={props.searchHandleFetchMore}

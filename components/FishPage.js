@@ -100,7 +100,6 @@ export default class FishPage extends React.Component {
   }
 
   onBackButtonPressAndroid = () => {
-    console.log("Inside onBackButtonPressAndroid");
     if (this.state.isSearchActive == true) {
       this.toggleSearchState();
       return true;
@@ -131,20 +130,12 @@ export default class FishPage extends React.Component {
           refreshingSearch: false, 
           lastSearchText: this.keyword,
           emptySearchReturned: response.length == 0,
-        }, () => {
-          console.log("Below is the state.search");
-          console.log("LAST TEXT");
-          console.log(this.state.lastSearchText);
-          // tempArray = this.state.search;
-          // this.state.search = Array.from(new Set(tempArray));
         }); 
-        console.log("SUCCESS")
       })
       .catch(() => this.setState({search: [], refreshingSearch: false }));
   }
 
   dropdownHandler = (value) => {
-    //this.fetchNews(value);
     this.wordDropDown = dropdownOptionsLocation[value];
     this.faoCode = dropdownOptions[value];
     this.offset = 0;
@@ -154,9 +145,7 @@ export default class FishPage extends React.Component {
     }, () => this.fetchSpecies(this.offset,this.faoCode));  //Need to update the current category being viewed
   }
 
-  //WARNING: currently does not support pagination
   searchSubmitHandler = () => {
-    //this.fetchNews(value);
     this.keyword = this.state.searchText;
     this.offset = 0;
     this.setState({
@@ -174,7 +163,6 @@ export default class FishPage extends React.Component {
 
   handleRefresh() {
     this.offset = 0;
-    console.log("Inside handleRefresh");
     if(this.state.connection_Status == 'Offline') {
       this.setState({
         refreshing: false,
@@ -193,11 +181,8 @@ export default class FishPage extends React.Component {
   handleSearchFetchMore = () => {
     if(!this.searchOnEndReachedCalledDuringMomentum) {
       this.searchOffset = this.searchOffset + 10; 
-      console.log(this.searchOffset);
       this.setState({refreshingSearch: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
      this.searchOnEndReachedCalledDuringMomentum = true;
-    } else {
-       console.log("Inside searchHandleFetchMore. fetch NOT executed");
     }
   }
 
@@ -296,7 +281,7 @@ export default class FishPage extends React.Component {
             //  }
             onSubmitEditing={() => {this.searchSubmitHandler();  this.searchOffset = 0;} }
             onChangeText={ (text) => {
-              this.setState({searchText: text}, () => console.log(`searchText is: ${this.state.searchText}`));} }
+              this.setState({searchText: text});}}
           />
                 </View>
             );
@@ -365,7 +350,6 @@ function DisplaySpecies(props) {
             keyExtractor={props.key}
             data={props.search}
             renderItem={({ item }) => <Species species={item} index={item.index} />}
-            //keyExtractor={item => item.SpecCode.toString()}
             refreshing={props.refreshingSearch}
             onRefresh={props.handleSearchRefresh}
             onEndReached={props.handleSearchFetchMore}
@@ -389,7 +373,6 @@ function DisplaySpecies(props) {
 }
 
 function DisplayEmptyList(props) {
-  console.log(`Inside DisplayEmptyList. refreshing: ${props.refreshing} refreshingSearch: ${props.refreshingSearch}`);
   if(props.connection_Status == 'Offline') {
     return <View style={styles.container}>
       <Text style={styles.welcome}>No Internet</Text>

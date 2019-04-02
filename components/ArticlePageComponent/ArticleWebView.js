@@ -9,16 +9,12 @@ export default class ArticleWebView extends React.Component {
 	super(props);
     }
 
-    componentDidMount() {
-	console.log(this.props);
-    }
-
     render() {
 	return (
+		//For debugging purposes, have this line as a prop to the WebView component            onLoadProgress={e => console.log(e.nativeEvent.progress)}
 		<WebView
             source={{ uri: this.props.navigation.getParam('uri', 'https://www.google.com')}}	//note: 2nd param is default value
             style={{ marginTop: 20 }}
-            onLoadProgress={e => console.log(e.nativeEvent.progress)}
 		/>
 	);
     }

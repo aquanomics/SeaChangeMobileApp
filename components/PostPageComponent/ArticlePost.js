@@ -22,14 +22,12 @@ export default class ArticlePost extends Component{
      * (logged out) or an Object (logged in)
      */
     componentDidMount() {
-        console.log("Inside componentDidMount of ArticlePostPage");
         this.unsubscriber = firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 this.setState({'user': user});
             } else {
                 //Note: Since this page is only accessible while signed in, when signed out,
                 //redirect the user to the log in page
-                console.log('not logged in');
                 this.setState({user: null}, () => {
                     this.props.navigation.goBack();     //go back to universal post page
                     this.props.navigation.goBack();     //go back to map page
@@ -47,7 +45,6 @@ export default class ArticlePost extends Component{
      * when the component unmounts.
      */
     componentWillUnmount() {
-        console.log("Inside componentWillUnmount() of ArticlePostPage");
         if (this.unsubscriber) {
             this.unsubscriber();
         }
@@ -97,7 +94,6 @@ export default class ArticlePost extends Component{
             this.setState({noUrlError: false, invalidUrl: false});
             this.state.user.getIdToken()
                 .then(idToken => {
-                    console.log("idToken retrieved!");
                     return fetch(URL, {
                         method: "POST",
                         body: JSON.stringify({
@@ -113,14 +109,12 @@ export default class ArticlePost extends Component{
                 })
                 .then(response => {
                     if(response.status != 200) {
-                        console.log(`Internal server error! Error code ${response.status}`);
                         this.setState({ buttonUploadState: 'upload', displayDialog: true,  dialogText: "Failed to Upload Article :("});
                     } else {
                         this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: "Article Successfully Uploaded :)" });
                     }
                 })
                 .catch(error => {   //external server error
-                    console.log(error);
                     this.setState({ buttonUploadState: 'upload', displayDialog: true, dialogText: "Failed to Upload Article :(" });
                 });
         }

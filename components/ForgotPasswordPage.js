@@ -61,7 +61,7 @@ export default class ForgotPasswordPage extends Component{
                     <Text style={styles.forgotText}>Tell us your email and we'll send you a link to log in.</Text>
                     <RkTextInput 
                         rkType="topLabel" 
-                        label="email"
+                        label="Email Address"
                         style={styles.textInput}
                         labelStyle={{color: '#D5DBDB'}}
                         inputStyle={{color: '#F4F6F6'}}

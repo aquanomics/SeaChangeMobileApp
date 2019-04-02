@@ -62,7 +62,6 @@ export default class EventsPage extends React.Component {
           search: [],
           searchListRefreshing: false,
           searchSubmitted: false,
-          //lastSearchText: this.state.searchText,
         });
     } else {
         this.setState({ isSearchActive: true});
@@ -77,7 +76,6 @@ export default class EventsPage extends React.Component {
     this.fetchCities(this.state.category);
     this.fetchEvents(this.state.category);
     this.props.navigation.setParams({ fetchEvents: this.Event });
-    //console.log(this.filterCity);
 
     //Used to detect network status change
     NetInfo.isConnected.addEventListener(
@@ -104,7 +102,6 @@ export default class EventsPage extends React.Component {
   }
 
   onBackButtonPressAndroid = () => {
-    console.log("Inside onBackButtonPressAndroid");
     if (this.state.isSearchActive == true) {
       this.toggleSearchState();
       return true;
@@ -133,11 +130,7 @@ export default class EventsPage extends React.Component {
   }
   fetchSpeciesSearch = () => {
     searchEvents(this.searchOffset, this.keyword)
-        .then(response => {this.setState({ search:[...this.state.search, ...response], refreshingSearch: false, lastSearchText: this.keyword}, () => {
-          console.log("Below is the state.search");
-          console.log("LAST TEXT");
-          console.log(this.state.lastSearchText);
-        }); console.log("SUCCESS")})
+        .then(response => this.setState({ search:[...this.state.search, ...response], refreshingSearch: false, lastSearchText: this.keyword}))
         .catch(() => this.setState({search: [], refreshingSearch: false }));
   }
 
@@ -147,21 +140,19 @@ export default class EventsPage extends React.Component {
     this.city = dropdownOptions[value];
     this.offset = 0;
     this.setState({
-        EventsList: [],
-        refreshing: true
+      EventsList: [],
+      refreshing: true
     }, () => this.fetchEvents(this.city));  //Need to update the current category being viewed
   }
 
-  //WARNING: currently does not support pagination
   searchSubmitHandler = () => {
-    //this.fetchNews(value);
     this.keyword = this.state.searchText;
     this.offset = 0;
     this.setState({
-        search: [],
-        refreshingSearch: true,
-        searchSubmitted: true,
-        lastSearchText: this.state.searchText,
+      search: [],
+      refreshingSearch: true,
+      searchSubmitted: true,
+      lastSearchText: this.state.searchText,
     }, () => this.fetchSpeciesSearch(this.searchOffset,this.state.searchText));  //Need to update the current category being viewed
   }
 
@@ -190,11 +181,8 @@ export default class EventsPage extends React.Component {
   handleSearchFetchMore = () => {
     if(!this.searchOnEndReachedCalledDuringMomentum) {
       this.searchOffset = this.searchOffset + 10; 
-      console.log(this.searchOffset);
       this.setState({refreshingSearch: true}, () => this.fetchSpeciesSearch(this.searchOffset,this.keyword));
      this.searchOnEndReachedCalledDuringMomentum = true;
-    } else {
-       console.log("Inside searchHandleFetchMore. fetch NOT executed");
     }
   }
 
@@ -274,7 +262,6 @@ export default class EventsPage extends React.Component {
                 defaultValue={this.wordDropDown}
                 options={dropdownOptions}
                 //WARNING: context is lost within onSelect
-                //onSelect={(idx, value) => alert("index of " + idx + " and value of " + value + " has been chosen")}
                 onSelect={(idx, value) => this.dropdownHandler(idx)}//using getParam is the way to get around "this" context being lost
             />
         </View>
@@ -290,7 +277,7 @@ export default class EventsPage extends React.Component {
                         enablesReturnKeyAutomatically={true}
                         onSubmitEditing={() => {this.searchSubmitHandler();  this.searchOffset = 0;} }
                         onChangeText={ (text) => {
-                          this.setState({searchText: text}, () => console.log(`searchText is: ${this.state.searchText}`));} }
+                          this.setState({searchText: text});} }
                         />
                   </View>
                 );
@@ -385,7 +372,6 @@ function DisplayEvents(props) {
 }
 
 function DisplayEmptyList(props) {
-  console.log(`Inside DisplayEmptyList. refreshing: ${props.refreshing} refreshingSearch: ${props.refreshingSearch}`);
   if(props.connection_Status == 'Offline') {
     return <View style={styles.container}>
       <Text style={styles.welcome}>No Internet</Text>

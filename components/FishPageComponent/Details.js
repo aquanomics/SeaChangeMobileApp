@@ -51,7 +51,7 @@ export default class Details extends React.Component {
 		            />
 		            </TouchableHighlight>
               </View>
-              <Text style={styles.fishName} numberOfLines={1}> {FBname.toUpperCase()}</Text>
+              <Text style={styles.fishName} numberOfLines={1}> {FBname ? FBname.toUpperCase() : null}</Text>
               <Text style={styles.fishScienceName} numberOfLines={2}> {Genus + " " + Species} </Text>
               <Text style={styles.fishBio} numberOfLines={2}> {"Weight: "+Weight/1000+" kg "+"  "+" Length: "+Length/100+" m"}</Text>
               <Text style={styles.petDescription} numberOfLines={20}> {Comments.replace(/\//g,"").replace(/<i>/g, "").replace(/ *\([^)]*\) */g, "") } </Text>

@@ -25,8 +25,6 @@ export default class SignupPage extends Component{
 
   	constructor(props) {
 		super(props);
-		//console.log("Inside constructor of SignupPage. Below is the props passed from the last page");
-		//console.log(this.props.navigation.state.params);
 
 		this.registeredOnFirebase = false;
 		this.unsubscriber = null;	//this is the listener for authentication. Idk why this isn't in the state, but reference I used did it this way
@@ -51,15 +49,11 @@ export default class SignupPage extends Component{
      * Once subscribed, the 'user' parameter will either be null 
      * (logged out) or an Object (logged in)
      */
-		 //TODO: NEED TO REMOVE console logs.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     componentDidMount() {
 		this.unsubscriber = firebase.auth().onAuthStateChanged((user) => {
 			if(user) {
-				console.log("Inside componentDidMount()'s callback function of SignUpPage. Below is the user");
-				console.log(user);
 				this.setState({'user':user});
 			} else {
-				console.log('not logged in');
 				this.setState({user: null});
 			}
 		});
@@ -82,15 +76,11 @@ export default class SignupPage extends Component{
     componentWillUnmount() {
 	    this._didFocusSubscription && this._didFocusSubscription.remove();
 	    this._willBlurSubscription && this._willBlurSubscription.remove();
-		console.log("Inside componentWillUnmount() of SignUpPage");
 		if (this.unsubscriber) 
 			this.unsubscriber();
     }
 
-		//TODO: NEED TO REMOVE console logs and REFACTOR AND CLEAN UP CODE.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     onPressSignUp = () => {
-		console.log('Sign up pressed');
-
 		//check strings are not empty. Firebase function will give an error saying string is empty, but it won't tell you which string (id or pw) is empty
 		//so check it ourselves and give the message
 
@@ -128,7 +118,6 @@ export default class SignupPage extends Component{
 					return firebase.auth().currentUser.getIdToken();
 				})	
 				.then((idToken) => {					//4th then
-					console.log("Inside third then chain");
 					return fetch(urlUserRegister, {
 						method: "POST",
 						body: JSON.stringify({
@@ -147,7 +136,6 @@ export default class SignupPage extends Component{
 						this.setState({ buttonSignUpState: 'signUp' });
 						throw({'message': `Internal server error! Error code ${response.status}`});
 					}
-					console.log('Sign up complete');
 					//if it's 200, then user creation is successful
 					this.setState({ buttonSignUpState: 'signUp' });
 					this.registeredOnFirebase = false;	//reset the flag

@@ -16,7 +16,10 @@ export default class ObservationCard extends React.Component {
     return (
       <TouchableHighlight
 	      underlayColor={'#fffad8'}
-        onPress={() => this.props.navigation.navigate('ObservationDetails', {postObject: this.props.item})}
+        onPress={() => this.props.navigation.navigate('ObservationDetails', {
+          postObject: this.props.item, 
+          deletionRefreshListData: this.props.deletionRefreshListData
+        })}
       >
         <Card
           featuredTitle={this.props.item.name == 'default-name' ? '' : this.props.item.name}

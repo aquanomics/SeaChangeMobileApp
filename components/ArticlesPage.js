@@ -21,40 +21,40 @@ export default class ArticlesPage extends React.Component {
 
 	//gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
     static navigationOptions = ({ navigation }) => ({
-			header: null,
+		header: null,
     });
 
     constructor(props) {
-			super(props);
+		super(props);
 
-			//https://stackoverflow.com/questions/47910127/flatlist-calls-onendreached-when-its-rendered
-			//we ONLY do this for search and not for news because the normal fetch and onEndReached fetch
-			//functions are one and the same.
-			this.searchOnEndReachedCalledDuringMomentum = true;	
-			this.newsOnEndReachedCalledDuringMomentum = true;	
+		//https://stackoverflow.com/questions/47910127/flatlist-calls-onendreached-when-its-rendered
+		//we ONLY do this for search and not for news because the normal fetch and onEndReached fetch
+		//functions are one and the same.
+		this.searchOnEndReachedCalledDuringMomentum = true;	
+		this.newsOnEndReachedCalledDuringMomentum = true;	
 
-			this.state = {
-					NewsArticle: [],			//for news FlatList
-					SearchArticle: [],			//for search FlatList
-					refreshing: true,			//for news FlatList
-					searchListRefreshing: false,	//for search FlatList
-					category: "TopStories",		//assigned TopStories as default. Changed by using dropdown list in the header
-					searchText: '',
-					searchSubmitted: false,		//to keep track of whether search has been submitted at least once during the search session
-										//This is used in the logic so that when you first try to search something before submission,
-										//the empty list doesn't show up
-					lastSearchText: '',			//We need to "remember" this value for pagination to know what string to query
-					isSearchActive: false,        	//state for search transition
-					emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
-								//This is used in the logic to differentiate whether to say No Internet or No Results
-					offset: 0,				//used for offsetting for pagination FOR NewsArticle[]	
-					searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]
-				    connection_Status : "",		//used to check network state	
-			};		
+		this.state = {
+			NewsArticle: [],			//for news FlatList
+			SearchArticle: [],			//for search FlatList
+			refreshing: true,			//for news FlatList
+			searchListRefreshing: false,	//for search FlatList
+			category: "TopStories",		//assigned TopStories as default. Changed by using dropdown list in the header
+			searchText: '',
+			searchSubmitted: false,		//to keep track of whether search has been submitted at least once during the search session
+								//This is used in the logic so that when you first try to search something before submission,
+								//the empty list doesn't show up
+			lastSearchText: '',			//We need to "remember" this value for pagination to know what string to query
+			isSearchActive: false,        	//state for search transition
+			emptySearchReturned: false,		//to keep track if no entries are returned for the given search keyword.
+						//This is used in the logic to differentiate whether to say No Internet or No Results
+			offset: 0,				//used for offsetting for pagination FOR NewsArticle[]	
+			searchOffset: 0,			//used for offsetting for pagination FOR SearchArticle[]
+		    connection_Status : "",		//used to check network state	
+		};		
 
-					this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
-							BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
-					);
+		this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+			BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+		);
     }
 
     componentDidMount() {
@@ -75,8 +75,6 @@ export default class ArticlesPage extends React.Component {
 		this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
 				BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
 		);
-		console.log("Value of firebase.auth().currentUser is below");
-		console.log(firebase.auth().currentUser);
     }
     
     componentWillUnmount() {
@@ -99,10 +97,10 @@ export default class ArticlesPage extends React.Component {
 
     onBackButtonPressAndroid = () => {
 		if (this.state.isSearchActive == true) {
-				this.toggleSearchState();
-				return true;
+			this.toggleSearchState();
+			return true;
 		} else {
-				return false;
+			return false;
 		}
     };
 
@@ -132,15 +130,14 @@ export default class ArticlesPage extends React.Component {
     
     dropdownHandler = (value) => {
 		this.setState({
-				NewsArticle: [],
-				refreshing: true,
-				category: value,
-				offset: 0,
+			NewsArticle: [],
+			refreshing: true,
+			category: value,
+			offset: 0,
 		}, () => this.fetchNews(value));	//Need to update the current category being viewed
     }
 
     handleRefresh = () => {
-    	console.log("Inside handleRefresh");
     	if(this.state.connection_Status == 'Offline') {
     		this.setState({
     			refreshing: false,
@@ -153,13 +150,12 @@ export default class ArticlesPage extends React.Component {
 				offset: 0,
 				NewsArticle: [],
 			},
-					() => this.fetchNews(this.state.category)
+				() => this.fetchNews(this.state.category)
 			);
 		}
     }
 
     searchSubmitHandler = (forPagination) => {
-		console.log(`inside searchSubmitHandler. forPagination: ${forPagination}`);
 		if(forPagination === undefined) {
 			this.setState({
 				searchSubmitted: true,
@@ -197,38 +193,32 @@ export default class ArticlesPage extends React.Component {
 
     newsHandleFetchMore = () => {
 			if(!this.newsOnEndReachedCalledDuringMomentum) {
-					console.log("Inside newsHandleFetchMore. fetch executed");
-					this.setState({
-					offset: this.state.offset + OFFSET_CONST,
-					//refreshing: true,
-					}, () => this.fetchNews(this.state.category));
+				this.setState({
+				offset: this.state.offset + OFFSET_CONST,
+				//refreshing: true,
+				}, () => this.fetchNews(this.state.category));
 
-					this.newsOnEndReachedCalledDuringMomentum = true;
-			} else {
-					console.log("Inside newsHandleFetchMore. fetch NOT executed");
+				this.newsOnEndReachedCalledDuringMomentum = true;
 			}
     }
 
     searchHandleFetchMore = () => {
-			if(!this.searchOnEndReachedCalledDuringMomentum) {
-					console.log("Inside searchHandleFetchMore. fetch executed");
-					this.setState({
-					searchOffset: this.state.searchOffset + OFFSET_CONST,
-					}, () => this.searchSubmitHandler(true));
+		if(!this.searchOnEndReachedCalledDuringMomentum) {
+			this.setState({
+			searchOffset: this.state.searchOffset + OFFSET_CONST,
+			}, () => this.searchSubmitHandler(true));
 
-					this.searchOnEndReachedCalledDuringMomentum = true;
-			} else {
-					console.log("Inside searchHandleFetchMore. fetch NOT executed");
-			}
+			this.searchOnEndReachedCalledDuringMomentum = true;
+		}
     }
 
 
     searchOnEndReachedCalledDuringMomentumHandler = () => {
-			this.searchOnEndReachedCalledDuringMomentum = false;
+		this.searchOnEndReachedCalledDuringMomentum = false;
     }
 
     newsOnEndReachedCalledDuringMomentumHandler = () => {
-			this.newsOnEndReachedCalledDuringMomentum = false;
+		this.newsOnEndReachedCalledDuringMomentum = false;
     }
 
     //render functions that return JSX
@@ -411,7 +401,6 @@ function DisplayArticles(props) {
 }
 
 function DisplayEmptyList(props) {
-	console.log(`Inside DisplayEmptyList. refreshing: ${props.refreshing} searchListRefreshing: ${props.searchListRefreshing}`);
 	if(props.connection_Status == 'Offline') {
 		return <View style={styles.container}>
 			<Text style={styles.welcome}>No Internet</Text>

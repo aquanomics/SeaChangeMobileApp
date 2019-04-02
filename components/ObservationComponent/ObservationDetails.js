@@ -27,16 +27,6 @@ export default class ObservationDetails extends React.Component {
 		deleteDialog: false,
         dialogText: '',
     };
-
-    componentDidMount() {
-			//debugging
-			console.log("inside ObservationDetails.js. Below is the props passed to it");
-			console.log(this.props.navigation.getParam('postObject', {} ));
-
-			//This below is a method of passing data to the navigationOptions.
-			//navigation.state is different from the component's this.state
-			// this.props.navigation.setParams({ myTitle: this.props.navigation.getParam('postObject', {} ).title});
-	}
 	
 	handleDeleteObservation = (imageKey) => {
 
@@ -44,23 +34,18 @@ export default class ObservationDetails extends React.Component {
 		fetch(resultUrl, { method: "DELETE"})
 		.then(response => {
 			if(response.status != 200) {    //internal server error
-				console.log(`Internal server error! Error code ${response.status}`);
 				this.setState({ buttonDeleteState: 'delete', displayResultDialog: true,  dialogText: "Failed to Delete Observation."});
 			} else {
-				console.log(`Image Deleted`);
 				this.setState({ buttonDeleteState: 'delete', displayResultDialog: true, dialogText: "Delete Successful!" });
 			}
 		})
 		.catch(error => {   //external server error
-			console.log("External server error")
 			this.setState({ buttonUploadState: 'delete', displayResultDialog: true, dialogText: error.message });
-			console.log(error.message);
 		});
     };
 
     render() {
 			const postObject = this.props.navigation.getParam('postObject', {});
-			console.log(postObject);
 			if (!postObject.lat || !postObject["lng"]) {
 				return (
 					<ScrollView style={styles.container}>
@@ -109,6 +94,7 @@ export default class ObservationDetails extends React.Component {
 						<Dialog
 							onTouchOutside={() => {
 								this.setState({ displayResultDialog: false });
+								this.props.navigation.state.params.deletionRefreshListData();
 								this.props.navigation.goBack();}}
 							width={0.9}
 							visible={this.state.displayResultDialog}
@@ -124,6 +110,7 @@ export default class ObservationDetails extends React.Component {
 									text="Continue"
 									onPress={() => {
 										this.setState({ displayResultDialog: false });
+										this.props.navigation.state.params.deletionRefreshListData();
 										this.props.navigation.goBack();}}
 									/>
 								</DialogFooter>}     
@@ -212,6 +199,7 @@ export default class ObservationDetails extends React.Component {
 						<Dialog
 							onTouchOutside={() => {
 								this.setState({ displayResultDialog: false });
+								this.props.navigation.state.params.deletionRefreshListData();
 								this.props.navigation.goBack();}}
 							width={0.9}
 							visible={this.state.displayResultDialog}
@@ -227,6 +215,7 @@ export default class ObservationDetails extends React.Component {
 									text="Continue"
 									onPress={() => {
 										this.setState({ displayResultDialog: false });
+										this.props.navigation.state.params.deletionRefreshListData();
 										this.props.navigation.goBack();}}
 									/>
 								</DialogFooter>}     

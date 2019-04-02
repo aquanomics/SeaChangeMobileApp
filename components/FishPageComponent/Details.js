@@ -1,25 +1,27 @@
 import React from 'react';
-import { Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight} from 'react-native';
+import {
+  Animated, ListView, Platform, StyleSheet, Text, View, Linking, Image, TouchableHighlight
+} from 'react-native';
 import { material, materialColors, systemWeights } from 'react-native-typography';
+
 export default class Details extends React.Component {
-
-
   constructor(props) {
     super(props);
-      this.state = {
-        scaleValue: new Animated.Value(0)
-      }
-  }   
+    this.state = {
+      scaleValue: new Animated.Value(0)
+    };
+  }
 
-  //TODO: IN-PROGESS TO MAKE GOOD ANIMATION FOR EACH CARD RENDER
+  // TODO: IN-PROGESS TO MAKE GOOD ANIMATION FOR EACH CARD RENDER
   componentDidMount() {
     Animated.timing(this.state.scaleValue, {
-        toValue: 1,
-        duration : 600,
-        delay: this.props.index * 300
+      toValue: 1,
+      duration: 600,
+      delay: this.props.index * 300
     }).start();
-  } 
-   render() {
+  }
+
+  render() {
     const {
       SpecCode,
       FBname,
@@ -28,39 +30,54 @@ export default class Details extends React.Component {
       PicPreferredName,
       Length,
       Weight,
-      Comments 
+      Comments
 
     } = this.props.details;
-    
+
     return (
-      <View style={{backgroundColor:"#8cdff2", flex: 1}}>
-        <Animated.View style={{ opacity: this.state.scaleValue  }}>
+      <View style={{ backgroundColor: '#8cdff2', flex: 1 }}>
+        <Animated.View style={{ opacity: this.state.scaleValue }}>
           <View style={styles.row}>
             <View>
               <View style={styles.imageContainer}>
-		            <TouchableHighlight 
-		              onPress={() => this.props.navigation.navigate('ArticleWebView',
-			             {uri: "https://www.fishbase.ca/summary/" + SpecCode})}
-		                underlayColor={'#fffad8'} >           
-		            <Image
-                  source={(PicPreferredName != null)
-                  ? {uri: "https://www.fishbase.ca/images/species/" + PicPreferredName}
-                  : require('../../img/place_holders/no-image-available.png')}
-                  resizeMode="stretch"
-                  style={styles.fishImage}
-		            />
-		            </TouchableHighlight>
+                <TouchableHighlight
+                  onPress={() => this.props.navigation.navigate('ArticleWebView',
+			             { uri: `https://www.fishbase.ca/summary/${SpecCode}` })}
+                  underlayColor="#fffad8"
+                >
+                  <Image
+                    source={(PicPreferredName != null)
+                      ? { uri: `https://www.fishbase.ca/images/species/${PicPreferredName}` }
+                      : require('../../img/place_holders/no-image-available.png')}
+                    resizeMode="stretch"
+                    style={styles.fishImage}
+                  />
+                </TouchableHighlight>
               </View>
-              <Text style={styles.fishName} numberOfLines={1}> {FBname.toUpperCase()}</Text>
-              <Text style={styles.fishScienceName} numberOfLines={2}> {Genus + " " + Species} </Text>
-              <Text style={styles.fishBio} numberOfLines={2}> {"Weight: "+Weight/1000+" kg "+"  "+" Length: "+Length/100+" m"}</Text>
-              <Text style={styles.petDescription} numberOfLines={20}> {Comments.replace(/\//g,"").replace(/<i>/g, "").replace(/ *\([^)]*\) */g, "") } </Text>
+              <Text style={styles.fishName} numberOfLines={1}>
+                {' '}
+                {FBname.toUpperCase()}
+              </Text>
+              <Text style={styles.fishScienceName} numberOfLines={2}>
+                {' '}
+                {`${Genus} ${Species}`}
+                {' '}
+              </Text>
+              <Text style={styles.fishBio} numberOfLines={2}>
+                {' '}
+                {`Weight: ${Weight / 1000} kg ` + '  ' + ` Length: ${Length / 100} m`}
+              </Text>
+              <Text style={styles.petDescription} numberOfLines={20}>
+                {' '}
+                {Comments.replace(/\//g, '').replace(/<i>/g, '').replace(/ *\([^)]*\) */g, '') }
+                {' '}
+              </Text>
             </View>
           </View>
         </Animated.View>
       </View>
     );
-}
+  }
 }
 const styles = StyleSheet.create({
   row: {
@@ -81,7 +98,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
 
   },
- fishImage:{
+  fishImage: {
     resizeMode: 'contain',
     height: 200,
     width: 300,
@@ -108,7 +125,7 @@ const styles = StyleSheet.create({
   },
   fishName: {
     textAlign: 'center',
-    flexDirection:'row',
+    flexDirection: 'row',
     flex: 1,
     ...material.titleObject,
     ...systemWeights.semibold,
@@ -118,10 +135,10 @@ const styles = StyleSheet.create({
   },
   fishBio: {
     textAlign: 'center',
-    flexDirection:'row',
+    flexDirection: 'row',
     marginTop: 5,
     paddingBottom: 10,
-    flex:1,
+    flex: 1,
     borderBottomColor: '#044554',
     borderBottomWidth: StyleSheet.hairlineWidth,
     ...material.captionObject,
@@ -131,15 +148,15 @@ const styles = StyleSheet.create({
     ...material.subheadingObject,
     ...systemWeights.light,
     textAlign: 'center',
-    flexDirection:'row',
+    flexDirection: 'row',
     marginTop: 5,
-    flex:1,
+    flex: 1,
   },
   petDescription: {
-    flexDirection:'row',
+    flexDirection: 'row',
     paddingTop: 10,
     marginTop: 5,
-    flex:1,
+    flex: 1,
     ...material.body2Object,
     ...systemWeights.regular,
   },

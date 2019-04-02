@@ -12,13 +12,13 @@ export default class SettingsPage extends React.Component {
     constructor(props) {
       super(props);
       this.handleChange = this.handleChange.bind(this);
-      this.toggleSwitch1 = this.toggleSwitch1.bind(this);
       settingsObject = this.props.navigation.getParam('settingsObject', {} )
       console.log(settingsObject);
       
       this.state = {
         settings: settingsObject,
-        text: (settingsObject.setCustomRadius ? "#222222":"#6d6d6d")
+        text: (settingsObject.setCustomRadius ? "#222222":"#6d6d6d"),
+        text2: (settingsObject.searchUserArea ? "#222222":"#6d6d6d")
         
       }     
     }
@@ -30,12 +30,7 @@ export default class SettingsPage extends React.Component {
       this.props.navigation.goBack();
     }
 
-    toggleSwitch1 = (value) => {
-      this.setState({switch1Value: value})
-      console.log('Switch 1 is: ' + value)
-    }
-
-
+ 
     render() {
         return(
             <View style={styles.container}>
@@ -74,7 +69,7 @@ export default class SettingsPage extends React.Component {
                       })
                     }}
                     value = {this.state.settings.setCustomRadius}/>
-                  <Text style={styles.text1}>Custom Radius</Text>
+                  <Text style={[styles.text1,{color:this.state.text}]}>Custom Radius</Text>
                 </View>
                 <Text style={[styles.text1,{color:this.state.text}]}>{"Search Radius (km)"}</Text>
                 <Text style={[styles.text2,{color:this.state.text}]}>{String(this.state.settings.customSearchRadius)}</Text>
@@ -107,11 +102,13 @@ export default class SettingsPage extends React.Component {
                           setCustomRadius: this.state.settings.setCustomRadius,
                           customSearchRadius: this.state.settings.customSearchRadius,
                           maxSearchResults: this.state.settings.maxSearchResults
-                        }
+                        },
+                        text2: ((value) ? "#222222" : "#6d6d6d")
+
                       })
                     }}
                     value = {this.state.settings.searchUserArea}/>
-                  <Text style={styles.text1}>Search User Area</Text>
+                  <Text style={[styles.text1,{color:this.state.text2}]}>Search User Area</Text>
                 </View>
                 <RoundButton 
                     style = {styles.button}
@@ -126,7 +123,6 @@ export default class SettingsPage extends React.Component {
                       this.handleChange();
                     }} />
                
-
             </View>
         );
       

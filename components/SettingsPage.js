@@ -30,7 +30,6 @@ export default class SettingsPage extends React.Component {
       this.props.navigation.goBack();
     }
 
- 
     render() {
         return(
             <View style={styles.container}>
@@ -56,7 +55,7 @@ export default class SettingsPage extends React.Component {
                 </View>
                 <View style={styles.switchrow}>
                   <Switch
-                    style={{marginLeft: 20, marginRight: 20}}
+                    style={{marginLeft: 20}}
                     onValueChange = {value => { 
                       this.setState({  
                         settings:{
@@ -73,7 +72,7 @@ export default class SettingsPage extends React.Component {
                 </View>
                 <Text style={[styles.text1,{color:this.state.text}]}>{"Search Radius (km)"}</Text>
                 <Text style={[styles.text2,{color:this.state.text}]}>{String(this.state.settings.customSearchRadius)}</Text>
-                <View style={{marginLeft: 10, marginRight: 20}}>
+                <View style={{marginLeft: 20, marginRight: 20}}>
                   <Slider
                       step={1}
                       disabled={!this.state.settings.setCustomRadius}
@@ -94,7 +93,7 @@ export default class SettingsPage extends React.Component {
                 </View>
                 <View style={styles.switchrow}>
                   <Switch
-                    style={{marginLeft: 20, marginRight: 10, marginBottom : 20}}
+                    style={{marginLeft: 20, marginBottom : 20}}
                     onValueChange = {value => { 
                       this.setState({  
                         settings:{
@@ -121,8 +120,7 @@ export default class SettingsPage extends React.Component {
                     onPress={() => {
                       console.log(this.state.settings);
                       this.handleChange();
-                    }} />
-               
+                    }} />    
             </View>
         );
       
@@ -138,15 +136,15 @@ const styles = {
       flexDirection: 'row',
     },
     button: {
-      margin: 10,
-     
+      alignSelf:'center',
       height: 50,
       width: 300,
+      
     },
-    button: {
-      justifyContent: 'center', 
-      alignItems: 'center'
-    },
+    //button: {
+    //  justifyContent: 'center', 
+    //  alignItems: 'center'
+    //},
     text1: {
         fontSize: 20,
         marginLeft: 20,

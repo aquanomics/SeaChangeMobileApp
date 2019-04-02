@@ -6,7 +6,7 @@ import { material, materialColors, systemWeights } from 'react-native-typography
 
 export default class SettingsPage extends React.Component {
     static navigationOptions = ({ navigation }) => ({
-      title: navigation.state.params.myTitle,
+      title: "Settings",
     });
     
     constructor(props) {

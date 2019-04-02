@@ -9,10 +9,6 @@ import Modal from "react-native-modal";
 
 
 const haversine = require('haversine');
-import { getArticles } from './ServerRequests/nearbyArticles';
-import { getRestaurants } from './ServerRequests/nearbyRestaurants';
-import { getPosts } from './ServerRequests/nearbyPosts';
-import { getEvents } from './ServerRequests/nearbyEvents';
 import { getNearby } from './ServerRequests/getNearby'
 
 

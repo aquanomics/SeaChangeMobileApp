@@ -60,7 +60,7 @@ export default class Details extends React.Component {
               </Text>
               <Text style={styles.fishScienceName} numberOfLines={2}>
                 {' '}
-                {`${Genus} ${Species}`}
+                {`${Genus ? Genus : null} ${Species ? Species : null}`}
                 {' '}
               </Text>
               <Text style={styles.fishBio} numberOfLines={2}>
@@ -69,7 +69,7 @@ export default class Details extends React.Component {
               </Text>
               <Text style={styles.petDescription} numberOfLines={20}>
                 {' '}
-                {Comments.replace(/\//g, '').replace(/<i>/g, '').replace(/ *\([^)]*\) */g, '') }
+                {Comments ? Comments.replace(/\//g, '').replace(/<i>/g, '').replace(/ *\([^)]*\) */g, '') : null}
                 {' '}
               </Text>
             </View>

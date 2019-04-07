@@ -517,9 +517,10 @@ function DisplayEmptyList(props) {
       <View style={styles.container}>
         <Text style={styles.welcome}>No results</Text>
         {props.isSearchActive == true && props.searchSubmitted == true
-          ? <Text style={styles.instructions}>Try a different keyword</Text> : null
+          ? <Text style={styles.instructions}>Try a different keyword.</Text> : null
 					}
-        <Text style={styles.instructions}>If connection was lost previously, try again</Text>
+        <Text style={styles.instructions}>Or maybe you haven't uploaded an observation.</Text>
+        <Text style={styles.instructions}>If connection was lost previously, try again.</Text>
       </View>
     );
   }
@@ -527,6 +528,7 @@ function DisplayEmptyList(props) {
   return (
     <View style={styles.container}>
       <Text style={styles.welcome}>Cannot Load Observations</Text>
+      <Text style={styles.instructions}>Or maybe you haven't uploaded an observation.</Text>
       <Text style={styles.instructions}>If connection was lost previously, try again</Text>
     </View>
   );

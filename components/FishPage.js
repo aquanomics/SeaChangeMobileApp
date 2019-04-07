@@ -10,8 +10,8 @@ import { getSpecies } from './FishPageComponent/Fish';
 import { getSpeciesSearch } from './FishPageComponent/Fish';
 import Species from './FishPageComponent/Species';
 
-const dropdownOptions = [21, 67, 18];
-const dropdownOptionsLocation = ['21: Northwest Atlantic', '67: Pacific, Northeast', '18: Arctic Sea'];
+const dropdownOptions = ['All', 18, 21, 67];
+const dropdownOptionsLocation = ['All', '18: Arctic Sea', '21: Northwest Atlantic', '67: Pacific, Northeast'];
 export default class FishPage extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     header: null, // gets rid of react-native-navigation library's header. We do this because we're using <Header /> from react-native-elements instead
@@ -45,7 +45,7 @@ export default class FishPage extends React.Component {
     this.fetchSpecies = this.fetchSpecies.bind(this);
     this.offset = 0;
     this.searchOffset = 0;
-    this.faoCode = 67;
+    this.faoCode = 'All';
     this.keyword = '';
     this.wordDropDown = 'Filter';
     this.searchOnEndReachedCalledDuringMomentum = true;

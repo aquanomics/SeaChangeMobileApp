@@ -50,13 +50,13 @@ const styles = StyleSheet.create({
 
 const MainNavigator = createStackNavigator({
     Fish: {
-        screen: FishPage
+        screen: FishPage,
     },
     Signup: {
-        screen: SignupPage
+        screen: SignupPage,
     },
     ForgotPassword: {
-        screen: ForgotPasswordPage
+        screen: ForgotPasswordPage,
     },
     Home: {
         screen: UserMap,

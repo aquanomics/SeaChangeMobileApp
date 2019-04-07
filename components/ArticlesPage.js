@@ -11,7 +11,7 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import Article from './ArticlePageComponent/Article';	// Component used to render each entry in the list
 import { getNews, getArticleSearch } from './ArticlePageComponent/news';
 
-const dropdownOptions = ['TopStories', 'Canada', 'World'];
+const dropdownOptions = ['All', 'TopStories', 'Canada', 'World'];
 const LIMIT = 5;	// this is used as a constant for BOTH SearchArticle[] and NewsArticle[]
 const OFFSET_CONST = 5;	// this is used as a constant for BOTH SearchArticle[] and NewsArticle[]
 
@@ -42,7 +42,7 @@ export default class ArticlesPage extends React.Component {
         SearchArticle: [],			// for search FlatList
         refreshing: true,			// for news FlatList
         searchListRefreshing: false,	// for search FlatList
-        category: 'TopStories',		// assigned TopStories as default. Changed by using dropdown list in the header
+        category: 'All',		// assigned TopStories as default. Changed by using dropdown list in the header
         searchText: '',
         searchSubmitted: false,		// to keep track of whether search has been submitted at least once during the search session
         // This is used in the logic so that when you first try to search something before submission,

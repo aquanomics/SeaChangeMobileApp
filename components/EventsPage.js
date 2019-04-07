@@ -43,7 +43,7 @@ export default class EventsPage extends React.Component {
     this.fetchCities = this.fetchCities.bind(this);
     this.offset = 0;
     this.searchOffset = 0;
-    this.city = 'Vancouver';
+    this.city = 'All';
     this.keyword = '';
     this.wordDropDown = 'Filter';
     this.searchOnEndReachedCalledDuringMomentum = true;

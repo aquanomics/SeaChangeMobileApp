@@ -29,6 +29,9 @@ import FishDetailPage from "./components/FishDetailPage";
 import ObservationsListPage from "./components/ObservationsListPage";
 import ObservationDetailsPage from "./components/ObservationComponent/ObservationDetails";
 import SettingsPage from "./components/SettingsPage"
+
+console.disableYellowBox = true; //Disable Yellow Box Warnings
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -43,18 +46,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  /*
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  */
 });
 
 const MainNavigator = createStackNavigator({

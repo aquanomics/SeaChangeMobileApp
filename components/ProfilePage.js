@@ -50,7 +50,6 @@ export default class ProfilePage extends Component {
      * Once subscribed, the 'user' parameter will either be null
      * (logged out) or an Object (logged in)
      */
-    // TODO: NEED TO REMOVE console logs.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     componentDidMount() {
       this.turnOnFirebaseAuthCallback();
     }

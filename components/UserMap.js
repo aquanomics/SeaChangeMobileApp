@@ -55,10 +55,10 @@ export default class UserMap extends Component {
     super(props);
     this.state = {
       region: {
-        latitude: 49.2827,
-        longitude: 123.1207,
-        latitudeDelta: .05,
-        longitudeDelta: .09
+        latitude: 49.2527,
+        longitude: -123.1458,
+        latitudeDelta: .3,
+        longitudeDelta: .3
       },
       searchInfo: {},
       events: [],

@@ -55,10 +55,10 @@ export default class UserMap extends Component {
     super(props);
     this.state = {
       region: {
-        latitude: 56.130367,
-        longitude: -106.346771,
-        latitudeDelta: 40,
-        longitudeDelta: 40
+        latitude: 49.2827,
+        longitude: 123.1207,
+        latitudeDelta: .05,
+        longitudeDelta: .09
       },
       searchInfo: {},
       events: [],
@@ -430,6 +430,7 @@ export default class UserMap extends Component {
           region={this.state.region}
           onRegionChangeComplete={this.onRegionChange}
           onMapReady={this.onMapReady}
+          rotateEnabled={false}
           showsUserLocation
         >
           {this.state.articles.map(marker => (

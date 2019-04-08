@@ -18,7 +18,8 @@ export default class ObservationCard extends React.Component {
         underlayColor="#fffad8"
         onPress={() => this.props.navigation.navigate('ObservationDetails', {
           postObject: this.props.item,
-          deletionRefreshListData: this.props.deletionRefreshListData
+          deletionRefreshListData: this.props.deletionRefreshListData,
+          fromMap: false
         })}
       >
         <Card

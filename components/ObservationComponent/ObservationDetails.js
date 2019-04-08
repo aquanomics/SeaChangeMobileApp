@@ -29,7 +29,8 @@ export default class ObservationDetails extends React.Component {
 	  buttonDeleteState: 'delete',
 	  displayResultDialog: false,
 	  deleteDialog: false,
-	  dialogText: '',
+    dialogText: '',
+    disableDelete: false,
 	};
 
 	handleDeleteObservation = (imageKey) => {
@@ -48,7 +49,15 @@ export default class ObservationDetails extends React.Component {
 	};
 
 	render() {
-	  const postObject = this.props.navigation.getParam('postObject', {});
+    const postObject = this.props.navigation.getParam('postObject', {});
+    const fromMap = this.props.navigation.getParam('fromMap', {});
+
+    console.log("FromMap is: " + fromMap);
+
+    if(fromMap === undefined) {
+      fromMap = false;
+    }
+
 	  if (!postObject.lat || !postObject.lng) {
 	    return (
   <ScrollView style={styles.container}>
@@ -128,7 +137,7 @@ export default class ObservationDetails extends React.Component {
     />
 
     <View style={styles.buttonContainer}>
-      <RoundButton
+      {!fromMap && <RoundButton
         style={styles.button}
         buttonState={this.state.buttonDeleteState}
         gradientStart={{ x: 0.5, y: 1 }}
@@ -151,7 +160,7 @@ export default class ObservationDetails extends React.Component {
 								    onPress: () => {},
 								  },
         }}
-      />
+      />}
     </View>
 
     <Divider style={styles.divider} />
@@ -241,7 +250,7 @@ export default class ObservationDetails extends React.Component {
     />
 
     <View style={styles.buttonContainer}>
-      <RoundButton
+    {!fromMap && <RoundButton
         style={styles.button}
         buttonState={this.state.buttonDeleteState}
         gradientStart={{ x: 0.5, y: 1 }}
@@ -264,7 +273,7 @@ export default class ObservationDetails extends React.Component {
 								    onPress: () => {},
 								  },
         }}
-      />
+      />}
     </View>
 
     <Divider style={styles.divider} />

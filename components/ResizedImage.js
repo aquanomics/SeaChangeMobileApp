@@ -15,8 +15,15 @@ export default class ResizedImage extends Component {
     Image.getSize(
       this.props.source.uri,
       (srcWidth, srcHeight) => {
-        		const ratio = Math.min((width - this.props.margin) / srcWidth, height / srcHeight);
-        		this.setState({ height: srcHeight * ratio });
+        console.log("Image size")
+        console.log(srcWidth);
+        console.log(srcHeight);
+        let ratio = 1.0;
+        if (srcWidth != 0 && srcHeight != 0){
+          ratio = Math.min((width - this.props.margin) / srcWidth, height / srcHeight);
+        }
+
+        this.setState({ height: srcHeight * ratio });
       },
       error => console.log(error)
     );

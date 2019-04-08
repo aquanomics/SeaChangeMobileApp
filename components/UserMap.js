@@ -494,6 +494,7 @@ export default class UserMap extends Component {
               <MapView.Callout style={styles.plainView} onPress={() => { this.props.navigation.navigate('ObservationDetails', { postObject: marker, fromMap: true }); }}>
                 <View>
                   {this.renderImage(marker.urlToImage)}
+                  <Text style={{ fontSize: 16, fontWeight: 'bold' }} numberOfLines={1}>{marker.name}</Text>
                   <Text style={{ fontSize: 16 }} numberOfLines={2}>{marker.comment}</Text>
 
                 </View>
@@ -513,7 +514,7 @@ export default class UserMap extends Component {
               <MapView.Callout style={styles.plainView} onPress={() => { this.props.navigation.navigate('EventsAbstraction', { eventsObject: marker }); }}>
                 <View>
                   {this.renderImage(marker.urlToImage)}
-                  <Text style={{ fontSize: 16 }} numberOfLines={1}>{marker.name}</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold' }} numberOfLines={1}>{marker.name}</Text>
                   <Text style={{ fontSize: 16 }} numberOfLines={2}>{marker.description}</Text>
 
                 </View>
